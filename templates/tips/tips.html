@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% block CSS %}
+<style>
+    .fr {
+        float: right;
+        text-align: right;
+    }
+    img.avatar {
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+    }
+    .vote:link, .vote:visited, .vote {
+        text-decoration: none;
+        font-size: 10px;
+        line-height: 1;
+        padding: 2px 8px 2px 8px;
+        border: 1px solid #e2e2e2;
+        border-radius: 3px;
+        color: #778;
+        display: inline-block;
+        vertical-align: baseline;
+        text-align: center;
+    }
+    .fa-chevron-up:before {
+        content: "\f077";
+    }
+    .header {
+        padding: 10px;
+        font-size: 15px;
+        line-height: 120%;
+        text-align: left;
+        border-bottom: 1px solid #e2e2e2;
+        overflow: auto;
+    }
+    h1 {
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 150%;
+        margin: 0px 0px 10px 0px;
+        padding: 0px;
+    }
+    a:active {
+        color: #778087;
+        text-decoration: none;
+        word-break: break-all;
+    }
+</style>
+{% endblock %}
+{% block main %}
+    <div class="box" style="border-bottom: 0px;">
+        <div class="header">
+            <div class="fr">
+                <a href="/member/doubleflower">
+                    <img src="//cdn.v2ex.com/avatar/43dc/4fd3/127752_large.png?m=1516961793" class="avatar" border="0"
+                         align="default">
+                </a>
+            </div>
+            <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="{% url 'go' tips_obj.category.code %}">{{ tips_obj.category.name }}</a>
+            <div class="sep10"></div>
+            <h1>{{ tips_obj.title }}</h1>
+            <div id="topic_433353_votes" class="votes">
+                <a href="javascript:" onclick="upVoteTopic({{ tips_obj.tips_sn }});" class="vote">
+                    <li class="fa fa-chevron-up">{{ tips_obj.like_num }}</li>
+                </a> &nbsp;<a href="javascript:" onclick="downVoteTopic({{ tips_obj.tips_sn }});" class="vote">
+                <li class="fa fa-chevron-down">{{ tips_obj.dislike_num }}</li>
+            </a></div> &nbsp;
+            <small class="gray"><a href="/member/doubleflower">{{ tips_obj.author.username }}</a> · {{ tips_obj.add_time }} · {{ tips_obj.click_num }} 次点击</small>
+        </div>
+        <div class="cell">
+            <div class="topic_content">
+                {{ tips_obj.content | safe }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

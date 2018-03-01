@@ -1,0 +1,107 @@
+{% extends 'layout.html' %}
+{% block CSS %}
+<style>
+    .header {
+        padding: 10px;
+        font-size: 15px;
+        line-height: 120%;
+        text-align: left;
+        border-bottom: 1px solid #e2e2e2;
+        overflow: auto;
+    }
+    a:active {
+        color: #778087;
+        text-decoration: none;
+        word-break: break-all;
+    }
+    .sls {
+        border-radius: 3px;
+        padding: 5px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        width: 240px;
+        font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", "Microsoft Yahei";
+    }
+    .problem {
+        padding: 10px;
+        font-size: 14px;
+        line-height: 120%;
+        text-align: left;
+        background-color: #ffffc0;
+        border-left: 5px solid #fff000;
+        border-bottom: 1px solid #e2e2e2;
+        color: #333;
+    }
+</style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 登录</div>
+        {% if has_error %}
+            <div class="problem">请解决以下问题才能登录：
+                <ul>
+                    {% if obj.errors.username.0 %}
+                        <li>{{ obj.errors.username.0 }}</li>
+                    {% endif %}
+                    {% if obj.errors.password.0 %}
+                        <li>{{ obj.errors.password.0 }}</li>
+                    {% endif %}
+                    {% if user_error %}
+                        <li>{{ user_error }}</li>
+                    {% endif %}
+                    {% if code_error %}
+                        <li>{{ code_error }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="inner">
+            <form method="post" action="{% url 'signin' %}">
+                {% csrf_token %}
+                <table cellpadding="5" cellspacing="0" border="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td width="120" align="right" valign="top">
+                            <div class="sep5"></div>
+                            用户名
+                        </td>
+                        <td width="auto" align="left"><input type="text" name="username" class="sls"
+                                                             placeholder="用户名或者电子邮箱地址">
+                            <div class="sep5"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">密码</td>
+                        <td width="auto" align="left"><input type="password" name="password" class="sls"></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">你是机器人么？</td>
+                        <td width="auto" align="left"><img id="checkCode" src="{% url 'check_code' %}"
+                                                           style="width: 120px; height: 35px; border-radius: 3px; border: 1px solid #ccc;"/>
+                            <div class="sep10"></div>
+                            <input type="text" class="sls" name="check_code" value="" placeholder="请输入上图中的验证码"></td>
+                    </tr>
+
+                    <tr>
+                        <td width="120" align="right"></td>
+                        <td width="auto" align="left"><input type="submit" class="btn btn-sm btn-secondary" value="登录">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right"></td>
+                        <td width="auto" align="left"><a href="/forgot">我忘记密码了</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+                </div>
+{% endblock %}
+
+{% block JS %}
+    <script>
+        $("#checkCode").click(function(){
+            this.src += '?'
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'layout.html' %}
+{% block CSS %}
+<style>
+    .node_header {
+        padding: 0px;
+        font-size: 14px;
+        line-height: 120%;
+        text-align: left;
+        background-color: #001d25;
+        color: #fff;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        display: flex;
+    }
+    .node_avatar {
+        width: 73px;
+        padding: 10px 10px 10px 10px;
+        box-sizing: content-box;
+    }
+    .node_info {
+        padding: 10px 10px 0px 0px;
+        width: 100%;
+    }
+    .f12 {
+        font-size: 12px;
+    }
+
+    .fr {
+        float: right;
+        text-align: right;
+    }
+    .node_header_link:link, .node_header_link:visited, .node_info a:link, .node_info a:visited {
+        color: #03c8ff;
+        text-decoration: none;
+    }
+
+    .node_header_tab_current:link, .node_header_tab_current:visited {
+        display: inline-block;
+        color: #fff !important;
+        line-height: 100%;
+        padding: 5px 10px 5px 10px;
+        border-bottom: 3px solid #fff;
+        text-decoration: none !important;
+    }
+    .node_header_tab:link, .node_header_tab:visited {
+        display: inline-block;
+        color: #fff;
+        line-height: 100%;
+        padding: 5px 10px 5px 10px;
+        text-decoration: none !important;
+    }
+    .tips-avatar {
+        margin-right: 26px;
+    }
+    .tips-title {
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="node_header">
+            <div class="node_avatar">
+                <div style="float: left; display: inline-block; margin-right: 10px; margin-bottom: initial!important;">
+                    <img src="//cdn.v2ex.com/navatar/8613/985e/90_xxlarge.png?m=1519290047" border="0" align="default"
+                         width="72" title="" style="">
+                </div>
+            </div>
+            <div class="node_info">
+                <div class="fr f12">
+                    <span>主题总数</span>
+                    <strong>{{ go_tips_count }}</strong>
+                    <span class="snow">&nbsp;•&nbsp;</span>
+                    <a href="/favorite/node/90?once=83632" class="node_header_link">加入收藏</a>
+                </div>
+                <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ code }}
+                <div class="sep10"></div>
+                <div class="sep5"></div>
+                <div class="fr" style="padding-left: 10px;">
+                    <input type="button" class="btn btn-sm btn-secondary" value="创建新主题"
+                           onclick="location.href = '/new';">
+                </div>
+                <span class="f12">这里讨论各种 Python 语言编程话题，也包括 Django，Tornado 等框架的讨论。这里是一个能够帮助你解决实际问题的地方。</span>
+                <div class="sep10"></div>
+                <div class="node_header_tabs"><a href="{%  url 'go' code %}" class="node_header_tab_current">全部主题</a><a
+                        href="{% url 'go_link' code %}" class="node_header_tab">相关链接</a></div>
+            </div>
+        </div>
+    </div>
+    <div class="cell" style="background-color: #f9f9f9; padding: 10px 10px 10px 20px;">
+        <ul class="pagination pagination-sm" style="margin-bottom:0;">
+            {% for p in page_list %}
+                {% if p == current_page %}
+                    <li class="page-item active"><a class="page-link" href="{% url 'go' code %}?p={{ p }}">{{ p }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="{% url 'go' code %}?p={{ p }}">{{ p }}</a></li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item"><a class="page-link">...</a></li>
+            <li class="page-item"><a class="page-link" href="{% url 'go' code %}?p={{ last_page }}">{{ last_page }}</a></li>
+        </ul>
+    </div>
+    {% for obj in current_page_obj %}
+        <div class="cell item" style="">
+            <div class="row">
+                <div class="col-1 tips-avatar">
+                    <img src="{{ obj.author.avatar }}" alt="{{ obj.author.username }}" width="48px" height="48px">
+                </div>
+                <div class="col-8">
+                    <div class="row tips-title">
+                        <div><a href="{% url 'tips' obj.tips_sn %}">{{ obj.title }}</a></div>
+                    </div>
+                    <div class="row tips-info">
+                        <a href="/member/{{ obj.author.username }}">{{ obj.author.username }}</a> •
+                        <strong>{{ obj.add_time }}</strong> •
+                        <strong>最后回复于。。。</strong>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <span>{{ obj.click_num }}</span>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

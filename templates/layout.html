@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>V2EX</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <style>
+        #Top {
+            text-align: center;
+            background-color: #fff;
+            height: 44px;
+            font-size: 15px;
+            font-weight: 500;
+            background-size: 44px 44px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.22);
+            padding: 0 20px 0 20px;
+        }
+
+        #Wrapper {
+            text-align: center;
+            background-color: #e2e2e2;
+            background-repeat: repeat-x;
+        }
+
+        .content {
+            min-width: 600px;
+            max-width: 1100px;
+            margin: 0px auto 0px auto;
+        }
+
+        #Leftbar {
+            width: 0px;
+            float: left;
+        }
+
+        #Rightbar {
+            width: 270px;
+            float: right;
+            margin-right: 20px;
+        }
+
+        #Main {
+            width: auto;
+            margin: 0px 310px 0px 20px;
+        }
+
+        .box {
+            background-color: #fff;
+            border-radius: 3px;
+            box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e2e2e2;
+        }
+
+        .inner {
+            padding: 10px;
+            font-size: 14px;
+            line-height: 150%;
+            text-align: left;
+        }
+
+        .cell {
+            padding: 10px;
+            font-size: 14px;
+            line-height: 120%;
+            text-align: left;
+            border-bottom: 1px solid #e2e2e2;
+            background-color: white;
+        }
+
+        .item {
+            background-position: 0 bottom;
+            background-repeat: repeat-x;
+        }
+
+        .sep20 {
+            height: 20px;
+        }
+
+        .sep5 {
+            height: 5px;
+        }
+
+        .sep10 {
+            height: 10px;
+        }
+
+        .item {
+            color: #778087;
+        }
+        a {
+            color: #778087;
+        }
+
+        a:hover {
+            color: #778399;
+        }
+
+        #Bottom {
+            border-top: 1px solid rgba(0, 0, 0, 0.22);
+            background-color: #fff;
+            text-align: center;
+            color: #999;
+            padding: 0px 10px 0px 10px;
+        }
+
+        #q {
+            border: none;
+            width: 222px;
+            height: 26px;
+            margin: 0px 0px 2px 30px;
+            background-color: transparent;
+            font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti !important;
+            font-size: 14px;
+            line-height: 16px;
+            outline: none;
+        }
+        .header {
+            padding: 10px;
+            font-size: 15px;
+            line-height: 120%;
+            text-align: left;
+            border-bottom: 1px solid #e2e2e2;
+            overflow: auto;
+        }
+        .f12 {
+            font-size: 12px;
+        }
+        .fr {
+            float: right;
+            text-align: right;
+        }
+    </style>
+    {% block CSS %} {% endblock %}
+</head>
+<body>
+<div id="Top">
+    <div class="content container">
+        <div style="padding-top: 6px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tbody>
+                <tr>
+                    <td width="110" align="left"><a href="{% url 'index' %}" name="top" title="way to explore"><img
+                            src="//cdn.v2ex.com/site/logo@2x.png?m=1346064962" border="0" align="default" alt="V2EX"
+                            width="94" height="30"></a></td>
+                    <td width="auto" align="left">
+                        <div id="Search">
+                            <form action="https://www.google.com" onsubmit="return dispatch()" target="_blank">
+                                <div style="width: 276px; height: 28px; background-size: 276px 28px; background-image: url('/static/img/qbar_light@2x.png'); background-repeat: no-repeat; display: inline-block;">
+                                    <input type="text" maxlength="40" name="q" id="q" value=""/>
+                                </div>
+                            </form>
+                        </div>
+                    </td>
+                    <td width="570" align="right" style="padding-top: 2px;"><a href="{% url 'index' %}" class="top">首页</a>&nbsp;&nbsp;&nbsp;<a
+                            href="{% url 'signup' %}" class="top">注册</a>&nbsp;&nbsp;&nbsp;<a href="{% url 'signin' %}" class="top">登录</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="Wrapper" class="container-fluid">
+    <div class="context container">
+        <div id="Leftbar"></div>
+        <div id="Rightbar">
+            <div class="sep20"></div>
+            {% if username %}
+                <div class="box">
+                    <div class="cell">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tbody>
+                            <tr>
+                                <td width="48" valign="top"><a href="/member/rootit"><img
+                                        src="//cdn.v2ex.com/avatar/d201/fcde/94579_large.png?m=1478051575"
+                                        class="avatar" border="0" align="default"
+                                        style="max-width: 48px; max-height: 48px;"></a></td>
+                                <td width="10" valign="top"></td>
+                                <td width="auto" align="left"><span class="bigger"><a
+                                        href="/member/rootit">rootit</a></span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="sep10"></div>
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tbody>
+                            <tr>
+                                <td width="33%" align="center"><a href="/my/nodes" class="dark" style="display: block;"><span
+                                        class="bigger">1</span>
+                                    <div class="sep3"></div>
+                                    <span class="fade">节点收藏</span></a></td>
+                                <td width="34%"
+                                    style="border-left: 1px solid rgba(100, 100, 100, 0.4); border-right: 1px solid rgba(100, 100, 100, 0.4);"
+                                    align="center"><a href="/my/topics" class="dark" style="display: block;"><span
+                                        class="bigger">0</span>
+                                    <div class="sep3"></div>
+                                    <span class="fade">主题收藏</span></a></td>
+                                <td width="33%" align="center"><a href="/my/following" class="dark"
+                                                                  style="display: block;"><span class="bigger">0</span>
+                                    <div class="sep3"></div>
+                                    <span class="fade">特别关注</span></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="cell">
+                        <div style="width: 250px; background-color: #f0f0f0; height: 3px; display: inline-block; vertical-align: middle;">
+                            <div style="width: 40px; background-color: #ccc; height: 3px; display: inline-block;"></div>
+                        </div>
+                    </div>
+                    <div class="cell" style="padding: 5px;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tbody>
+                            <tr>
+                                <td width="32"><a href="/new"><img
+                                        src="/static/img/flat_compose.png?v=7d21f0767aeba06f1dec21485cf5d2f1" width="32"
+                                        border="0"></a></td>
+                                <td width="10"></td>
+                                <td width="auto" valign="middle" align="left"><a href="/new">创作新主题</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="inner">
+                        <div class="fr" id="money"><a href="/balance" class="balance_area" style="">24 <img
+                                src="//cdn.v2ex.com/static/img/silver.png" alt="S" align="absmiddle" border="0"
+                                style="padding-bottom: 2px;"> 81 <img src="//cdn.v2ex.com/static/img/bronze.png" alt="B"
+                                                                      align="absmiddle" border="0"></a></div>
+                        <a href="/notifications" class="fade">0 条未读提醒</a></div>
+                </div>
+                <div class="sep20"></div>
+                <div class="box">
+                    <div class="inner">
+                        <li class="fa fa-gift" style="color: #f90;"></li> &nbsp;<a href="/mission/daily">领取今日的登录奖励</a>
+                    </div>
+                </div>
+                <div class="sep20"></div>
+            {% else %}
+                <div class="box">
+                    <div class="cell">
+                        <strong>V2EX = way to explore</strong>
+                        <div class="sep5"></div>
+                        <span>V2EX 是一个关于分享和探索的地方</span>
+                    </div>
+                    <div class="inner">
+                        <div class="sep5"></div>
+                        <div align="center"><a href="{% url 'signup' %}" class="btn btn-sm btn-secondary">现在注册</a>
+                            <div class="sep5"></div>
+                            <div class="sep10"></div>
+                            已注册用户请 &nbsp;<a href="{% url 'signin' %}">登录</a></div>
+                    </div>
+                </div>
+                <div class="sep20"></div>
+                <div class="box">
+                    <div class="inner">
+                    </div>
+                </div>
+                <div class="sep20"></div>
+            {% endif %}
+            {% block rightbar %} {% endblock %}
+        </div>
+        <div id="Main">
+            <div class="sep20"></div>
+            {% block main %}
+            {% endblock %}
+        </div>
+    </div>
+    <div class="sep20"></div>
+</div>
+
+<div id="Bottom" class="card-footer">
+    <div class="content">
+        <div class="inner">
+            <div class="sep10"></div>
+            <strong><a href="/about" class="dark" target="_self">关于</a> &nbsp; <span class="snow">·</span> &nbsp; <a
+                    href="/faq" class="dark" target="_self">FAQ</a> &nbsp; <span class="snow">·</span> &nbsp; <a
+                    href="/p/7v9TEc53" class="dark" target="_self">API</a> &nbsp; <span class="snow">·</span> &nbsp; <a
+                    href="/mission" class="dark" target="_self">我们的愿景</a> &nbsp; <span class="snow">·</span> &nbsp; <a
+                    href="/advertise" class="dark" target="_self">广告投放</a> &nbsp; <span class="snow">·</span> &nbsp; <a
+                    href="/advertise/2016.html" class="dark" target="_self">鸣谢</a> &nbsp; <span class="snow">·</span>
+                    &nbsp; 3266 人在线</strong> &nbsp; <span>最高记录 3541</span> &nbsp; <span
+                    class="snow">·</span></a>
+            <div class="sep20"></div>
+            创意工作者们的社区
+            <div class="sep5"></div>
+            World is powered by solitude
+            <div class="sep20"></div>
+            <div class="sep10"></div>
+        </div>
+    </div>
+    {% block footer %} {% endblock %}
+</div>
+<script src="/static/js/jquery-3.3.1.js"></script>
+<script src="/static/js/jquery.cookie.js"></script>
+<script src="/static/js/bootstrap.js"></script>
+
+<script>
+    /* Ajax 初始化请求操作*/
+    $(function () {
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                xhr.setRequestHeader('X-CSRFtoken', $.cookie('_xsrf'));
+            }
+        });
+    });
+    /* title 变化 */
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            $('title').text('V2EX');
+        } else {
+            $('title').text('欢迎回来ヽ(✿ﾟ▽ﾟ)ノ');
+            setTimeout("$('title').text('V2EX');", 3000);
+        }
+    }, false);
+</script>
+{% block JS %} {% endblock %}
+</body>
+</html>

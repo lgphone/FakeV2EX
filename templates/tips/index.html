@@ -1,0 +1,55 @@
+{% extends 'layout.html' %}
+{% block CSS %}
+<style>
+    .tips-avatar {
+        margin-right: 26px;
+    }
+    .tips-title {
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+    <div class="box">
+        <div class="inner" style="background-color: #fff; border-top-left-radius: 3px; border-top-right-radius: 3px;" id="Tabs">
+            {% for obj in category_obj %}
+                {% if current_tab == obj.code %}
+                    <a class="btn btn-sm btn-secondary" href="/?tab={{ obj.code }}">{{ obj.name }}</a>
+                {% else %}
+                    <a class="btn btn-sm btn-light" href="/?tab={{ obj.code }}">{{ obj.name }}</a>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="cell" style="background-color: #f9f9f9; padding: 10px 10px 10px 20px;">
+          {% for obj in category_children_obj %}
+            <a href="{% url 'go' obj.code %}" class="badge badge-dark">{{ obj.name }}</a>
+            {% endfor %}
+        </div>
+        {% for obj in tips_obj %}
+        <div class="cell item" style="">
+            <div class="row">
+                <div class="col-1 tips-avatar">
+                    <img src="{{ obj.author.avatar }}" alt="{{ obj.author.username }}" width="48px" height="48px">
+                </div>
+                <div class="col-8">
+                    <div class="row tips-title">
+                        <div><a href="{% url 'tips' obj.tips_sn  %}">{{ obj.title }}</a></div>
+                    </div>
+                    <div class="row tips-info">
+                        <a href="/member/{{ obj.author.username }}">{{ obj.author.username }}</a>  •
+                        <strong>{{ obj.add_time }}</strong>  •
+                        <strong>最后回复于。。。</strong>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <span>{{ obj.click_num }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <div class="inner">
+            <span class="chevron">→</span> <a href="{% url 'recent' %}">更多新主题</a>
+        </div>
+    </div>
+{% endblock %}

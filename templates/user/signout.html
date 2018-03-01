@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% block CSS %}
+<style>
+    .header {
+        padding: 10px;
+        font-size: 15px;
+        line-height: 120%;
+        text-align: left;
+        border-bottom: 1px solid #e2e2e2;
+        overflow: auto;
+    }
+    a:active {
+        color: #778087;
+        text-decoration: none;
+        word-break: break-all;
+    }
+</style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 登出</div>
+        <div class="inner">
+            你已经完全登出，没有任何个人信息留在这台电脑上。
+            <div class="sep20"></div>
+            <a href="{% url 'signin' %}" class="btn btn-sm btn-secondary">重新登录</a>
+        </div>
+    </div>
+{% endblock %}

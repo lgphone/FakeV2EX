@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+{% block CSS %}
+<style>
+    .tips-avatar {
+        margin-right: 26px;
+    }
+    .tips-title {
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+{% block main %}
+<div class="box">
+    <div class="header">
+        <div class="fr f12"><span>共 {{ tips_count }} 个主题</span></div>
+        <a href="{% url 'index' %}">V2EX</a>
+        <span class="chevron">&nbsp;›&nbsp;</span> 最近的主题
+    </div>
+
+    <div class="cell" style="background-color: #f9f9f9; padding: 10px 10px 10px 20px;">
+        <ul class="pagination pagination-sm" style="margin-bottom:0;">
+            {% for p in page_list %}
+                {% if p == current_page %}
+                    <li class="page-item active"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a></li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item"><a class="page-link">...</a></li>
+            <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ last_page }}">{{ last_page }}</a></li>
+        </ul>
+    </div>
+    {% for obj in current_page_obj %}
+    <div class="cell item" style="">
+        <div class="row">
+            <div class="col-1 tips-avatar">
+                <img src="{{ obj.author.avatar }}" alt="{{ obj.author.username }}" width="48px" height="48px">
+            </div>
+            <div class="col-8">
+                <div class="row tips-title">
+                    <div><a href="{% url 'tips' obj.tips_sn %}">{{ obj.title }}</a></div>
+                </div>
+                <div class="row tips-info">
+                    <a href="/member/{{ obj.author.username }}">{{ obj.author.username }}</a> •
+                    <strong>{{ obj.add_time }}</strong> •
+                    <strong>最后回复于。。。</strong>
+                </div>
+            </div>
+            <div class="col-2">
+                <span>{{ obj.click_num }}</span>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+    <div class="cell" style="background-color: #f9f9f9; padding: 10px 10px 10px 20px;">
+    <ul class="pagination pagination-sm" style="margin-bottom:0;">
+        {% for p in page_list %}
+            {% if p == current_page %}
+                <li class="page-item active"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a>
+                </li>
+            {% else %}
+                <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+</div>
+{% endblock %}
