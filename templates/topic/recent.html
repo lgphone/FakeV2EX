@@ -27,43 +27,75 @@
                     <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a></li>
                 {% endif %}
             {% endfor %}
-            <li class="page-item"><a class="page-link">...</a></li>
-            <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ last_page }}">{{ last_page }}</a></li>
+            {% if page_obj.is_large %}
+                <li class="page-item"><a class="page-link">...</a></li>
+                <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ last_page }}">{{ last_page }}</a></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                {% if current_page == 1 %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                    </li>
+                {% endif %}
+                {% if current_page == last_page %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            {% endif %}
         </ul>
     </div>
     {% for obj in current_page_obj %}
-    <div class="cell item" style="">
-        <div class="row">
-            <div class="col-1 topic-avatar">
-                <img src="{{ obj.author.avatar }}" alt="{{ obj.author.username }}" width="48px" height="48px">
-            </div>
-            <div class="col-8">
-                <div class="row topic-title">
-                    <div><a href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></div>
+        <div class="cell item" style="">
+            <div class="row">
+                <div class="col-1 topic-avatar">
+                    <img src="{{ obj.author.avatar }}" alt="{{ obj.author.username }}" width="48px" height="48px">
                 </div>
-                <div class="row topic-info">
-                    <a href="/member/{{ obj.author.username }}">{{ obj.author.username }}</a> •
-                    <strong>{{ obj.add_time }}</strong> •
-                    <strong>最后回复于。。。</strong>
+                <div class="col-8">
+                    <div class="row topic-title">
+                        <div><a href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></div>
+                    </div>
+                    <div class="row topic-info">
+                        <a href="/member/{{ obj.author.username }}">{{ obj.author.username }}</a> •
+                        <strong>{{ obj.add_time }}</strong> •
+                        <strong>最后回复于。。。</strong>
+                    </div>
                 </div>
-            </div>
-            <div class="col-2">
-                <span>{{ obj.click_num }}</span>
+                <div class="col-2">
+                    <span>{{ obj.click_num }}</span>
+                </div>
             </div>
         </div>
-    </div>
-{% endfor %}
+    {% endfor %}
     <div class="cell" style="background-color: #f9f9f9; padding: 10px 10px 10px 20px;">
-    <ul class="pagination pagination-sm" style="margin-bottom:0;">
-        {% for p in page_list %}
-            {% if p == current_page %}
-                <li class="page-item active"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a>
-                </li>
-            {% else %}
-                <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a></li>
+        <ul class="pagination pagination-sm" style="margin-bottom:0;">
+            {% for p in page_list %}
+                {% if p == current_page %}
+                    <li class="page-item active"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a>
+                    </li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.is_large %}
+                <li class="page-item"><a class="page-link">...</a></li>
+                <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ last_page }}">{{ last_page }}</a></li>
             {% endif %}
-        {% endfor %}
-    </ul>
-</div>
+
+        </ul>
+    </div>
 </div>
 {% endblock %}

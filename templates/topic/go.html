@@ -78,7 +78,7 @@
                 <div class="sep5"></div>
                 <div class="fr" style="padding-left: 10px;">
                     <input type="button" class="btn btn-sm btn-secondary" value="创建新主题"
-                           onclick="location.href = '/new';">
+                           onclick="location.href = '{% url 'new' %}?go_code={{ go_code }}';">
                 </div>
                 <span class="f12">这里讨论各种 Python 语言编程话题，也包括 Django，Tornado 等框架的讨论。这里是一个能够帮助你解决实际问题的地方。</span>
                 <div class="sep10"></div>
@@ -91,14 +91,43 @@
         <ul class="pagination pagination-sm" style="margin-bottom:0;">
             {% for p in page_list %}
                 {% if p == current_page %}
-                    <li class="page-item active"><a class="page-link" href="{% url 'go' go_code %}?p={{ p }}">{{ p }}</a>
+                    <li class="page-item active"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a>
                     </li>
                 {% else %}
-                    <li class="page-item"><a class="page-link" href="{% url 'go' go_code %}?p={{ p }}">{{ p }}</a></li>
+                    <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a></li>
                 {% endif %}
             {% endfor %}
-            <li class="page-item"><a class="page-link">...</a></li>
-            <li class="page-item"><a class="page-link" href="{% url 'go' go_code %}?p={{ last_page }}">{{ last_page }}</a></li>
+            {% if page_obj.is_large %}
+                <li class="page-item"><a class="page-link">...</a></li>
+                <li class="page-item"><a class="page-link"
+                                         href="{% url 'recent' %}?p={{ last_page }}">{{ last_page }}</a></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                {% if current_page == 1 %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+                    </li>
+                {% endif %}
+                {% if current_page == last_page %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="#">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            {% endif %}
+
         </ul>
     </div>
     {% for obj in current_page_obj %}

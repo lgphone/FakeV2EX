@@ -50,21 +50,23 @@
     <div class="box" style="border-bottom: 0px;">
         <div class="header">
             <div class="fr">
-                <a href="/member/doubleflower">
-                    <img src="//cdn.v2ex.com/avatar/43dc/4fd3/127752_large.png?m=1516961793" class="avatar" border="0"
+                <a href="{% url 'member' topic_obj.author.username  %}">
+                    <img src="{{ topic_obj.author.avatar }}" class="avatar" border="0"
                          align="default">
                 </a>
             </div>
             <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="{% url 'go' topic_obj.category.code %}">{{ topic_obj.category.name }}</a>
             <div class="sep10"></div>
             <h1>{{ topic_obj.title }}</h1>
-            <div id="topic_433353_votes" class="votes">
-                <a href="javascript:" onclick="upVoteTopic({{ topic_obj.tips_sn }});" class="vote">
+            <div id="topic_votes" class="votes">
+                <a href="javascript:" onclick="upVoteTopic('{{ topic_obj.topic_sn }}');" class="vote">
                     <li class="fa fa-chevron-up">&nbsp;{{ topic_obj.like_num }}</li>
-                </a> &nbsp;<a href="javascript:" onclick="downVoteTopic({{ topic_obj.tips_sn }});" class="vote">
-                <li class="fa fa-chevron-down">&nbsp;{{ topic_obj.dislike_num }}</li>
-            </a></div> &nbsp;
-            <small class="gray"><a href="/member/doubleflower">{{ topic_obj.author.username }}</a> · {{ topic_obj.add_time }} · {{ topic_obj.click_num }} 次点击</small>
+                </a> &nbsp;
+                <a href="javascript:" onclick="downVoteTopic('{{ topic_obj.topic_sn }}');" class="vote">
+                    <li class="fa fa-chevron-down">&nbsp;{{ topic_obj.dislike_num }}</li>
+                </a>
+            </div> &nbsp;
+            <small class="gray"><a href="{% url 'member' topic_obj.author.username  %}">{{ topic_obj.author.username }}</a> · {{ topic_obj.add_time }} · {{ topic_obj.click_num }} 次点击</small>
         </div>
         <div class="cell">
             <div class="topic_content">
@@ -72,4 +74,48 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block JS %}
+<script>
+    function upVoteTopic(topic_sn) {
+        $.ajax({
+            url: '/topic/vote?t=' + $.cookie('csrftoken'),
+            type: 'post',
+            data: {'topic_sn': topic_sn, 'vote_action': 'up'},
+            success: function (recv) {
+                recv = JSON.parse(recv);
+                if (recv.changed) {
+                    console.log('成功');
+                    $('#topic_votes').html(recv.data);
+                } else {
+                    console.log('失败')
+                }
+            },
+            error: function () {
+                console.log('请求失败')
+            }
+        })
+    }
+
+    function downVoteTopic(topic_sn) {
+        $.ajax({
+            url: '/topic/vote?t=' + $.cookie('csrftoken'),
+            type: 'post',
+            data: {'topic_sn': topic_sn, 'vote_action': 'down'},
+            success: function (recv) {
+                recv = JSON.parse(recv);
+                if (recv.changed) {
+                    console.log('成功');
+                    $('#topic_votes').html(recv.data);
+                } else {
+                    console.log('失败')
+                }
+            },
+            error: function () {
+                console.log('请求失败')
+            }
+        })
+    }
+</script>
 {% endblock %}

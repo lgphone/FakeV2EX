@@ -31,7 +31,7 @@ class TopicCategory(models.Model):
     class Meta:
         verbose_name = "Tips类别"
         verbose_name_plural = verbose_name
-        # unique_together = ('code', 'category_type',)
+        unique_together = ('code', 'category_type',)
 
     def __str__(self):
         return self.name
@@ -45,8 +45,6 @@ class Topic(models.Model):
     author = models.ForeignKey(User, verbose_name="Topic作者", on_delete=models.CASCADE)
     topic_sn = models.CharField(max_length=50, default="", unique=True, verbose_name="Topic唯一sn")
     click_num = models.IntegerField(default=0, verbose_name="Topic点击数")
-    like_num = models.IntegerField(default=0, verbose_name="顶数")
-    dislike_num = models.IntegerField(default=0, verbose_name="踩数")
     title = models.TextField(max_length=120, verbose_name="Topic title")
     content = models.TextField(max_length=20000, verbose_name="Topic title")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
@@ -57,3 +55,26 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class TopicVote(models.Model):
+    """
+    Topic Vote
+    """
+    user = models.ForeignKey(User, verbose_name="用户", on_delete=models.CASCADE)
+    topic = models.ForeignKey(Topic, verbose_name="Topic", on_delete=models.CASCADE)
+    like = models.BooleanField(verbose_name="是否喜欢此贴")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
+
+    class Meta:
+        verbose_name = 'Topic'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.user
+
+    def count_like(self, topic_obj):
+        return TopicVote.objects.filter(like=True, topic=topic_obj).count()
+
+    def count_dislike(self, topic_obj):
+        return TopicVote.objects.filter(like=False, topic=topic_obj).count()

@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+
+from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
 from django.core.paginator import Paginator
 from django.views.generic import View
@@ -7,7 +8,7 @@ from django.utils.decorators import method_decorator
 from utils.auth_decorator import login_auth
 from django.http import Http404
 from utils.some_utils import gender_topic_sn
-from .models import TopicCategory, Topic
+from .models import TopicCategory, Topic, TopicVote
 from .forms import NewTopicForm
 User = get_user_model()
 # Create your views here.
@@ -20,7 +21,7 @@ class IndexView(View):
         current_tab = request.GET.get('tab', 'tech')
         category_obj = TopicCategory.objects.filter(category_type=1)
         category_children_obj = TopicCategory.objects.filter(parent_category__code=current_tab)
-        topic_obj = Topic.objects.filter(category__parent_category__code=current_tab).order_by('add_time')[0:30]
+        topic_obj = Topic.objects.filter(category__parent_category__code=current_tab).order_by('-add_time')[0:30]
         return render(request, 'topic/index.html', locals())
 
 
@@ -32,6 +33,10 @@ class NewTopicView(View):
     def get(self, request):
         is_login = request.session.get('isLogin', None)
         user_info = request.session.get('user_info', None)
+        go_code = request.GET.get('go_code', None)
+        if go_code:
+            go_obj = TopicCategory.objects.filter(code=go_code).first()
+            return render(request, 'topic/new.html', locals())
         go_obj = TopicCategory.objects.filter(category_type=2)
         return render(request, 'topic/new.html', locals())
 
@@ -60,16 +65,16 @@ class RecentView(View):
         user_info = request.session.get('user_info', None)
         current_page = request.GET.get('p', '1')
         current_page = int(current_page)
-        topic_obj = Topic.objects.all().order_by('add_time')[0:30]
+        topic_obj = Topic.objects.all().order_by('-add_time')[0:30]
         page_obj = Paginator(topic_obj, 15)
-        topic_count = page_obj.count
+        if page_obj.num_pages > 10:
+            page_obj.is_large = True
         current_page_obj = page_obj.page(current_page).object_list
         last_page = page_obj.page_range[-1]
         if current_page == 1:
             if len(page_obj.page_range) > 18:
                 page_list = list(page_obj.page_range[current_page - 1:10])
             page_list = list(page_obj.page_range)
-            print(page_list)
         else:
             if len(page_obj.page_range) > 20:
                 page_list = list(page_obj.page_range[:current_page-1][-5])
@@ -112,8 +117,8 @@ class TopicView(View):
             topic_obj = Topic.objects.get(topic_sn=topic_sn)
             topic_obj.click_num += 1
             topic_obj.save()
+            topic_obj.like_num = TopicVote.objects.filter(like=True, topic=topic_obj).count()
+            topic_obj.dislike_num = TopicVote.objects.filter(like=False, topic=topic_obj).count()
             return render(request, 'topic/topic.html', locals())
         except Topic.DoesNotExist:
             raise Http404("topic does not exist")
-
-

@@ -89,7 +89,10 @@
         a {
             color: #778087;
         }
-
+        a.top:hover {
+            color: #99a;
+            text-decoration: none;
+        }
         a:hover {
             color: #778399;
         }
@@ -177,6 +180,7 @@
 
 <div id="Wrapper" class="container-fluid">
     <div class="context container">
+        {% csrf_token %}
         <div id="Leftbar"></div>
         <div id="Rightbar">
             <div class="sep20"></div>
@@ -222,7 +226,7 @@
     $(function () {
         $.ajaxSetup({
             beforeSend: function (xhr, settings) {
-                xhr.setRequestHeader('X-CSRFtoken', $.cookie('_xsrf'));
+                xhr.setRequestHeader('X-CSRFtoken', $.cookie('csrftoken'));
             }
         });
     });

@@ -54,7 +54,11 @@
             </ul>
         </div>
     {% endif %}
-    <div class="cell"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 创作新主题</div>
+    {% if go_code %}
+        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="{% url 'go' go_obj.code %}">{{ go_obj.name }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 创建新主题</div>
+    {% else %}
+        <div class="cell"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 创作新主题</div>
+    {% endif %}
     <form method="POST" action="{% url 'new' %}" id="compose">
         {% csrf_token %}
         <input type="hidden" class="hide" name="username" value="{{ user_info.username }}" >
@@ -70,18 +74,21 @@
         <div style="text-align: left; border-bottom: 1px solid #e2e2e2; font-size: 14px; line-height: 120%;">
             <textarea class="msl" rows="10" maxlength="20000" id="editor" name="content"></textarea>
         </div>
-        <div class="cell">
-            <div class="input-group go">
-              <select class="custom-select" name="go_code">
-                  {% for item in go_obj %}
-                    <option value="{{ item.code }}" selected>{{ item.name }}/{{ item.code }}</option>
-                  {% endfor %}
-              </select>
+        {% if go_code%}
+            <input type="hidden" name="go_code" value="{{ go_code }}">
+        {% else %}
+            <div class="cell">
+                <div class="input-group go">
+                  <select class="custom-select" name="go_code">
+                      {% for item in go_obj %}
+                        <option value="{{ item.code }}" selected>{{ item.name }}/{{ item.code }}</option>
+                      {% endfor %}
+                  </select>
+                </div>
             </div>
-        </div>
+        {% endif %}
         <div class="cell">
             <div class="fr">
-                <span id="error_message"></span>
                 <button type="submit" class="btn btn-sm btn-secondary">
                     <li class="fa fa-paper-plane"></li> &nbsp;发布主题
                 </button>

@@ -71,6 +71,7 @@ class SigninView(View):
                             user_obj.save()
                             user_info = {
                                 'username': username,
+                                'uid': user_obj.id,
                                 'avatar': user_obj.avatar,
                                 'mobile': user_obj.mobile,
                             }

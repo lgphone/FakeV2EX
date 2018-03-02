@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from topic.views import IndexView, GoView, TopicView, GoLinkView, RecentView, NewTopicView
 from user.views import SignupView, check_code, SigninView, SignoutView, MemberView
+from operation.views import TopicVoteView
 
 
 urlpatterns = [
@@ -28,6 +29,7 @@ urlpatterns = [
     path('go/<slug:go_code>', GoView.as_view(), name='go'),
     path('go/<slug:go_code>/links', GoLinkView.as_view(), name='go_link'),
     path('t/<slug:topic_sn>', TopicView.as_view(), name='topic'),
+    path('topic/vote', TopicVoteView.as_view(), name='topic_vote'),
     path('signup', SignupView.as_view(), name='signup'),
     path('signin', SigninView.as_view(), name='signin'),
     path('signout', SignoutView.as_view(), name='signout'),
