@@ -8,10 +8,10 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "v2ex.settings")
 
 import django
 django.setup()
-from tips.models import Tips, TipsCategory
+from topic.models import Topic, TopicCategory
 
 
-tips_obj = Tips.objects.all()
+tips_obj = Topic.objects.all()
 
 row_data = []
 
@@ -30,7 +30,7 @@ for i in tips_obj:
 print(row_data)
 
 
-tips_cate = TipsCategory.objects.all()
+tips_cate = TopicCategory.objects.all()
 tips_data = []
 for i in tips_cate:
     tmp = {

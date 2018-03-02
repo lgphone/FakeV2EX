@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user.apps.UserConfig',
     'operation.apps.OperationConfig',
-    'tips.apps.NoteConfig',
+    'topic.apps.TopicConfig',
 ]
 
 AUTH_USER_MODEL = "user.UserProfile"

@@ -1,0 +1,49 @@
+{% extends 'user/master.html' %}
+{% block CSS %}
+<style>
+    a:active {
+        color: #778087;
+        text-decoration: none;
+        word-break: break-all;
+    }
+    .widgets {
+        display: flex;
+        flex-flow: row wrap;
+        padding: 5px;
+    }
+</style>
+{% endblock %}
+{% block main %}
+<div class="box">
+    <div class="cell">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+            <tbody>
+                <tr>
+                    <td width="73" valign="top" align="center"><img src="{{ user_obj.avatar }}" class="avatar" border="0" align="default"><div class="sep10"></div><strong class="online">{{ user_obj.status }}</strong></td>
+                    <td width="10"></td>
+                    <td width="auto" valign="top" align="left">
+                        <div class="fr">
+                        </div>
+                        <h1 style="margin-bottom: 5px;">{{ user_obj.username }}</h1>
+                        <span class="bigger"></span>
+                        <div class="sep10"></div>
+                        <span class="gray"><li class="fa fa-time"></li> &nbsp; V2EX 第 {{ user_obj.id }} 号会员，加入于 {{ user_obj.date_joined }}，今日活跃度排名 <a href="/top/dau">407</a></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="sep5"></div>
+    </div>
+    <div class="widgets">
+        {% if user_obj.location %}
+            <a href="http://www.google.com/maps?q={{ user_obj.location }}" class="social_label" target="_blank" rel="nofollow">
+            <span class="fa fa-map-pin"> &nbsp; &nbsp;
+            </span>{{ user_obj.location }}</a>
+        {% else %}
+            <a href="#" class="social_label" target="_blank" rel="nofollow">
+            <span class="fa fa-map-pin"> &nbsp; &nbsp;
+            </span>火星</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

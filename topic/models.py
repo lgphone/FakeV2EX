@@ -7,9 +7,9 @@ User = get_user_model()
 # Create your models here.
 
 
-class TipsCategory(models.Model):
+class TopicCategory(models.Model):
     """
-    Tips类别
+    Topic类别
     """
     CATEGORY_TYPE = (
         (1, "tab"),
@@ -31,28 +31,28 @@ class TipsCategory(models.Model):
     class Meta:
         verbose_name = "Tips类别"
         verbose_name_plural = verbose_name
-        unique_together = ('code', 'category_type',)
+        # unique_together = ('code', 'category_type',)
 
     def __str__(self):
         return self.name
 
 
-class Tips(models.Model):
+class Topic(models.Model):
     """
-    Tips
+    Topic
     """
-    category = models.ForeignKey(TipsCategory, verbose_name="Go分类", on_delete=models.CASCADE)
-    author = models.ForeignKey(User, verbose_name="Tips作者", on_delete=models.CASCADE)
-    tips_sn = models.CharField(max_length=50, default="", unique=True, verbose_name="Tips唯一货号")
-    click_num = models.IntegerField(default=0, verbose_name="Tips点击数")
+    category = models.ForeignKey(TopicCategory, verbose_name="Go分类", on_delete=models.CASCADE)
+    author = models.ForeignKey(User, verbose_name="Topic作者", on_delete=models.CASCADE)
+    topic_sn = models.CharField(max_length=50, default="", unique=True, verbose_name="Topic唯一sn")
+    click_num = models.IntegerField(default=0, verbose_name="Topic点击数")
     like_num = models.IntegerField(default=0, verbose_name="顶数")
     dislike_num = models.IntegerField(default=0, verbose_name="踩数")
-    title = models.TextField(max_length=120, verbose_name="Tips title")
-    content = models.TextField(max_length=20000, verbose_name="Tips title")
+    title = models.TextField(max_length=120, verbose_name="Topic title")
+    content = models.TextField(max_length=20000, verbose_name="Topic title")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
 
     class Meta:
-        verbose_name = 'Tips'
+        verbose_name = 'Topic'
         verbose_name_plural = verbose_name
 
     def __str__(self):

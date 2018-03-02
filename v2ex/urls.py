@@ -15,17 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from tips.views import IndexView, GoView, TipsView, GoLinkView, RecentView
-from user.views import SignupView, check_code, SigninView, SignoutView
+from topic.views import IndexView, GoView, TopicView, GoLinkView, RecentView, NewTopicView
+from user.views import SignupView, check_code, SigninView, SignoutView, MemberView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', IndexView.as_view(), name='index'),
     path('recent', RecentView.as_view(), name='recent'),
-    path('go/<slug:code>', GoView.as_view(), name='go'),
-    path('go/<slug:code>/links', GoLinkView.as_view(), name='go_link'),
-    path('t/<slug:tips_sn>', TipsView.as_view(), name='tips'),
+    path('new', NewTopicView.as_view(), name='new'),
+    path('member/<slug:username>', MemberView.as_view(), name='member'),
+    path('go/<slug:go_code>', GoView.as_view(), name='go'),
+    path('go/<slug:go_code>/links', GoLinkView.as_view(), name='go_link'),
+    path('t/<slug:topic_sn>', TopicView.as_view(), name='topic'),
     path('signup', SignupView.as_view(), name='signup'),
     path('signin', SigninView.as_view(), name='signin'),
     path('signout', SignoutView.as_view(), name='signout'),

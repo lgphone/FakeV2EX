@@ -13,17 +13,21 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "v2ex.settings")
 import django
 django.setup()
 
-from tips.models import TipsCategory
+from topic.models import TopicCategory
 
 from db_tools.data.category_data import row_data
 
 for i in row_data:
-    i_obj = TipsCategory()
+    i_obj = TopicCategory()
     i_obj.code = i["code"]
     i_obj.name = i["name"]
     i_obj.desc = i["desc"]
     i_obj.category_type = i["category_type"]
-    i_obj.parent_category = i["parent_category"]
+    i_obj.parent_category_id = i["parent_category"]
     i_obj.is_hot = i["is_hot"]
     i_obj.avatar = i["avatar"]
-    i_obj.save()
+    try:
+        i_obj.save()
+    except:
+        pass
+

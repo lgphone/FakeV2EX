@@ -1,0 +1,119 @@
+{% extends 'layout.html' %}
+
+{% block CSS %}
+<style>
+    .msl {
+        width: 100%;
+        border: none;
+        resize: none;
+        background-color: #f9f9f9;
+        outline: none;
+        font-size: 14px;
+        line-height: 20px;
+        padding: 10px;
+        font-family: 'Helvetica Neue', 'Hiragino Sans GB', 'Microsoft Yahei', sans-serif;
+        margin: 0px;
+        box-sizing: border-box;
+    }
+    .msl:focus {
+        background-color: #fff;
+    }
+    .go {
+        width: 20%;
+    }
+    .problem {
+        padding: 10px;
+        font-size: 14px;
+        line-height: 120%;
+        text-align: left;
+        background-color: #ffffc0;
+        border-left: 5px solid #fff000;
+        border-bottom: 1px solid #e2e2e2;
+        color: #333;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<div class="box" id="box">
+    {% if has_error %}
+        <div class="problem">请解决以下问题然后再提交：
+            <ul>
+                {% if obj.errors.username.0 %}
+                    <li>{{ obj.errors.username.0 }}</li>
+                {% endif %}
+                {% if obj.errors.title.0 %}
+                    <li>{{ obj.errors.title.0 }}</li>
+                {% endif %}
+                {% if obj.errors.content.0 %}
+                    <li>{{ obj.errors.content.0 }}</li>
+                {% endif %}
+                {% if obj.errors.go_code.0 %}
+                    <li>{{ obj.errors.go_code.0 }}</li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="cell"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 创作新主题</div>
+    <form method="POST" action="{% url 'new' %}" id="compose">
+        {% csrf_token %}
+        <input type="hidden" class="hide" name="username" value="{{ user_info.username }}" >
+        <div class="cell"><div class="fr" id="title_remaining">120</div>
+            主题标题
+        </div>
+        <div class="cell" style="padding: 0px; background-color: #fff;">
+            <textarea class="msl" rows="1" maxlength="120" id="topic_title" name="title" autofocus="autofocus" placeholder="请输入主题标题，如果标题能够表达完整内容，则正文可以为空"></textarea>
+        </div>
+        <div class="cell"><div class="fr" id="content_remaining">20000</div>
+            正文
+        </div>
+        <div style="text-align: left; border-bottom: 1px solid #e2e2e2; font-size: 14px; line-height: 120%;">
+            <textarea class="msl" rows="10" maxlength="20000" id="editor" name="content"></textarea>
+        </div>
+        <div class="cell">
+            <div class="input-group go">
+              <select class="custom-select" name="go_code">
+                  {% for item in go_obj %}
+                    <option value="{{ item.code }}" selected>{{ item.name }}/{{ item.code }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+        </div>
+        <div class="cell">
+            <div class="fr">
+                <span id="error_message"></span>
+                <button type="submit" class="btn btn-sm btn-secondary">
+                    <li class="fa fa-paper-plane"></li> &nbsp;发布主题
+                </button>
+            </div>
+            <button class="btn btn-sm btn-secondary" onclick="previewTopic();"><li class="fa fa-eye"></li> &nbsp;预览主题</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+
+{% block rightbar %}
+<div class="box">
+    <div class="cell">发帖提示</div>
+    <div class="inner">
+        <ul style="margin-top: 0px;">
+            <li><span class="f13">主题标题</span><div class="sep10"></div>
+            请在标题中描述内容要点。如果一件事情在标题的长度内就已经可以说清楚，那就没有必要写正文了。
+            <div class="sep10"></div>
+            </li>
+            <li><div class="fr" style="margin-top: -5px; margin-right: 5px;"><img src="/static/img/markdown.png" border="0" width="32"></div><span class="f13">正文</span><div class="sep10"></div>
+            可以在正文中为你要发布的主题添加更多细节。V2EX 支持 <span style="font-family: Consolas, 'Panic Sans', mono"><a href="https://help.github.com/articles/github-flavored-markdown" target="_blank">GitHub Flavored Markdown</a></span> 文本标记语法。
+            <div class="sep10"></div>
+            在正式提交之前，你可以点击本页面左下角的“预览主题”来查看 Markdown 正文的实际渲染效果。
+            <div class="sep10"></div>
+            </li>
+            <li><span class="f13">选择节点</span><div class="sep10"></div>
+            在最后，请为你的主题选择一个节点。恰当的归类会让你发布的信息更加有用。
+            <div class="sep10"></div>
+            你可以在主题发布后 300 秒内，对标题或者正文进行编辑。同时，在 300 秒内，你可以重新为主题选择节点。
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

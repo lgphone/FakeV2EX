@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>V2EX</title>
     <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/font-awesome.css">
     <style>
         #Top {
             text-align: center;
@@ -71,6 +72,7 @@
         .item {
             background-position: 0 bottom;
             background-repeat: repeat-x;
+            color: #778087;
         }
 
         .sep20 {
@@ -84,10 +86,6 @@
         .sep10 {
             height: 10px;
         }
-
-        .item {
-            color: #778087;
-        }
         a {
             color: #778087;
         }
@@ -95,7 +93,10 @@
         a:hover {
             color: #778399;
         }
-
+        .no_hove_line a:hover {
+            text-decoration: none;
+            color: #343a40;
+        }
         #Bottom {
             border-top: 1px solid rgba(0, 0, 0, 0.22);
             background-color: #fff;
@@ -130,6 +131,9 @@
             float: right;
             text-align: right;
         }
+        .hide {
+            display: none;
+        }
     </style>
     {% block CSS %} {% endblock %}
 </head>
@@ -152,8 +156,18 @@
                             </form>
                         </div>
                     </td>
-                    <td width="570" align="right" style="padding-top: 2px;"><a href="{% url 'index' %}" class="top">首页</a>&nbsp;&nbsp;&nbsp;<a
+                    {% if is_login %}
+                        <td width="570" align="right" style="padding-top: 2px;">
+                            <a href="/" class="top">首页</a>
+                            &nbsp;&nbsp;&nbsp;<a href="{% url 'member' user_info.username %}" class="top">{{ user_info.username }}</a>
+                            &nbsp;&nbsp;&nbsp;<a href="/notes" class="top">记事本</a>
+                            &nbsp;&nbsp;&nbsp;<a href="/t" class="top">时间轴</a>
+                            &nbsp;&nbsp;&nbsp;<a href="/settings" class="top">设置</a>
+                            &nbsp;&nbsp;&nbsp;<a href="#;" onclick="if (confirm('确定要从 V2EX 登出？')) { location.href= '{% url 'signout' %}'; }" class="top">登出</a></td>
+                    {% else %}
+                        <td width="570" align="right" style="padding-top: 2px;"><a href="{% url 'index' %}" class="top">首页</a>&nbsp;&nbsp;&nbsp;<a
                             href="{% url 'signup' %}" class="top">注册</a>&nbsp;&nbsp;&nbsp;<a href="{% url 'signin' %}" class="top">登录</a></td>
+                    {% endif %}
                 </tr>
                 </tbody>
             </table>
@@ -166,99 +180,6 @@
         <div id="Leftbar"></div>
         <div id="Rightbar">
             <div class="sep20"></div>
-            {% if username %}
-                <div class="box">
-                    <div class="cell">
-                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                            <tbody>
-                            <tr>
-                                <td width="48" valign="top"><a href="/member/rootit"><img
-                                        src="//cdn.v2ex.com/avatar/d201/fcde/94579_large.png?m=1478051575"
-                                        class="avatar" border="0" align="default"
-                                        style="max-width: 48px; max-height: 48px;"></a></td>
-                                <td width="10" valign="top"></td>
-                                <td width="auto" align="left"><span class="bigger"><a
-                                        href="/member/rootit">rootit</a></span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div class="sep10"></div>
-                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                            <tbody>
-                            <tr>
-                                <td width="33%" align="center"><a href="/my/nodes" class="dark" style="display: block;"><span
-                                        class="bigger">1</span>
-                                    <div class="sep3"></div>
-                                    <span class="fade">节点收藏</span></a></td>
-                                <td width="34%"
-                                    style="border-left: 1px solid rgba(100, 100, 100, 0.4); border-right: 1px solid rgba(100, 100, 100, 0.4);"
-                                    align="center"><a href="/my/topics" class="dark" style="display: block;"><span
-                                        class="bigger">0</span>
-                                    <div class="sep3"></div>
-                                    <span class="fade">主题收藏</span></a></td>
-                                <td width="33%" align="center"><a href="/my/following" class="dark"
-                                                                  style="display: block;"><span class="bigger">0</span>
-                                    <div class="sep3"></div>
-                                    <span class="fade">特别关注</span></a></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="cell">
-                        <div style="width: 250px; background-color: #f0f0f0; height: 3px; display: inline-block; vertical-align: middle;">
-                            <div style="width: 40px; background-color: #ccc; height: 3px; display: inline-block;"></div>
-                        </div>
-                    </div>
-                    <div class="cell" style="padding: 5px;">
-                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                            <tbody>
-                            <tr>
-                                <td width="32"><a href="/new"><img
-                                        src="/static/img/flat_compose.png?v=7d21f0767aeba06f1dec21485cf5d2f1" width="32"
-                                        border="0"></a></td>
-                                <td width="10"></td>
-                                <td width="auto" valign="middle" align="left"><a href="/new">创作新主题</a></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="inner">
-                        <div class="fr" id="money"><a href="/balance" class="balance_area" style="">24 <img
-                                src="//cdn.v2ex.com/static/img/silver.png" alt="S" align="absmiddle" border="0"
-                                style="padding-bottom: 2px;"> 81 <img src="//cdn.v2ex.com/static/img/bronze.png" alt="B"
-                                                                      align="absmiddle" border="0"></a></div>
-                        <a href="/notifications" class="fade">0 条未读提醒</a></div>
-                </div>
-                <div class="sep20"></div>
-                <div class="box">
-                    <div class="inner">
-                        <li class="fa fa-gift" style="color: #f90;"></li> &nbsp;<a href="/mission/daily">领取今日的登录奖励</a>
-                    </div>
-                </div>
-                <div class="sep20"></div>
-            {% else %}
-                <div class="box">
-                    <div class="cell">
-                        <strong>V2EX = way to explore</strong>
-                        <div class="sep5"></div>
-                        <span>V2EX 是一个关于分享和探索的地方</span>
-                    </div>
-                    <div class="inner">
-                        <div class="sep5"></div>
-                        <div align="center"><a href="{% url 'signup' %}" class="btn btn-sm btn-secondary">现在注册</a>
-                            <div class="sep5"></div>
-                            <div class="sep10"></div>
-                            已注册用户请 &nbsp;<a href="{% url 'signin' %}">登录</a></div>
-                    </div>
-                </div>
-                <div class="sep20"></div>
-                <div class="box">
-                    <div class="inner">
-                    </div>
-                </div>
-                <div class="sep20"></div>
-            {% endif %}
             {% block rightbar %} {% endblock %}
         </div>
         <div id="Main">

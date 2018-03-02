@@ -1,10 +1,10 @@
-{% extends 'layout.html' %}
+{% extends 'topic/master.html' %}
 {% block CSS %}
 <style>
-    .tips-avatar {
+    .topic-avatar {
         margin-right: 26px;
     }
-    .tips-title {
+    .topic-title {
         margin-bottom: 10px;
     }
 </style>
@@ -26,17 +26,17 @@
             <a href="{% url 'go' obj.code %}" class="badge badge-dark">{{ obj.name }}</a>
             {% endfor %}
         </div>
-        {% for obj in tips_obj %}
+        {% for obj in topic_obj %}
         <div class="cell item" style="">
             <div class="row">
-                <div class="col-1 tips-avatar">
+                <div class="col-1 topic-avatar">
                     <img src="{{ obj.author.avatar }}" alt="{{ obj.author.username }}" width="48px" height="48px">
                 </div>
                 <div class="col-8">
-                    <div class="row tips-title">
-                        <div><a href="{% url 'tips' obj.tips_sn  %}">{{ obj.title }}</a></div>
+                    <div class="row topic-title">
+                        <div><a href="{% url 'topic' obj.topic_sn  %}">{{ obj.title }}</a></div>
                     </div>
-                    <div class="row tips-info">
+                    <div class="row topic-info">
                         <a href="/member/{{ obj.author.username }}">{{ obj.author.username }}</a>  •
                         <strong>{{ obj.add_time }}</strong>  •
                         <strong>最后回复于。。。</strong>

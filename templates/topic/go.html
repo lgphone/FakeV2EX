@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'topic/master.html' %}
 {% block CSS %}
 <style>
     .node_header {
@@ -39,6 +39,7 @@
         color: #fff !important;
         line-height: 100%;
         padding: 5px 10px 5px 10px;
+        border-bottom: 3px solid #fff;
         text-decoration: none !important;
     }
     .node_header_tab:link, .node_header_tab:visited {
@@ -46,8 +47,13 @@
         color: #fff;
         line-height: 100%;
         padding: 5px 10px 5px 10px;
-        border-bottom: 3px solid #fff;
         text-decoration: none !important;
+    }
+    .topic-avatar {
+        margin-right: 26px;
+    }
+    .topic-title {
+        margin-bottom: 10px;
     }
 </style>
 {% endblock %}
@@ -63,21 +69,21 @@
             <div class="node_info">
                 <div class="fr f12">
                     <span>主题总数</span>
-                    <strong>{{ go_tips_count }}</strong>
+                    <strong>{{ go_topic_count }}</strong>
                     <span class="snow">&nbsp;•&nbsp;</span>
                     <a href="/favorite/node/90?once=83632" class="node_header_link">加入收藏</a>
                 </div>
-                <a href="/">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ code }}
+                <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ go_code }}
                 <div class="sep10"></div>
                 <div class="sep5"></div>
                 <div class="fr" style="padding-left: 10px;">
                     <input type="button" class="btn btn-sm btn-secondary" value="创建新主题"
-                           onclick="location.href = '/new/{{ code }}';">
+                           onclick="location.href = '/new';">
                 </div>
                 <span class="f12">这里讨论各种 Python 语言编程话题，也包括 Django，Tornado 等框架的讨论。这里是一个能够帮助你解决实际问题的地方。</span>
                 <div class="sep10"></div>
-                <div class="node_header_tabs"><a href="/go/{{ code }}" class="node_header_tab_current">全部主题</a><a
-                        href="/go/{{ code }}/links" class="node_header_tab">相关链接</a></div>
+                <div class="node_header_tabs"><a href="{%  url 'go' go_code %}" class="node_header_tab_current">全部主题</a><a
+                        href="{% url 'go_link' go_code %}" class="node_header_tab">相关链接</a></div>
             </div>
         </div>
     </div>
@@ -85,25 +91,27 @@
         <ul class="pagination pagination-sm" style="margin-bottom:0;">
             {% for p in page_list %}
                 {% if p == current_page %}
-                    <li class="page-item active"><a class="page-link" href="{% url 'go' code %}?p={{ p }}">{{ p }}</a>
+                    <li class="page-item active"><a class="page-link" href="{% url 'go' go_code %}?p={{ p }}">{{ p }}</a>
                     </li>
                 {% else %}
-                    <li class="page-item"><a class="page-link" href="{% url 'go' code %}?p={{ p }}">{{ p }}</a></li>
+                    <li class="page-item"><a class="page-link" href="{% url 'go' go_code %}?p={{ p }}">{{ p }}</a></li>
                 {% endif %}
             {% endfor %}
+            <li class="page-item"><a class="page-link">...</a></li>
+            <li class="page-item"><a class="page-link" href="{% url 'go' go_code %}?p={{ last_page }}">{{ last_page }}</a></li>
         </ul>
     </div>
     {% for obj in current_page_obj %}
         <div class="cell item" style="">
             <div class="row">
-                <div class="col-1 tips-avatar">
+                <div class="col-1 topic-avatar">
                     <img src="{{ obj.author.avatar }}" alt="{{ obj.author.username }}" width="48px" height="48px">
                 </div>
                 <div class="col-8">
-                    <div class="row tips-title">
-                        <div><a href="/tips/{{ obj.tips_sn }}">{{ obj.title }}</a></div>
+                    <div class="row topic-title">
+                        <div><a href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></div>
                     </div>
-                    <div class="row tips-info">
+                    <div class="row topic-info">
                         <a href="/member/{{ obj.author.username }}">{{ obj.author.username }}</a> •
                         <strong>{{ obj.add_time }}</strong> •
                         <strong>最后回复于。。。</strong>

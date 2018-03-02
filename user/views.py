@@ -1,4 +1,5 @@
 from io import BytesIO
+import time
 from django.shortcuts import render, HttpResponse, redirect
 from django.views.generic import View
 from django.db.models import Q
@@ -36,8 +37,12 @@ class SignupView(View):
                     password = obj.cleaned_data['password']
                     email = obj.cleaned_data['email']
                     mobile = obj.cleaned_data['mobile']
-                    UserProfile.objects.create(username=username, password=password, email=email, mobile=mobile)
-                    print('create user success')
+                    user_obj = UserProfile()
+                    user_obj.username = username
+                    user_obj.email = email
+                    user_obj.mobile = mobile
+                    user_obj.set_password(password)
+                    user_obj.save()
                     return redirect('/signin')
             else:
                 code_error = "验证码错误"
@@ -54,7 +59,6 @@ class SigninView(View):
         has_error = True
         if request.POST.get('check_code', None):
             if request.session['CheckCode'].upper() == request.POST.get('check_code').upper():
-                print('code ok')
                 obj = SigninForm(request.POST)
                 if obj.is_valid():
                     username = obj.cleaned_data['username']
@@ -62,10 +66,17 @@ class SigninView(View):
                     user_obj = UserProfile.objects.filter(Q(username=username) | Q(email=username)).first()
                     if user_obj:
                         if user_obj.check_password(password):
-                            print('login success')
+                            current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                            user_obj.last_login = current_time
+                            user_obj.save()
+                            user_info = {
+                                'username': username,
+                                'avatar': user_obj.avatar,
+                                'mobile': user_obj.mobile,
+                            }
                             resp = redirect('/')
-                            resp.set_cookie('username', username)
-                            request.session.setdefault('isLogin', True)
+                            request.session['isLogin'] = True
+                            request.session['user_info'] = user_info
                             return resp
                         else:
                             user_error = '用户或密码错误'
@@ -80,8 +91,14 @@ class SigninView(View):
 
 class SignoutView(View):
     def get(self, request):
+        request.session['isLogin'] = False
         resp = render(request, 'user/signout.html')
-        request.session.setdefault('isLogin', False)
-        resp.cookies.clear()
         return resp
 
+
+class MemberView(View):
+    def get(self, request, username):
+        is_login = request.session.get('isLogin', None)
+        user_info = request.session.get('user_info', None)
+        user_obj = UserProfile.objects.filter(username=username).first()
+        return render(request, 'user/member.html', locals())

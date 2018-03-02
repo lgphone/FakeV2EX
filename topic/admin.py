@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import Tips, TipsCategory
+from .models import Topic, TopicCategory
 
 # Register your models here.
 
 
-class TipsAdmin(admin.ModelAdmin):
+class TopicAdmin(admin.ModelAdmin):
     # 要列出的字段
     list_display = ('id', 'category', 'title', 'author', 'add_time',)
     # 可以搜索的字段
@@ -24,12 +24,12 @@ class TipsAdmin(admin.ModelAdmin):
     # ]
 
 
-class TipsCategoryAdmin(admin.ModelAdmin):
+class TopicCategoryAdmin(admin.ModelAdmin):
     # 要列出的字段
     list_display = ('id', 'name', 'code', 'category_type', 'is_hot', 'add_time',)
     # 可以搜索的字段
     search_fields = ('name', )
 
 
-admin.site.register(Tips, TipsAdmin)
-admin.site.register(TipsCategory, TipsCategoryAdmin)
+admin.site.register(Topic, TopicAdmin)
+admin.site.register(TopicCategory, TopicCategoryAdmin)

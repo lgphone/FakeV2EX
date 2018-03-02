@@ -1,4 +1,4 @@
-{% extends 'layout.html' %}
+{% extends 'topic/master.html' %}
 {% block CSS %}
 <style>
     .fr {
@@ -55,20 +55,20 @@
                          align="default">
                 </a>
             </div>
-            <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="{% url 'go' tips_obj.category.code %}">{{ tips_obj.category.name }}</a>
+            <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="{% url 'go' topic_obj.category.code %}">{{ topic_obj.category.name }}</a>
             <div class="sep10"></div>
-            <h1>{{ tips_obj.title }}</h1>
+            <h1>{{ topic_obj.title }}</h1>
             <div id="topic_433353_votes" class="votes">
-                <a href="javascript:" onclick="upVoteTopic({{ tips_obj.tips_sn }});" class="vote">
-                    <li class="fa fa-chevron-up">{{ tips_obj.like_num }}</li>
-                </a> &nbsp;<a href="javascript:" onclick="downVoteTopic({{ tips_obj.tips_sn }});" class="vote">
-                <li class="fa fa-chevron-down">{{ tips_obj.dislike_num }}</li>
+                <a href="javascript:" onclick="upVoteTopic({{ topic_obj.tips_sn }});" class="vote">
+                    <li class="fa fa-chevron-up">&nbsp;{{ topic_obj.like_num }}</li>
+                </a> &nbsp;<a href="javascript:" onclick="downVoteTopic({{ topic_obj.tips_sn }});" class="vote">
+                <li class="fa fa-chevron-down">&nbsp;{{ topic_obj.dislike_num }}</li>
             </a></div> &nbsp;
-            <small class="gray"><a href="/member/doubleflower">{{ tips_obj.author.username }}</a> · {{ tips_obj.add_time }} · {{ tips_obj.click_num }} 次点击</small>
+            <small class="gray"><a href="/member/doubleflower">{{ topic_obj.author.username }}</a> · {{ topic_obj.add_time }} · {{ topic_obj.click_num }} 次点击</small>
         </div>
         <div class="cell">
             <div class="topic_content">
-                {{ tips_obj.content | safe }}
+                {{ topic_obj.content | safe }}
             </div>
         </div>
     </div>
