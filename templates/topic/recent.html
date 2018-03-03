@@ -12,53 +12,17 @@
 {% block main %}
 <div class="box">
     <div class="header">
-        <div class="fr f12"><span>共 {{ topic_count }} 个主题</span></div>
+        <div class="fr f12"><span>共 {{ page_obj.data_count }} 个主题</span></div>
         <a href="{% url 'index' %}">V2EX</a>
         <span class="chevron">&nbsp;›&nbsp;</span> 最近的主题
     </div>
 
     <div class="cell" style="background-color: #f9f9f9; padding: 10px 10px 10px 20px;">
         <ul class="pagination pagination-sm" style="margin-bottom:0;">
-            {% for p in page_list %}
-                {% if p == current_page %}
-                    <li class="page-item active"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a>
-                    </li>
-                {% else %}
-                    <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a></li>
-                {% endif %}
-            {% endfor %}
-            {% if page_obj.is_large %}
-                <li class="page-item"><a class="page-link">...</a></li>
-                <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ last_page }}">{{ last_page }}</a></li>
-                <li></li>
-                <li></li>
-                <li></li>
-                {% if current_page == 1 %}
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
-                    </li>
-                {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
-                    </li>
-                {% endif %}
-                {% if current_page == last_page %}
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="#">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                {% endif %}
-            {% endif %}
+            {{ page_str }}
         </ul>
     </div>
-    {% for obj in current_page_obj %}
+    {% for obj in topic_obj %}
         <div class="cell item" style="">
             <div class="row">
                 <div class="col-1 topic-avatar">
@@ -82,19 +46,7 @@
     {% endfor %}
     <div class="cell" style="background-color: #f9f9f9; padding: 10px 10px 10px 20px;">
         <ul class="pagination pagination-sm" style="margin-bottom:0;">
-            {% for p in page_list %}
-                {% if p == current_page %}
-                    <li class="page-item active"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a>
-                    </li>
-                {% else %}
-                    <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ p }}">{{ p }}</a></li>
-                {% endif %}
-            {% endfor %}
-            {% if page_obj.is_large %}
-                <li class="page-item"><a class="page-link">...</a></li>
-                <li class="page-item"><a class="page-link" href="{% url 'recent' %}?p={{ last_page }}">{{ last_page }}</a></li>
-            {% endif %}
-
+            {{ page_str }}
         </ul>
     </div>
 </div>

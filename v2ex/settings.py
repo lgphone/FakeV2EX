@@ -130,7 +130,12 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
+# session 相关配置
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_NAME = "sessionid"
 SESSION_COOKIE_PATH = "/"
 SESSION_COOKIE_AGE = 1209600
+
+# 分页器配置
+PRE_PAGE_COUNT = 15
+PAGER_NUMS = 7

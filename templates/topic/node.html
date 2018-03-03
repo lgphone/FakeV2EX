@@ -1,0 +1,147 @@
+{% extends 'topic/master.html' %}
+{% block CSS %}
+<style>
+    .node_header {
+        padding: 0;
+        font-size: 14px;
+        line-height: 120%;
+        text-align: left;
+        color: #fff;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        display: flex;
+    }
+    .node_avatar {
+        width: 73px;
+        padding: 10px 10px 10px 10px;
+        box-sizing: content-box;
+    }
+    .node_info {
+        padding: 10px 10px 0 0;
+        width: 100%;
+    }
+    .f12 {
+        font-size: 12px;
+    }
+
+    .fr {
+        float: right;
+        text-align: right;
+    }
+    .node_header_link:link, .node_header_link:visited, .node_info a:link, .node_info a:visited {
+        color: #03c8ff;
+        text-decoration: none;
+    }
+
+    .node_header_tab_current:link, .node_header_tab_current:visited {
+        display: inline-block;
+        color: #fff !important;
+        line-height: 100%;
+        padding: 5px 10px 5px 10px;
+        border-bottom: 3px solid #fff;
+        text-decoration: none !important;
+    }
+    .node_header_tab:link, .node_header_tab:visited {
+        display: inline-block;
+        color: #fff;
+        line-height: 100%;
+        padding: 5px 10px 5px 10px;
+        text-decoration: none !important;
+    }
+    .topic-avatar {
+        margin-right: 26px;
+    }
+    .topic-title {
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="node_header" style="background-color: {{ node_obj.header_color }};">
+            <div class="node_avatar">
+                <div style="float: left; display: inline-block; margin-right: 10px; margin-bottom: initial!important;">
+                    <img src="{{ node_obj.avatar }}" border="0" align="default"
+                         width="72" title="" style="">
+                </div>
+            </div>
+            <div class="node_info">
+                <div class="fr f12">
+                    <span>主题总数</span>
+                    <strong>{{ page_obj.data_count }}</strong>
+                    <span class="snow">&nbsp;•&nbsp;</span>
+                    {% if node_obj.favorite.0 == 1 %}
+                        <a href="#;" onclick="favoriteTopic('{{ node_code }}')" class="node_header_link">取消收藏</a>
+                    {% else %}
+                        <a href="#;" onclick="favoriteTopic('{{ node_code }}')" class="node_header_link">加入收藏</a>
+                    {% endif %}
+                </div>
+                <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ node_code }}
+                <div class="sep10"></div>
+                <div class="sep5"></div>
+                <div class="fr" style="padding-left: 10px;">
+                    <input type="button" class="btn btn-sm btn-secondary" value="创建新主题"
+                           onclick="location.href = '{% url 'new' %}?node_code={{ node_code }}';">
+                </div>
+                <span class="f12">{{ node_obj.desc }}</span>
+                <div class="sep10"></div>
+                <div class="node_header_tabs"><a href="{% url 'node' node_code %}"
+                                                 class="node_header_tab_current">全部主题</a><a
+                        href="{% url 'node_link' node_code %}" class="node_header_tab">相关链接</a></div>
+            </div>
+        </div>
+
+        <div class="cell" style="background-color: #f9f9f9; padding: 10px 10px 10px 20px;">
+            <ul class="pagination pagination-sm" style="margin-bottom:0;">
+                {{ page_str }}
+             </ul>
+        </div>
+        {% for obj in topic_obj %}
+            <div class="cell item" style="">
+                <div class="row">
+                    <div class="col-1 topic-avatar">
+                        <img src="{{ obj.author.avatar }}" alt="{{ obj.author.username }}" width="48px" height="48px">
+                    </div>
+                    <div class="col-8">
+                        <div class="row topic-title">
+                            <div><a href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></div>
+                        </div>
+                        <div class="row topic-info">
+                            <a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a> •
+                            <strong>{{ obj.add_time }}</strong> •
+                            <strong>最后回复于。。。</strong>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <span>{{ obj.click_num }}</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+
+{% block JS %}
+    <script>
+        function favoriteTopic(node_code) {
+        $.ajax({
+            url: '/node/favorite?t=' + $.cookie('csrftoken'),
+            type: 'post',
+            data: {'node_code': node_code},
+            success: function (recv) {
+                recv = JSON.parse(recv);
+                if (recv.changed) {
+                    console.log('成功');
+                    $('.node_header_link').html(recv.data);
+                } else {
+                    console.log('失败')
+                }
+            },
+            error: function () {
+                console.log('请求失败')
+            }
+        })
+    }
+    </script>
+{% endblock %}

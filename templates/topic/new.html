@@ -18,7 +18,7 @@
     .msl:focus {
         background-color: #fff;
     }
-    .go {
+    .node {
         width: 20%;
     }
     .problem {
@@ -48,14 +48,14 @@
                 {% if obj.errors.content.0 %}
                     <li>{{ obj.errors.content.0 }}</li>
                 {% endif %}
-                {% if obj.errors.go_code.0 %}
-                    <li>{{ obj.errors.go_code.0 }}</li>
+                {% if obj.errors.node_code.0 %}
+                    <li>{{ obj.errors.node_code.0 }}</li>
                 {% endif %}
             </ul>
         </div>
     {% endif %}
-    {% if go_code %}
-        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="{% url 'go' go_obj.code %}">{{ go_obj.name }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 创建新主题</div>
+    {% if node_code %}
+        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="{% url 'node' node_obj.code %}">{{ node_obj.name }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 创建新主题</div>
     {% else %}
         <div class="cell"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 创作新主题</div>
     {% endif %}
@@ -74,13 +74,13 @@
         <div style="text-align: left; border-bottom: 1px solid #e2e2e2; font-size: 14px; line-height: 120%;">
             <textarea class="msl" rows="10" maxlength="20000" id="editor" name="content" onkeydown="tab(this)"></textarea>
         </div>
-        {% if go_code%}
-            <input type="hidden" name="go_code" value="{{ go_code }}">
+        {% if node_code%}
+            <input type="hidden" name="node_code" value="{{ node_code }}">
         {% else %}
             <div class="cell">
-                <div class="input-group go">
-                  <select class="custom-select" name="go_code">
-                      {% for item in go_obj %}
+                <div class="input-group node">
+                  <select class="custom-select" name="node_code">
+                      {% for item in node_obj %}
                         <option value="{{ item.code }}" selected>{{ item.name }}/{{ item.code }}</option>
                       {% endfor %}
                   </select>

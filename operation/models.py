@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
-from topic.models import Topic
+from topic.models import Topic, TopicCategory
 
 User = get_user_model()
 # Create your models here.
@@ -43,3 +43,27 @@ class TopicVote(models.Model):
     # 计算收藏的数量
     def count_favorite(self, topic_obj):
         return TopicVote.objects.filter(favorite=1, topic=topic_obj).count()
+
+
+class FavoriteNode(models.Model):
+    """
+    用户和分类关联表，用于查询用户收藏的节点
+    """
+    CHOICES = (
+        (-1, "None"),
+        (0, "False"),
+        (1, "True"),
+    )
+    user = models.ForeignKey(User, verbose_name="用户", on_delete=models.CASCADE)
+    node = models.ForeignKey(TopicCategory, verbose_name="Topic", on_delete=models.CASCADE)
+    favorite = models.IntegerField(choices=CHOICES, default=CHOICES[0][0], verbose_name="是否收藏此节点")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
+
+    class Meta:
+        verbose_name = '用户和分类关联表'
+        verbose_name_plural = verbose_name
+        unique_together = ('user', 'node',)
+
+    def __str__(self):
+        return self.user
