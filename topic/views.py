@@ -1,4 +1,4 @@
-
+import markdown
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -8,10 +8,14 @@ from django.utils.decorators import method_decorator
 from utils.auth_decorator import login_auth
 from django.http import Http404
 from utils.some_utils import gender_topic_sn
-from .models import TopicCategory, Topic, TopicVote
-from .forms import NewTopicForm
+from .models import TopicCategory, Topic
+from operation.models import TopicVote
+from .forms import NewTopicForm, MarkdownPreForm
 User = get_user_model()
 # Create your views here.
+
+exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite', 'markdown.extensions.tables',
+        'markdown.extensions.toc']
 
 
 class IndexView(View):
@@ -52,7 +56,13 @@ class NewTopicView(View):
             content = obj.cleaned_data['content']
             go_code = obj.cleaned_data['go_code']
             topic_sn = gender_topic_sn()
-            Topic.objects.create(author=User.objects.filter(username=username).first(), title=title, content=content,
+            if content:
+                html_content = markdown.markdown(content, format="xhtml5", extensions=exts)
+            else:
+                html_content = content
+            Topic.objects.create(author=User.objects.filter(username=username).first(), title=title,
+                                 content=content,
+                                 html_content=html_content,
                                  category=TopicCategory.objects.filter(code=go_code).first(), topic_sn=topic_sn)
             return redirect(reverse('topic', args=(topic_sn,)))
         go_obj = TopicCategory.objects.filter(category_type=2)
@@ -117,8 +127,30 @@ class TopicView(View):
             topic_obj = Topic.objects.get(topic_sn=topic_sn)
             topic_obj.click_num += 1
             topic_obj.save()
-            topic_obj.like_num = TopicVote.objects.filter(like=True, topic=topic_obj).count()
-            topic_obj.dislike_num = TopicVote.objects.filter(like=False, topic=topic_obj).count()
+            topic_obj.like_num = TopicVote.objects.filter(vote=1, topic=topic_obj).count()
+            topic_obj.dislike_num = TopicVote.objects.filter(vote=-1, topic=topic_obj).count()
+            topic_obj.favorite_num = TopicVote.objects.filter(favorite=1, topic=topic_obj).count()
+            topic_obj.thanks = TopicVote.objects.values_list('thanks').filter(topic=topic_obj,
+                                                                              user_id=user_info['uid']).first()
+            topic_obj.favorite = TopicVote.objects.values_list('favorite').filter(topic=topic_obj,
+                                                                                  user_id=user_info['uid']).first()
+            # print(topic_obj.thanks)
+            # print(topic_obj.favorite)
             return render(request, 'topic/topic.html', locals())
         except Topic.DoesNotExist:
             raise Http404("topic does not exist")
+
+
+class MarkdownPreView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(MarkdownPreView, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        obj = MarkdownPreForm(request.POST)
+        if obj.is_valid():
+            md = obj.cleaned_data['md']
+            md_html = markdown.markdown(md, format="xhtml5", extensions=exts)
+            return HttpResponse(md_html)
+
+        return HttpResponse('')

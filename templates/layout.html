@@ -6,6 +6,7 @@
     <title>V2EX</title>
     <link rel="stylesheet" href="/static/css/bootstrap.css">
     <link rel="stylesheet" href="/static/css/font-awesome.css">
+    <link rel="stylesheet" href="/static/plugin/highlight/tomorrow.css">
     <style>
         #Top {
             text-align: center;
@@ -13,25 +14,19 @@
             height: 44px;
             font-size: 15px;
             font-weight: 500;
-            background-size: 44px 44px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.22);
-            padding: 0 20px 0 20px;
+            background-size: 44px 44px;;
+            border-bottom: 1px solid #e2e2e2;
         }
 
         #Wrapper {
             text-align: center;
             background-color: #e2e2e2;
+            background-image: url(/static/img/shadow_light.png);
             background-repeat: repeat-x;
         }
 
-        .content {
-            min-width: 600px;
-            max-width: 1100px;
-            margin: 0px auto 0px auto;
-        }
-
         #Leftbar {
-            width: 0px;
+            width: 0;
             float: left;
         }
 
@@ -40,16 +35,21 @@
             float: right;
             margin-right: 20px;
         }
-
+        .content {
+            min-width: 800px;
+            max-width: 1150px;
+            margin: 0 auto;
+        }
         #Main {
             width: auto;
-            margin: 0px 310px 0px 20px;
+            margin: 0 310px 0 20px;
         }
+
 
         .box {
             background-color: #fff;
             border-radius: 3px;
-            box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid #e2e2e2;
         }
 
@@ -71,7 +71,6 @@
 
         .item {
             background-position: 0 bottom;
-            background-repeat: repeat-x;
             color: #778087;
         }
 
@@ -114,7 +113,6 @@
             height: 26px;
             margin: 0px 0px 2px 30px;
             background-color: transparent;
-            font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti !important;
             font-size: 14px;
             line-height: 16px;
             outline: none;
@@ -161,7 +159,7 @@
                     </td>
                     {% if is_login %}
                         <td width="570" align="right" style="padding-top: 2px;">
-                            <a href="/" class="top">首页</a>
+                            <a href="{% url 'index' %}" class="top">首页</a>
                             &nbsp;&nbsp;&nbsp;<a href="{% url 'member' user_info.username %}" class="top">{{ user_info.username }}</a>
                             &nbsp;&nbsp;&nbsp;<a href="/notes" class="top">记事本</a>
                             &nbsp;&nbsp;&nbsp;<a href="/t" class="top">时间轴</a>
@@ -179,7 +177,7 @@
 </div>
 
 <div id="Wrapper" class="container-fluid">
-    <div class="context container">
+    <div class="content container">
         {% csrf_token %}
         <div id="Leftbar"></div>
         <div id="Rightbar">
@@ -220,6 +218,7 @@
 <script src="/static/js/jquery-3.3.1.js"></script>
 <script src="/static/js/jquery.cookie.js"></script>
 <script src="/static/js/bootstrap.js"></script>
+<script src="/static/plugin/highlight/highlight.pack.js"></script>
 
 <script>
     /* Ajax 初始化请求操作*/
@@ -239,7 +238,9 @@
             setTimeout("$('title').text('V2EX');", 3000);
         }
     }, false);
+
 </script>
+<script>hljs.initHighlightingOnLoad();</script>
 {% block JS %} {% endblock %}
 </body>
 </html>

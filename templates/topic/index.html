@@ -15,9 +15,9 @@
         <div class="inner" style="background-color: #fff; border-top-left-radius: 3px; border-top-right-radius: 3px;" id="Tabs">
             {% for obj in category_obj %}
                 {% if current_tab == obj.code %}
-                    <a class="btn btn-sm btn-secondary" href="/?tab={{ obj.code }}">{{ obj.name }}</a>
+                    <a class="btn btn-sm btn-secondary" href="{% url 'index' %}?tab={{ obj.code }}">{{ obj.name }}</a>
                 {% else %}
-                    <a class="btn btn-sm btn-light" href="/?tab={{ obj.code }}">{{ obj.name }}</a>
+                    <a class="btn btn-sm btn-light" href="{% url 'index' %}?tab={{ obj.code }}">{{ obj.name }}</a>
                 {% endif %}
             {% endfor %}
         </div>
@@ -37,7 +37,7 @@
                         <div><a href="{% url 'topic' obj.topic_sn  %}">{{ obj.title }}</a></div>
                     </div>
                     <div class="row topic-info">
-                        <a href="/member/{{ obj.author.username }}">{{ obj.author.username }}</a>  •
+                        <a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a>  •
                         <strong>{{ obj.add_time }}</strong>  •
                         <strong>最后回复于。。。</strong>
                     </div>

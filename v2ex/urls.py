@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from topic.views import IndexView, GoView, TopicView, GoLinkView, RecentView, NewTopicView
+from topic.views import IndexView, GoView, TopicView, GoLinkView, RecentView, NewTopicView, MarkdownPreView
 from user.views import SignupView, check_code, SigninView, SignoutView, MemberView
-from operation.views import TopicVoteView
+from operation.views import TopicVoteView, FavoriteTopicView, ThanksTopicView
 
 
 urlpatterns = [
@@ -30,8 +30,11 @@ urlpatterns = [
     path('go/<slug:go_code>/links', GoLinkView.as_view(), name='go_link'),
     path('t/<slug:topic_sn>', TopicView.as_view(), name='topic'),
     path('topic/vote', TopicVoteView.as_view(), name='topic_vote'),
+    path('topic/favorite', FavoriteTopicView.as_view(), name='favorite_topic'),
+    path('topic/thanks', ThanksTopicView.as_view(), name='favorite_topic'),
     path('signup', SignupView.as_view(), name='signup'),
     path('signin', SigninView.as_view(), name='signin'),
     path('signout', SignoutView.as_view(), name='signout'),
     path('check_code', check_code, name='check_code'),
+    path('preview/markdown', MarkdownPreView.as_view(), name='markdown_preview'),
 ]

@@ -6,11 +6,11 @@ from .models import Topic, TopicCategory
 
 class TopicAdmin(admin.ModelAdmin):
     # 要列出的字段
-    list_display = ('id', 'category', 'title', 'author', 'add_time',)
+    list_display = ('id', 'category', 'title', 'author', 'click_num', 'add_time')
     # 可以搜索的字段
     search_fields = ('title', )
     # 列出可以编辑的字段
-    # list_editable = ('name', 'shop_price',)
+    list_editable = ('click_num', 'category',)
     # 右侧过滤条件
     list_filter = ('add_time',)
     # 根据某个字段排序
@@ -26,9 +26,15 @@ class TopicAdmin(admin.ModelAdmin):
 
 class TopicCategoryAdmin(admin.ModelAdmin):
     # 要列出的字段
-    list_display = ('id', 'name', 'code', 'category_type', 'is_hot', 'add_time',)
+    list_display = ('id', 'name', 'code', 'category_type', 'header_color', 'theme_color', 'add_time',)
     # 可以搜索的字段
-    search_fields = ('name', )
+    search_fields = ('name', 'code')
+    # 列出可以编辑的字段
+    list_editable = ('header_color', 'theme_color',)
+    # 根据某个字段排序
+    ordering = ('id',)
+    # 分页，每页显示多少条
+    list_per_page = 30
 
 
 admin.site.register(Topic, TopicAdmin)

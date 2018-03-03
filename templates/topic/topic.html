@@ -1,6 +1,18 @@
 {% extends 'topic/master.html' %}
 {% block CSS %}
 <style>
+    .topic_buttons {
+        padding: 5px;
+        font-size: 14px;
+        line-height: 120%;
+        background: #eeeeee;
+        border-radius: 0px 0px 3px 3px;
+        text-align: left;
+    }
+    a.tb:hover {
+        color: #999;
+        text-decoration: none;
+    }
     .fr {
         float: right;
         text-align: right;
@@ -21,9 +33,6 @@
         vertical-align: baseline;
         text-align: center;
     }
-    .fa-chevron-up:before {
-        content: "\f077";
-    }
     .header {
         padding: 10px;
         font-size: 15px;
@@ -43,6 +52,9 @@
         color: #778087;
         text-decoration: none;
         word-break: break-all;
+    }
+    .gray {
+        color: #999;
     }
 </style>
 {% endblock %}
@@ -70,7 +82,22 @@
         </div>
         <div class="cell">
             <div class="topic_content">
-                {{ topic_obj.content | safe }}
+                {{ topic_obj.html_content | safe }}
+            </div>
+        </div>
+        <div class="topic_buttons">
+            <div class="fr gray f11" style="line-height: 12px; padding-top: 3px; text-shadow: 0px 1px 0px #fff;">{{ topic_obj.click_num }} 次点击 &nbsp;∙&nbsp; {{ topic_obj.favorite_num }} 人收藏 &nbsp; </div>
+            <div class="action-buttons">
+                {% if topic_obj.favorite.0 == 1 %}
+                    <a id="favorite" class="tb" href="#;" onclick="favoriteTopic('{{ topic_obj.topic_sn }}')">取消收藏</a> &nbsp;
+                {% else %}
+                    <a id="favorite" class="tb" href="#;" onclick="favoriteTopic('{{ topic_obj.topic_sn }}')">加入收藏</a> &nbsp;
+                {% endif %}
+                {% if topic_obj.thanks.0 == 1 %}
+                    <a id="thanks" href="#;" class="tb gray" disabled="disabled">已经发送感谢</a>
+                {% else %}
+                    <a id="thanks" href="#;" class="tb" onclick="if (confirm('你确定要向本主题创建者发送谢意？')) { thankTopic('{{ topic_obj.topic_sn }}'); }">感谢</a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -117,5 +144,47 @@
             }
         })
     }
+
+    function favoriteTopic(topic_sn) {
+        $.ajax({
+            url: '/topic/favorite?t=' + $.cookie('csrftoken'),
+            type: 'post',
+            data: {'topic_sn': topic_sn},
+            success: function (recv) {
+                recv = JSON.parse(recv);
+                if (recv.changed) {
+                    console.log('成功');
+                    $('#favorite').html(recv.data);
+                } else {
+                    console.log('失败')
+                }
+            },
+            error: function () {
+                console.log('请求失败')
+            }
+        })
+    }
+
+    function thankTopic(topic_sn) {
+        if($('#thanks').html() === '已经发送感谢'){
+            return
+        }
+        $.ajax({
+            url: '/topic/thanks?t=' + $.cookie('csrftoken'),
+            type: 'post',
+            data: {'topic_sn': topic_sn},
+            success: function (recv) {
+                recv = JSON.parse(recv);
+                if (recv.changed) {
+                    console.log('成功');
+                    $('#thanks').html(recv.data).attr('onclick', '').addClass('gray');
+                }
+            },
+            error: function () {
+                console.log('请求失败')
+            }
+        })
+    }
+
 </script>
 {% endblock %}

@@ -26,6 +26,8 @@ class UserProfile(AbstractUser):
     avatar = models.CharField(max_length=50, null=True, blank=True, default="/static/img/default-avatar.png",
                               verbose_name="头像")
     status = models.CharField(max_length=6, choices=STATUS_TYPE, default="OFFLINE", verbose_name="在线状态")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="注册时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
         verbose_name = "用户"
@@ -42,6 +44,7 @@ class VerifyCode(models.Model):
     code = models.CharField(max_length=10, verbose_name="验证码")
     email = models.EmailField(verbose_name="邮箱")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
         verbose_name = "邮箱验证码"

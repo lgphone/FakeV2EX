@@ -20,7 +20,12 @@ class NewTopicForm(forms.Form):
                                max_length=50, error_messages={'required': '用户不存在'},)
     title = forms.CharField(max_length=120, required=True,
                             error_messages={'required': '标题不能为空', 'max_length': '超过标题字符限定'})
-    content = forms.CharField(max_length=20000, required=True,
-                              error_messages={'required': '内容不能为空', 'max_length': '超过内容字符限定'})
+    content = forms.CharField(max_length=20000, required=False,
+                              error_messages={'max_length': '超过内容字符限定'})
     go_code = forms.CharField(validators=[go_code_validate, ], required=True,
                               error_messages={'required': '标签不能为空'})
+
+
+class MarkdownPreForm(forms.Form):
+    md = forms.CharField(max_length=20000, required=True,
+                         error_messages={'required': '内容不能为空', 'max_length': '超过字符限定'})

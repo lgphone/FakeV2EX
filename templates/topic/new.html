@@ -66,13 +66,13 @@
             主题标题
         </div>
         <div class="cell" style="padding: 0px; background-color: #fff;">
-            <textarea class="msl" rows="1" maxlength="120" id="topic_title" name="title" autofocus="autofocus" placeholder="请输入主题标题，如果标题能够表达完整内容，则正文可以为空"></textarea>
+            <textarea class="msl" rows="1" maxlength="120" id="topic_title" name="title" placeholder="请输入主题标题，如果标题能够表达完整内容，则正文可以为空"></textarea>
         </div>
         <div class="cell"><div class="fr" id="content_remaining">20000</div>
             正文
         </div>
         <div style="text-align: left; border-bottom: 1px solid #e2e2e2; font-size: 14px; line-height: 120%;">
-            <textarea class="msl" rows="10" maxlength="20000" id="editor" name="content"></textarea>
+            <textarea class="msl" rows="10" maxlength="20000" id="editor" name="content" onkeydown="tab(this)"></textarea>
         </div>
         {% if go_code%}
             <input type="hidden" name="go_code" value="{{ go_code }}">
@@ -93,9 +93,10 @@
                     <li class="fa fa-paper-plane"></li> &nbsp;发布主题
                 </button>
             </div>
-            <button class="btn btn-sm btn-secondary" onclick="previewTopic();"><li class="fa fa-eye"></li> &nbsp;预览主题</button>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="previewTopic();"><li class="fa fa-eye"></li> &nbsp;预览主题</button>
         </div>
     </form>
+    <div class="inner" id="topic_preview"><div class="topic_content"><div class="markdown_body"></div></div></div>
 </div>
 {% endblock %}
 
@@ -123,4 +124,36 @@
         </ul>
     </div>
 </div>
+{% endblock %}
+
+{% block JS %}
+    <script>
+        function previewTopic() {
+            var md = $('#editor').val();
+            console.log(md);
+            $.ajax({
+                url: 'preview/markdown',
+                type: 'post',
+                data: {'md': md},
+                success: function (recv) {
+                    $('.markdown_body').html(recv);
+                    console.log('codehilite');
+                    $('.codehilite code').each(function (i, block) {
+                        hljs.highlightBlock(block);
+                    });
+                },
+                error: function () {
+                    console.log('请求失败')
+                }
+            })
+        }
+
+        function tab(obj){
+          if (event.keyCode == 9)
+          {
+             obj.value = obj.value + "  "; // 跳几格由你自已决定
+             event.returnValue = false;
+          }
+        }
+    </script>
 {% endblock %}

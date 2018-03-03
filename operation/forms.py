@@ -20,3 +20,8 @@ class TopicVoteForm(forms.Form):
                                   error_messages={'required': 'vote_action 不能为空'})
     topic_sn = forms.CharField(validators=[topic_exist_validate, ], required=True,
                                error_messages={'required': 'topic_sn 不能为空'})
+
+
+class CheckTopicForm(forms.Form):
+    topic_sn = forms.CharField(validators=[topic_exist_validate, ], required=True,
+                               error_messages={'required': 'topic_sn 不能为空'})
