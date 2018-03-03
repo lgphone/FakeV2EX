@@ -2,9 +2,11 @@ from io import BytesIO
 import time
 from django.shortcuts import render, HttpResponse, redirect
 from django.views.generic import View
+from django.http import Http404
 from django.db.models import Q
 from utils.check_code import create_validate_code
 from .models import UserProfile
+from operation.models import TopicVote, FavoriteNode
 from .forms import SignupForm, SigninForm
 # Create your views here.
 
@@ -68,12 +70,15 @@ class SigninView(View):
                         if user_obj.check_password(password):
                             current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
                             user_obj.last_login = current_time
+                            user_obj.status = 'ONLINE'
                             user_obj.save()
                             user_info = {
                                 'username': username,
                                 'uid': user_obj.id,
                                 'avatar': user_obj.avatar,
                                 'mobile': user_obj.mobile,
+                                'favorite_node_num': FavoriteNode.objects.filter(favorite=1, user=user_obj).count(),
+                                'favorite_topic_num': TopicVote.objects.filter(favorite=1, user=user_obj).count(),
                             }
                             resp = redirect('/')
                             request.session['isLogin'] = True
@@ -92,14 +97,21 @@ class SigninView(View):
 
 class SignoutView(View):
     def get(self, request):
-        request.session['isLogin'] = False
-        resp = render(request, 'user/signout.html')
-        return resp
+        user_info = request.session.get('user_info', None)
+        if user_info:
+            request.session['isLogin'] = False
+            user_obj = UserProfile.objects.filter(id=user_info['uid']).first()
+            if user_obj:
+                user_obj.status = 'OFFLINE'
+        return render(request, 'user/signout.html')
 
 
 class MemberView(View):
     def get(self, request, username):
         is_login = request.session.get('isLogin', None)
         user_info = request.session.get('user_info', None)
-        user_obj = UserProfile.objects.filter(username=username).first()
-        return render(request, 'user/member.html', locals())
+        try:
+            user_obj = UserProfile.objects.get(username=username)
+            return render(request, 'user/member.html', locals())
+        except UserProfile.DoesNotExist:
+            raise Http404("Not Find This User")

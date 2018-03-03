@@ -81,9 +81,11 @@ class FavoriteTopicView(View):
                 topic_vote_obj = TopicVote.objects.get(user_id=uid, topic=topic_obj)
                 if topic_vote_obj.favorite == 1:
                     topic_vote_obj.favorite = 0
+                    user_info['favorite_topic_num'] -= 1
                     ret['data'] = "&nbsp;加入收藏&nbsp;"
                 else:
                     topic_vote_obj.favorite = 1
+                    user_info['favorite_topic_num'] += 1
                     ret['data'] = "&nbsp;取消收藏&nbsp;"
                 topic_vote_obj.save()
             except TopicVote.DoesNotExist:
@@ -92,7 +94,9 @@ class FavoriteTopicView(View):
                 topic_vote_obj.favorite = 1
                 topic_vote_obj.topic = topic_obj
                 topic_vote_obj.save()
+                user_info['favorite_topic_num'] += 1
                 ret['data'] = "&nbsp;取消收藏&nbsp;"
+            request.session['user_info'] = user_info
             ret['topic_sn'] = topic_sn
         else:
             ret['changed'] = False
@@ -167,9 +171,11 @@ class FavoriteNodeView(View):
                 favorite_node_obj = FavoriteNode.objects.get(user_id=uid, node=node_obj)
                 if favorite_node_obj.favorite == 1:
                     favorite_node_obj.favorite = 0
+                    user_info['favorite_node_num'] -= 1
                     ret['data'] = "加入收藏"
                 else:
                     favorite_node_obj.favorite = 1
+                    user_info['favorite_node_num'] += 1
                     ret['data'] = "取消收藏"
                 favorite_node_obj.save()
             except FavoriteNode.DoesNotExist:
@@ -178,7 +184,9 @@ class FavoriteNodeView(View):
                 favorite_node_obj.favorite = 1
                 favorite_node_obj.node = node_obj
                 favorite_node_obj.save()
+                user_info['favorite_node_num'] += 1
                 ret['data'] = "取消收藏"
+            request.session['user_info'] = user_info
             ret['node_code'] = node_code
         else:
             ret['changed'] = False
