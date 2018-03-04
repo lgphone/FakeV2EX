@@ -74,6 +74,9 @@
             color: #778087;
         }
 
+        .c {
+            clear: both;
+        }
         .sep20 {
             height: 20px;
         }
@@ -158,12 +161,35 @@
             background-color: #aab0c6;
             border-color: #aab0c6;
         }
+        .topic-info a,strong{
+            margin-right: 3px;
+            margin-left: 3px;
+        }
+        .topic-title {
+            margin-bottom: 10px;
+        }
+
+        .topic {
+            margin: 0 auto;
+            padding: 0;
+        }
+        .cell {
+            padding: 10px;
+            font-size: 14px;
+            line-height: 120%;
+            text-align: left;
+            border-bottom: 1px solid #e2e2e2;
+        }
+        .item {
+            background-position: 0 bottom;
+            background-repeat: repeat-x;
+        }
     </style>
     {% block CSS %} {% endblock %}
 </head>
 <body>
 <div id="Top">
-    <div class="content container">
+    <div class="content">
         <div style="padding-top: 6px;">
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tbody>
@@ -199,8 +225,8 @@
     </div>
 </div>
 
-<div id="Wrapper" class="container-fluid">
-    <div class="content container">
+<div id="Wrapper">
+    <div class="content">
         {% csrf_token %}
         <div id="Leftbar"></div>
         <div id="Rightbar">
@@ -212,11 +238,10 @@
             {% block main %}
             {% endblock %}
         </div>
+        <div class="sep20"></div>
     </div>
-    <div class="sep20"></div>
-</div>
-
-<div id="Bottom" class="card-footer">
+    <div class="c"></div>
+<div id="Bottom">
     <div class="content">
         <div class="inner">
             <div class="sep10"></div>
@@ -238,6 +263,9 @@
     </div>
     {% block footer %} {% endblock %}
 </div>
+</div>
+
+
 <script src="/static/js/jquery-3.3.1.js"></script>
 <script src="/static/js/jquery.cookie.js"></script>
 <script src="/static/js/bootstrap.js"></script>

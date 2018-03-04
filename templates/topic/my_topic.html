@@ -1,0 +1,51 @@
+{% extends 'topic/master.html' %}
+{% block CSS %}
+<style>
+    .f12 {
+        font-size: 12px;
+    }
+    .fr {
+        float: right;
+        text-align: right;
+    }
+</style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 我收藏的主题
+            <div class="fr f12"><span class="snow">主题总数&nbsp;</span> <strong class="gray">{{ user_info.favorite_topic_num }}</strong></div>
+        </div>
+        {% for obj in my_favorite_obj %}
+            <div class="cell item">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td width="48" valign="top" align="center">
+                            <a href="{% url 'member' obj.user.username %}">
+                                <img src="{{ obj.user.avatar }}" class="rounded" alt="{{ obj.user.username }}"
+                                     width="48px" height="48px" border="0" align="default">
+                            </a>
+                        </td>
+                        <td width="10"></td>
+                        <td width="auto" valign="middle">
+                            <span class="item_title"><a href="{% url 'topic' obj.topic.topic_sn %}">{{ obj.topic.title }}</a></span>
+                            <div class="sep5"></div>
+                            <span class="small">
+                            <div class="votes"></div>
+                            <a class="node" href="{% url 'node' obj.topic.category.code %}">{{ obj.topic.category.name }}</a> &nbsp;•&nbsp;
+                            <strong><a href="{% url 'member' obj.user.username %}">{{ obj.user.username }}</a>
+                            </strong> &nbsp;•&nbsp; {{ obj.topic.add_time }} &nbsp;•&nbsp; 最后回复来自 <strong>
+                            <a href="{% url 'member' obj.user.username %}">{{ obj.user.username }}</a></strong>
+                        </span>
+                        </td>
+                        <td width="70" align="right" valign="middle">
+                            <a href="{% url 'topic' obj.topic.topic_sn %}"
+                               class="badge badge-pill badge-secondary">&nbsp;{{ obj.topic.click_num }}&nbsp;</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+    {% endfor %}
+    </div>
+{% endblock %}

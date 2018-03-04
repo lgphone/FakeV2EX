@@ -1,12 +1,13 @@
 from io import BytesIO
 import time
 from django.shortcuts import render, HttpResponse, redirect
+from django.urls import reverse
 from django.views.generic import View
 from django.http import Http404
 from django.db.models import Q
 from utils.check_code import create_validate_code
-from .models import UserProfile
-from operation.models import TopicVote, FavoriteNode
+from .models import UserProfile, UserFollowing
+from operation.models import TopicVote, FavoriteNode, Topic
 from .forms import SignupForm, SigninForm
 # Create your views here.
 
@@ -45,7 +46,7 @@ class SignupView(View):
                     user_obj.mobile = mobile
                     user_obj.set_password(password)
                     user_obj.save()
-                    return redirect('/signin')
+                    return redirect(reverse('signin'))
             else:
                 code_error = "验证码错误"
         else:
@@ -79,8 +80,9 @@ class SigninView(View):
                                 'mobile': user_obj.mobile,
                                 'favorite_node_num': FavoriteNode.objects.filter(favorite=1, user=user_obj).count(),
                                 'favorite_topic_num': TopicVote.objects.filter(favorite=1, user=user_obj).count(),
+                                'following_user_num': UserFollowing.objects.filter(is_following=1, user=user_obj).count()
                             }
-                            resp = redirect('/')
+                            resp = redirect(reverse('index'))
                             request.session['isLogin'] = True
                             request.session['user_info'] = user_info
                             return resp
@@ -108,10 +110,25 @@ class SignoutView(View):
 
 class MemberView(View):
     def get(self, request, username):
+        # 判断是否是登录用户，调整页面显示按钮
         is_login = request.session.get('isLogin', None)
+        # 从session中获取当前用户信息
         user_info = request.session.get('user_info', None)
         try:
+            # 获取链接指向的用户名的obj
             user_obj = UserProfile.objects.get(username=username)
+            # 获取作者是连接中的用户的Topic主题
+            topic_obj = Topic.objects.filter(author=user_obj).select_related('category')
+            # 获取当前用户是否following 此用户 根据此来调整页面显示信息
+            is_following = UserFollowing.objects.values_list('is_following').filter(is_following=1,
+                                                                                    user_id=user_info['uid'],
+                                                                                    following=user_obj).first()
+            # 获取当前用户是否block 此用户
+            is_block = UserFollowing.objects.values_list('is_block').filter(is_block=1, user_id=user_info['uid'],
+                                                                            following=user_obj).first()
+            # print(is_following)
+            # print(is_block)
             return render(request, 'user/member.html', locals())
+        # 没有此用户，指向没有的连接，返回404
         except UserProfile.DoesNotExist:
             raise Http404("Not Find This User")

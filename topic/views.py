@@ -10,6 +10,7 @@ from utils.some_utils import gender_topic_sn
 from utils.pagination import Paginator
 from .models import TopicCategory, Topic, NodeLink
 from operation.models import TopicVote, FavoriteNode
+from user.models import UserFollowing
 from .forms import NewTopicForm, MarkdownPreForm, CheckNodeForm
 
 User = get_user_model()
@@ -165,3 +166,56 @@ class MarkdownPreView(View):
             return HttpResponse(md_html)
 
         return HttpResponse('')
+
+
+class MyFavoriteNodeView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(MyFavoriteNodeView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        is_login = request.session.get('isLogin', None)
+        user_info = request.session.get('user_info', None)
+        my_favorite_obj = FavoriteNode.objects.filter(favorite=1, user_id=user_info['uid']).select_related(
+            'node').order_by('-add_time')
+        return render(request, 'topic/my_node.html', locals())
+
+
+class MyFavoriteTopicView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(MyFavoriteTopicView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        is_login = request.session.get('isLogin', None)
+        user_info = request.session.get('user_info', None)
+        my_favorite_obj = TopicVote.objects.filter(favorite=1,
+                                                   user_id=user_info['uid']).select_related('topic',
+                                                                                            'user',
+                                                                                            'topic__category').order_by(
+            '-add_time')
+        return render(request, 'topic/my_topic.html', locals())
+
+
+class MyFollowingView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(MyFollowingView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        is_login = request.session.get('isLogin', None)
+        user_info = request.session.get('user_info', None)
+        # 获取当前我正在关注的用户的QuerySet  判断 is_following  是不是 1
+        my_following_obj = UserFollowing.objects.filter(user_id=user_info['uid'], is_following=1).select_related(
+            'following')
+        print(my_following_obj)
+        # 设定一个列表，存放查询到的所收藏的用户的id
+        following_user_id = []
+        # 把id 加入列表
+        for obj in my_following_obj:
+            following_user_id.append(obj.following.id)
+        # 查询用户id在所关注的用户的主题
+        following_topic_obj = Topic.objects.filter(author_id__in=following_user_id).select_related('category',
+                                                                                                   'author').order_by(
+            '-add_time')
+        return render(request, 'topic/my_following.html', locals())

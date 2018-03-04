@@ -19,11 +19,34 @@
         <table cellpadding="0" cellspacing="0" border="0" width="100%">
             <tbody>
                 <tr>
-                    <td width="73" valign="top" align="center"><img src="{{ user_obj.avatar }}" class="avatar" border="0" align="default"><div class="sep10"></div><strong class="online">{{ user_obj.status }}</strong></td>
+                    <td width="73" valign="top" align="center"><img src="{{ user_obj.avatar }}" class="rounded" border="0" align="default"><div class="sep10"></div><strong class="online">{{ user_obj.status }}</strong></td>
                     <td width="10"></td>
                     <td width="auto" valign="top" align="left">
-                        <div class="fr">
-                        </div>
+                        {% if is_login %}
+                            {% if user_info.username != user_obj.username %}
+                                <div class="fr">
+                                    {% if is_following.0 == 1 %}
+                                        <input type="button" value="取消特别关注"
+                                               onclick="if (confirm('确认要取消对 {{ user_obj.username }}的关注 ？')) { location.href = '{% url 'following' user_obj.username %}'; }"
+                                               class="btn btn-sm btn-secondary">
+                                    {% else %}
+                                        <input type="button" value="加入特别关注"
+                                               onclick="if (confirm('确认要开始关注 {{ user_obj.username }}？')) { location.href = '{% url 'following' user_obj.username %}'; }"
+                                               class="btn btn-sm btn-warning">
+                                    {% endif %}
+                                    <div class="sep10"></div>
+                                    {% if is_block.0 == 1 %}
+                                        <input type="button" value="Unblock"
+                                               onclick="if (confirm('确认要解除对 {{ user_obj.username }}的屏蔽 ？')) { location.href = '{% url 'block' user_obj.username %}'; }"
+                                               class="btn btn-sm btn-dark">
+                                    {% else %}
+                                        <input type="button" value="Block"
+                                               onclick="if (confirm('确认要屏蔽 {{ user_obj.username }}？')) { location.href = '{% url 'block' user_obj.username %}'; }"
+                                               class="btn btn-sm btn-dark">
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
                         <h1 style="margin-bottom: 5px;">{{ user_obj.username }}</h1>
                         <span class="bigger"></span>
                         <div class="sep10"></div>
@@ -45,5 +68,28 @@
             </span>火星</a>
         {% endif %}
     </div>
+</div>
+<div class="sep20"></div>
+<div class="box">
+    {% for obj in topic_obj %}
+        <div class="cell item">
+            <div class="row topic">
+                <div class="col-8">
+                    <div class="row topic-title">
+                        <div><a href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></div>
+                    </div>
+                    <div class="row topic-info">
+                        <a href="{% url 'node' obj.category.code %}" class="badge badge-light">{{ obj.category.name }}</a>
+                        <a href="{% url 'member' user_obj.username %}">{{ user_obj.username }}</a> •
+                        <strong>{{ obj.add_time }}</strong> •
+                        <strong>最后回复于。。。</strong>
+                    </div>
+                </div>
+                <div class="col-1  offset-2">
+                    <a href="{% url 'topic' obj.topic_sn %}" class="badge badge-pill badge-secondary">&nbsp;{{ obj.click_num }}&nbsp;</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
 </div>
 {% endblock %}

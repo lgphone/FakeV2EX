@@ -87,25 +87,37 @@
             </ul>
         </div>
         {% for obj in topic_obj %}
-            <div class="cell item" style="">
-                <div class="row">
-                    <div class="col-1 topic-avatar">
-                        <img src="{{ obj.author.avatar }}" alt="{{ obj.author.username }}" width="48px" height="48px">
-                    </div>
-                    <div class="col-8">
-                        <div class="row topic-title">
-                            <div><a href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></div>
-                        </div>
-                        <div class="row topic-info">
-                            <a href="/member/{{ obj.author.username }}">{{ obj.author.username }}</a> •
-                            <strong>{{ obj.add_time }}</strong> •
-                            <strong>最后回复于。。。</strong>
-                        </div>
-                    </div>
-                    <div class="col-2">
-                        <span>{{ obj.click_num }}</span>
-                    </div>
-                </div>
+            <div class="cell item">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td width="48" valign="top" align="center">
+                            <a href="{% url 'member' obj.author.username %}">
+                                <img src="{{ obj.author.avatar }}" class="rounded" alt="{{ obj.author.username }}"
+                                     width="48px" height="48px" border="0" align="default">
+                            </a>
+                        </td>
+                        <td width="10"></td>
+                        <td width="auto" valign="middle">
+                            <span class="item_title"><a
+                                    href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></span>
+                            <div class="sep5"></div>
+                            <span class="small">
+                            <div class="votes"></div>
+                            <a class="node"
+                               href="{% url 'node' obj.category.code %}">{{ obj.category.name }}</a> &nbsp;•&nbsp;
+                            <strong><a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a>
+                            </strong> &nbsp;•&nbsp; {{ obj.add_time }} &nbsp;•&nbsp; 最后回复来自 <strong>
+                            <a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a></strong>
+                        </span>
+                        </td>
+                        <td width="70" align="right" valign="middle">
+                            <a href="{% url 'topic' obj.topic_sn %}"
+                               class="badge badge-pill badge-secondary">&nbsp;{{ obj.click_num }}&nbsp;</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         {% endfor %}
     </div>
@@ -123,6 +135,7 @@
                 if (recv.changed) {
                     console.log('成功');
                     $('.node_header_link').html(recv.data);
+                    location.reload();
                 } else {
                     console.log('失败')
                 }

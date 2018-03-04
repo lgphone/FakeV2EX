@@ -65,7 +65,7 @@
         <div class="header">
             <div class="fr">
                 <a href="{% url 'member' topic_obj.author.username  %}">
-                    <img src="{{ topic_obj.author.avatar }}" class="avatar" border="0"
+                    <img src="{{ topic_obj.author.avatar }}" class="rounded" border="0"
                          align="default">
                 </a>
             </div>
@@ -117,6 +117,7 @@
                 if (recv.changed) {
                     console.log('成功');
                     $('#topic_votes').html(recv.data);
+                    location.reload();
                 } else {
                     console.log('失败')
                 }
@@ -137,6 +138,7 @@
                 if (recv.changed) {
                     console.log('成功');
                     $('#topic_votes').html(recv.data);
+                    location.reload();
                 } else {
                     console.log('失败')
                 }
@@ -157,6 +159,7 @@
                 if (recv.changed) {
                     console.log('成功');
                     $('#favorite').html(recv.data);
+                    location.reload();
                 } else {
                     console.log('失败')
                 }
@@ -180,6 +183,7 @@
                 if (recv.changed) {
                     console.log('成功');
                     $('#thanks').html(recv.data).attr('onclick', '').addClass('gray');
+                    location.reload();
                 }
             },
             error: function () {

@@ -44,6 +44,11 @@ class TopicCategory(models.Model):
     def __str__(self):
         return self.name
 
+    # 计算所在分类的Topic数量
+    @property
+    def count_topic(self):
+        return Topic.objects.filter(category=self).count()
+
 
 class Topic(models.Model):
     """

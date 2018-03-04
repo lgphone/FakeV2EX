@@ -1,0 +1,49 @@
+{% extends 'topic/master.html' %}
+{% block CSS %}
+<style>
+    .f12 {
+        font-size: 12px;
+    }
+    .fr {
+        float: right;
+        text-align: right;
+    }
+    a:link, a:visited, a:active {
+        color: #778087;
+        text-decoration: none;
+        word-break: break-all;
+    }
+    .grid_item {
+        background-color: #f9f9f9;
+        width: 25%;
+        height: 160px;
+        margin-right: 0;
+        box-shadow: none;
+        display: inline-table;
+        transition: box-shadow 0.2s;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 我收藏的节点
+            <div class="fr f12"><span class="snow">节点总数&nbsp;</span> <strong class="gray">{{ user_info.favorite_node_num }}</strong></div>
+        </div>
+        <div style="text-align: left; background-color: #f9f9f9;" id="MyNodes">
+            {% for obj in my_favorite_obj %}
+                <a class="grid_item badge badge-light" href="{% url 'node' obj.node.code %}" id="n_{{ obj.node.id }}">
+                    <div style="display: table; padding: 20px 0 20px 0; width: 100%; text-align: center; font-size: 14px;">
+                        <img src="{{ obj.node.avatar }}" border="0"
+                             align="default" width="auto">
+                        <div class="sep10"></div>
+                        {{ obj.node.name }}
+                        <div class="sep5"></div>
+                        <span class="f12" style="color: #ccc;"><li class="fa fa-comments"></li>
+                            {{ obj.node.count_topic }}</span></div>
+            {% endfor %}
+
+        </a>
+        </div>
+    </div>
+{% endblock %}

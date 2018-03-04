@@ -30,7 +30,7 @@ class TopicVote(models.Model):
         unique_together = ('user', 'topic',)
 
     def __str__(self):
-        return self.user
+        return self.user.username
 
     # 计算顶的数量
     def count_like(self, topic_obj):
@@ -66,4 +66,4 @@ class FavoriteNode(models.Model):
         unique_together = ('user', 'node',)
 
     def __str__(self):
-        return self.user
+        return self.user.username
