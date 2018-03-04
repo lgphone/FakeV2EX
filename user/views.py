@@ -102,6 +102,7 @@ class SignoutView(View):
         user_info = request.session.get('user_info', None)
         if user_info:
             request.session['isLogin'] = False
+            del request.session['user_info']
             user_obj = UserProfile.objects.filter(id=user_info['uid']).first()
             if user_obj:
                 user_obj.status = 'OFFLINE'
@@ -119,13 +120,14 @@ class MemberView(View):
             user_obj = UserProfile.objects.get(username=username)
             # 获取作者是连接中的用户的Topic主题
             topic_obj = Topic.objects.filter(author=user_obj).select_related('category')
-            # 获取当前用户是否following 此用户 根据此来调整页面显示信息
-            is_following = UserFollowing.objects.values_list('is_following').filter(is_following=1,
-                                                                                    user_id=user_info['uid'],
-                                                                                    following=user_obj).first()
-            # 获取当前用户是否block 此用户
-            is_block = UserFollowing.objects.values_list('is_block').filter(is_block=1, user_id=user_info['uid'],
-                                                                            following=user_obj).first()
+            if is_login:
+                # 获取当前用户是否following 此用户 根据此来调整页面显示信息
+                is_following = UserFollowing.objects.values_list('is_following').filter(is_following=1,
+                                                                                        user_id=user_info['uid'],
+                                                                                        following=user_obj).first()
+                # 获取当前用户是否block 此用户
+                is_block = UserFollowing.objects.values_list('is_block').filter(is_block=1, user_id=user_info['uid'],
+                                                                                following=user_obj).first()
             # print(is_following)
             # print(is_block)
             return render(request, 'user/member.html', locals())

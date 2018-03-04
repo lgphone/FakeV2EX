@@ -69,11 +69,13 @@
                 <div class="fr f12">
                     <span>主题总数</span>
                     <strong>{{ page_obj.data_count }}</strong>
-                    <span class="snow">&nbsp;•&nbsp;</span>
-                    {% if node_obj.favorite.0 == 1 %}
-                        <a href="#;" onclick="favoriteTopic('{{ node_code }}')" class="node_header_link">取消收藏</a>
-                    {% else %}
-                        <a href="#;" onclick="favoriteTopic('{{ node_code }}')" class="node_header_link">加入收藏</a>
+                    {% if is_login %}
+                        <span class="snow">&nbsp;•&nbsp;</span>
+                        {% if node_obj.favorite.0 == 1 %}
+                            <a href="#;" onclick="favoriteTopic('{{ node_code }}')" class="node_header_link">取消收藏</a>
+                        {% else %}
+                            <a href="#;" onclick="favoriteTopic('{{ node_code }}')" class="node_header_link">加入收藏</a>
+                        {% endif %}
                     {% endif %}
                 </div>
                 <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ node_code }}

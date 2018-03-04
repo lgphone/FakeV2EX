@@ -87,21 +87,23 @@
                 {{ topic_obj.html_content | safe }}
             </div>
         </div>
-        <div class="topic_buttons">
-            <div class="fr gray f11" style="line-height: 12px; padding-top: 3px; text-shadow: 0px 1px 0px #fff;">{{ topic_obj.click_num }} 次点击 &nbsp;∙&nbsp; {{ topic_obj.favorite_num }} 人收藏 &nbsp; </div>
-            <div class="action-buttons">
-                {% if topic_obj.favorite.0 == 1 %}
-                    <a id="favorite" class="badge badge-pill badge-light tb" href="#;" onclick="favoriteTopic('{{ topic_obj.topic_sn }}')">&nbsp;取消收藏&nbsp;</a> &nbsp;
-                {% else %}
-                    <a id="favorite" class="badge badge-pill badge-light tb" href="#;" onclick="favoriteTopic('{{ topic_obj.topic_sn }}')">&nbsp;加入收藏&nbsp;</a> &nbsp;
-                {% endif %}
-                {% if topic_obj.thanks.0 == 1 %}
-                    <a id="thanks" href="#;" class="badge badge-pill badge-light tb" disabled="disabled">&nbsp;已经发送感谢&nbsp;</a>
-                {% else %}
-                    <a id="thanks" href="#;" class="badge badge-pill badge-light tb" onclick="if (confirm('你确定要向本主题创建者发送谢意？')) { thankTopic('{{ topic_obj.topic_sn }}'); }">&nbsp;感谢&nbsp;</a>
-                {% endif %}
+        {% if is_login %}
+            <div class="topic_buttons">
+                <div class="fr gray f11" style="line-height: 12px; padding-top: 3px; text-shadow: 0px 1px 0px #fff;">{{ topic_obj.click_num }} 次点击 &nbsp;∙&nbsp; {{ topic_obj.favorite_num }} 人收藏 &nbsp; </div>
+                <div class="action-buttons">
+                    {% if topic_obj.favorite.0 == 1 %}
+                        <a id="favorite" class="badge badge-pill badge-light tb" href="#;" onclick="favoriteTopic('{{ topic_obj.topic_sn }}')">&nbsp;取消收藏&nbsp;</a> &nbsp;
+                    {% else %}
+                        <a id="favorite" class="badge badge-pill badge-light tb" href="#;" onclick="favoriteTopic('{{ topic_obj.topic_sn }}')">&nbsp;加入收藏&nbsp;</a> &nbsp;
+                    {% endif %}
+                    {% if topic_obj.thanks.0 == 1 %}
+                        <a id="thanks" href="#;" class="badge badge-pill badge-light tb" disabled="disabled">&nbsp;已经发送感谢&nbsp;</a>
+                    {% else %}
+                        <a id="thanks" href="#;" class="badge badge-pill badge-light tb" onclick="if (confirm('你确定要向本主题创建者发送谢意？')) { thankTopic('{{ topic_obj.topic_sn }}'); }">&nbsp;感谢&nbsp;</a>
+                    {% endif %}
+                </div>
             </div>
-        </div>
+        {% endif %}
     </div>
 {% endblock %}
 

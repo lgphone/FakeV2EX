@@ -101,8 +101,9 @@ class NodeView(View):
         current_page = int(current_page)
         try:
             node_obj = TopicCategory.objects.get(code=node_code, category_type=2)
-            node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(user_id=user_info['uid'],
-                                                                                    node=node_obj).first()
+            if is_login:
+                node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(user_id=user_info['uid'],
+                                                                                        node=node_obj).first()
             topic_obj = Topic.objects.filter(category=node_obj).order_by('-add_time')
             page_obj = Paginator(current_page, topic_obj.count())
             topic_obj = topic_obj[page_obj.start:page_obj.end]
@@ -120,8 +121,9 @@ class NodeLinkView(View):
         current_page = int(current_page)
         try:
             node_obj = TopicCategory.objects.get(code=node_code, category_type=2)
-            node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(user_id=user_info['uid'],
-                                                                                    node=node_obj).first()
+            if is_login:
+                node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(user_id=user_info['uid'],
+                                                                                        node=node_obj).first()
             node_link_obj = NodeLink.objects.filter(category__code=node_code).order_by('-add_time')
             page_obj = Paginator(current_page, node_link_obj.count())
             node_link_obj = node_link_obj[page_obj.start:page_obj.end]
@@ -142,12 +144,11 @@ class TopicView(View):
             topic_obj.like_num = TopicVote.objects.filter(vote=1, topic=topic_obj).count()
             topic_obj.dislike_num = TopicVote.objects.filter(vote=0, topic=topic_obj).count()
             topic_obj.favorite_num = TopicVote.objects.filter(favorite=1, topic=topic_obj).count()
-            topic_obj.thanks = TopicVote.objects.values_list('thanks').filter(topic=topic_obj,
-                                                                              user_id=user_info['uid']).first()
-            topic_obj.favorite = TopicVote.objects.values_list('favorite').filter(topic=topic_obj,
+            if is_login:
+                topic_obj.thanks = TopicVote.objects.values_list('thanks').filter(topic=topic_obj,
                                                                                   user_id=user_info['uid']).first()
-            # print(topic_obj.thanks)
-            # print(topic_obj.favorite)
+                topic_obj.favorite = TopicVote.objects.values_list('favorite').filter(topic=topic_obj,
+                                                                                      user_id=user_info['uid']).first()
             return render(request, 'topic/topic.html', locals())
         except Topic.DoesNotExist:
             raise Http404("topic does not exist")
