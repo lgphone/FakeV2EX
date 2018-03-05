@@ -72,7 +72,7 @@
                         {% endif %}
                     {% endif %}
                 </div>
-                <a href="/">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ node_code }}
+                <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ node_code }}
                 <div class="sep10"></div>
                 <div class="sep5"></div>
                 <span class="f12">{{ node_obj.desc }}</span>

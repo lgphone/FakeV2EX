@@ -81,6 +81,10 @@ class NewTopicView(View):
 
 
 class RecentView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(RecentView, self).dispatch(request, *args, **kwargs)
+
     def get(self, request):
         is_login = request.session.get('isLogin', None)
         user_info = request.session.get('user_info', None)
@@ -191,8 +195,7 @@ class MyFavoriteTopicView(View):
         is_login = request.session.get('isLogin', None)
         user_info = request.session.get('user_info', None)
         my_favorite_obj = TopicVote.objects.filter(favorite=1,
-                                                   user_id=user_info['uid']).select_related('topic',
-                                                                                            'user',
+                                                   user_id=user_info['uid']).select_related('topic__author',
                                                                                             'topic__category').order_by(
             '-add_time')
         return render(request, 'topic/my_topic.html', locals())

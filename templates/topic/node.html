@@ -81,10 +81,12 @@
                 <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ node_code }}
                 <div class="sep10"></div>
                 <div class="sep5"></div>
-                <div class="fr" style="padding-left: 10px;">
-                    <input type="button" class="btn btn-sm btn-secondary" value="创建新主题"
-                           onclick="location.href = '{% url 'new' %}?node_code={{ node_code }}';">
-                </div>
+                {% if is_login %}
+                    <div class="fr" style="padding-left: 10px;">
+                        <input type="button" class="btn btn-sm btn-secondary" value="创建新主题"
+                               onclick="location.href = '{% url 'new' %}?node_code={{ node_code }}';">
+                    </div>
+                {% endif %}
                 <span class="f12">{{ node_obj.desc }}</span>
                 <div class="sep10"></div>
                 <div class="node_header_tabs"><a href="{% url 'node' node_code %}"

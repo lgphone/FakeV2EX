@@ -21,8 +21,8 @@
                     <tbody>
                     <tr>
                         <td width="48" valign="top" align="center">
-                            <a href="{% url 'member' obj.user.username %}">
-                                <img src="{{ obj.user.avatar }}" class="rounded" alt="{{ obj.user.username }}"
+                            <a href="{% url 'member' obj.topic.author.username %}">
+                                <img src="{{ obj.topic.author.avatar }}" class="rounded" alt="{{ obj.topic.author.username }}"
                                      width="48px" height="48px" border="0" align="default">
                             </a>
                         </td>
@@ -33,9 +33,9 @@
                             <span class="small">
                             <div class="votes"></div>
                             <a class="node" href="{% url 'node' obj.topic.category.code %}">{{ obj.topic.category.name }}</a> &nbsp;•&nbsp;
-                            <strong><a href="{% url 'member' obj.user.username %}">{{ obj.user.username }}</a>
+                            <strong><a href="{% url 'member' obj.topic.author.username %}">{{ obj.topic.author.username }}</a>
                             </strong> &nbsp;•&nbsp; {{ obj.topic.add_time }} &nbsp;•&nbsp; 最后回复来自 <strong>
-                            <a href="{% url 'member' obj.user.username %}">{{ obj.user.username }}</a></strong>
+                            <a href="{% url 'member' obj.topic.author.username %}">{{ obj.topic.author.username }}</a></strong>
                         </span>
                         </td>
                         <td width="70" align="right" valign="middle">
