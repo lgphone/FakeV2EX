@@ -1,5 +1,6 @@
 # FakeV2EX
 Django 2.0 写的仿V2EX社区
+纯技术交流
 
 ## 完成功能
 * Topic 展示
