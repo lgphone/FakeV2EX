@@ -1,5 +1,5 @@
 # FakeV2EX
-Django 2.0 写的仿V2EX社区
+Django 2.0 写的仿V2EX社区  纯技术交流 联系方式: QQ 435968679
 
 ## Demo地址
 [http://fv2ex.izhihu.me](http://fv2ex.izhihu.me)
@@ -23,7 +23,7 @@ Django 2.0 写的仿V2EX社区
 * 收藏Topic
 * 感谢Topic的作者
 
-##　待完成
+## 待完成
 * 注册邮箱验证
 * 统计在线用户
 * 检测当前用户是否在线
