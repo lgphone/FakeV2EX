@@ -45,7 +45,6 @@
             margin: 0 310px 0 20px;
         }
 
-
         .box {
             background-color: #fff;
             border-radius: 3px;
@@ -173,17 +172,6 @@
             margin: 0 auto;
             padding: 0;
         }
-        .cell {
-            padding: 10px;
-            font-size: 14px;
-            line-height: 120%;
-            text-align: left;
-            border-bottom: 1px solid #e2e2e2;
-        }
-        .item {
-            background-position: 0 bottom;
-            background-repeat: repeat-x;
-        }
     </style>
     {% block CSS %} {% endblock %}
 </head>
@@ -211,7 +199,6 @@
                             <a href="{% url 'index' %}" class="top">首页</a>
                             &nbsp;&nbsp;&nbsp;<a href="{% url 'member' user_info.username %}" class="top">{{ user_info.username }}</a>
                             &nbsp;&nbsp;&nbsp;<a href="/notes" class="top">记事本</a>
-                            &nbsp;&nbsp;&nbsp;<a href="/t" class="top">时间轴</a>
                             &nbsp;&nbsp;&nbsp;<a href="/settings" class="top">设置</a>
                             &nbsp;&nbsp;&nbsp;<a href="#;" onclick="if (confirm('确定要从 V2EX 登出？')) { location.href= '{% url 'signout' %}'; }" class="top">登出</a></td>
                     {% else %}
@@ -227,7 +214,6 @@
 
 <div id="Wrapper">
     <div class="content">
-        {% csrf_token %}
         <div id="Leftbar"></div>
         <div id="Rightbar">
             <div class="sep20"></div>
@@ -241,6 +227,9 @@
         <div class="sep20"></div>
     </div>
     <div class="c"></div>
+    {% if is_login %}
+        {% csrf_token %}
+    {% endif %}
 <div id="Bottom">
     <div class="content">
         <div class="inner">

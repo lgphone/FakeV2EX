@@ -1,0 +1,96 @@
+{% extends 'layout.html' %}
+{% block rightbar %}
+    {% if is_login %}
+        <div class="box">
+            <div class="cell">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td width="48" valign="top"><a href="{% url 'member' user_info.username %}"><img
+                                src="{{ user_info.avatar }}"
+                                class="rounded" border="0" align="default"
+                                style="max-width: 48px; max-height: 48px;"></a></td>
+                        <td width="10" valign="top"></td>
+                        <td width="auto" align="left"><span class="bigger"><a
+                                href="{% url 'member' user_info.username %}">{{ user_info.username }}</a></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="sep10"></div>
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tbody>
+                    <tr class="no_hove_line">
+                        <td width="33%" align="center"><a href="{% url 'my_nodes' %}" class="dark" style="display: block;"><span
+                                class="bigger">{{ user_info.favorite_node_num }}</span>
+                            <div class="sep3"></div>
+                            <span>节点收藏</span></a></td>
+                        <td width="34%"
+                            style="border-left: 1px solid rgba(100, 100, 100, 0.4); border-right: 1px solid rgba(100, 100, 100, 0.4);"
+                            align="center"><a href="{% url 'my_topics' %}" class="dark" style="display: block;"><span
+                                class="bigger">{{ user_info.favorite_topic_num }}</span>
+                            <div class="sep3"></div>
+                            <span>主题收藏</span></a></td>
+                        <td width="33%" align="center"><a href="{% url 'my_following' %}" class="dark"
+                                                          style="display: block;"><span class="bigger">{{ user_info.following_user_num }}</span>
+                            <div class="sep3"></div>
+                            <span>特别关注</span></a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="cell">
+                <div style="width: 250px; background-color: #f0f0f0; height: 3px; display: inline-block; vertical-align: middle;">
+                    <div style="width: 40px; background-color: #ccc; height: 3px; display: inline-block;"></div>
+                </div>
+            </div>
+            <div class="cell" style="padding: 5px;">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td width="32"><a href="{% url 'new' %}"><img
+                                src="/static/img/flat_compose.png" width="32"
+                                border="0"></a></td>
+                        <td width="10"></td>
+                        <td width="auto" valign="middle" align="left"><a href="{% url 'index' %}">创作新主题</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="inner">
+                <div class="fr" id="money"><a href="/balance" class="balance_area" style="">24 <img
+                        src="//cdn.v2ex.com/static/img/silver.png" alt="S" align="absmiddle" border="0"
+                        style="padding-bottom: 2px;"> 81 <img src="//cdn.v2ex.com/static/img/bronze.png" alt="B"
+                                                              align="absmiddle" border="0"></a></div>
+                <a href="/notifications">0 条未读提醒</a></div>
+        </div>
+        <div class="sep20"></div>
+        <div class="box">
+            <div class="inner">
+                <li class="fa fa-gift" style="color: #f90;"></li> &nbsp;<a href="/mission/daily">领取今日的登录奖励</a>
+            </div>
+        </div>
+        <div class="sep20"></div>
+    {% else %}
+        <div class="box">
+            <div class="cell">
+                <strong>V2EX = way to explore</strong>
+                <div class="sep5"></div>
+                <span>V2EX 是一个关于分享和探索的地方</span>
+            </div>
+            <div class="inner">
+                <div class="sep5"></div>
+                <div align="center"><a href="{% url 'signup' %}" class="btn btn-sm btn-secondary">现在注册</a>
+                    <div class="sep5"></div>
+                    <div class="sep10"></div>
+                    已注册用户请 &nbsp;<a href="{% url 'signin' %}">登录</a></div>
+            </div>
+        </div>
+        <div class="sep20"></div>
+        <div class="box">
+            <div class="inner">
+            </div>
+        </div>
+        <div class="sep20"></div>
+    {% endif %}
+{% endblock %}

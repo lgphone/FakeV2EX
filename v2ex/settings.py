@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'operation.apps.OperationConfig',
     'topic.apps.TopicConfig',
+    'notes.apps.NotesConfig',
 ]
 
 AUTH_USER_MODEL = "user.UserProfile"

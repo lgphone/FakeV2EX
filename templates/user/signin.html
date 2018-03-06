@@ -56,6 +56,9 @@
         {% endif %}
         <div class="inner">
             <form method="post" action="{% url 'signin' %}">
+                {% if next_url %}
+                    <input type="hidden" name="next" value="{{ next_url }}">
+                {% endif %}
                 {% csrf_token %}
                 <table cellpadding="5" cellspacing="0" border="0" width="100%">
                     <tbody>
@@ -80,7 +83,6 @@
                             <div class="sep10"></div>
                             <input type="text" class="sls" name="check_code" value="" placeholder="请输入上图中的验证码"></td>
                     </tr>
-
                     <tr>
                         <td width="120" align="right"></td>
                         <td width="auto" align="left"><input type="submit" class="btn btn-sm btn-secondary" value="登录">
@@ -94,7 +96,7 @@
                 </table>
             </form>
         </div>
-                </div>
+    </div>
 {% endblock %}
 
 {% block JS %}

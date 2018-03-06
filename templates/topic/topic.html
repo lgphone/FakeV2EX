@@ -9,6 +9,9 @@
         border-radius: 0px 0px 3px 3px;
         text-align: left;
     }
+    .topic_content img {
+        max-width: 100% !important;
+    }
     a.tb {
         background-color: #eeeeee;
     }
@@ -110,45 +113,51 @@
 {% block JS %}
 <script>
     function upVoteTopic(topic_sn) {
-        $.ajax({
-            url: '/topic/vote?t=' + $.cookie('csrftoken'),
-            type: 'post',
-            data: {'topic_sn': topic_sn, 'vote_action': 'up'},
-            success: function (recv) {
-                recv = JSON.parse(recv);
-                if (recv.changed) {
-                    console.log('成功');
-                    $('#topic_votes').html(recv.data);
-                    location.reload();
-                } else {
-                    console.log('失败')
+        if ($.cookie('csrftoken')) {
+            $.ajax({
+                url: '/topic/vote?t=' + $.cookie('csrftoken'),
+                type: 'post',
+                data: {'topic_sn': topic_sn, 'vote_action': 'up'},
+                success: function (recv) {
+                    recv = JSON.parse(recv);
+                    if (recv.changed) {
+                        console.log('成功');
+                        $('#topic_votes').html(recv.data);
+                        location.reload();
+                    } else {
+                        console.log('失败')
+                    }
+                },
+                error: function () {
+                    console.log('请求失败')
                 }
-            },
-            error: function () {
-                console.log('请求失败')
-            }
-        })
+            })
+        }
+
     }
 
     function downVoteTopic(topic_sn) {
-        $.ajax({
-            url: '/topic/vote?t=' + $.cookie('csrftoken'),
-            type: 'post',
-            data: {'topic_sn': topic_sn, 'vote_action': 'down'},
-            success: function (recv) {
-                recv = JSON.parse(recv);
-                if (recv.changed) {
-                    console.log('成功');
-                    $('#topic_votes').html(recv.data);
-                    location.reload();
-                } else {
-                    console.log('失败')
+        if ($.cookie('csrftoken')) {
+            $.ajax({
+                url: '/topic/vote?t=' + $.cookie('csrftoken'),
+                type: 'post',
+                data: {'topic_sn': topic_sn, 'vote_action': 'down'},
+                success: function (recv) {
+                    recv = JSON.parse(recv);
+                    if (recv.changed) {
+                        console.log('成功');
+                        $('#topic_votes').html(recv.data);
+                        location.reload();
+                    } else {
+                        console.log('失败')
+                    }
+                },
+                error: function () {
+                    console.log('请求失败')
                 }
-            },
-            error: function () {
-                console.log('请求失败')
-            }
-        })
+            })
+        }
+
     }
 
     function favoriteTopic(topic_sn) {

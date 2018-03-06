@@ -56,7 +56,8 @@ class SignupView(View):
 
 class SigninView(View):
     def get(self, request):
-        return render(request, 'user/signin.html')
+        next_url = request.GET.get('next', None)
+        return render(request, 'user/signin.html', locals())
 
     def post(self, request):
         has_error = True
@@ -82,7 +83,12 @@ class SigninView(View):
                                 'favorite_topic_num': TopicVote.objects.filter(favorite=1, user=user_obj).count(),
                                 'following_user_num': UserFollowing.objects.filter(is_following=1, user=user_obj).count()
                             }
-                            resp = redirect(reverse('index'))
+                            if request.POST.get('next', None):
+                                next_url = request.POST.get('next')
+                            else:
+                                next_url = reverse('index')
+                            print(next_url)
+                            resp = redirect(next_url)
                             request.session['isLogin'] = True
                             request.session['user_info'] = user_info
                             return resp
@@ -101,8 +107,7 @@ class SignoutView(View):
     def get(self, request):
         user_info = request.session.get('user_info', None)
         if user_info:
-            request.session['isLogin'] = False
-            del request.session['user_info']
+            request.session.flush()
             user_obj = UserProfile.objects.filter(id=user_info['uid']).first()
             if user_obj:
                 user_obj.status = 'OFFLINE'

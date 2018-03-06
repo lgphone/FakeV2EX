@@ -1,6 +1,10 @@
 # FakeV2EX
 Django 2.0 写的仿V2EX社区
 
+## Demo地址
+[http://fv2ex.izhihu.me](http://fv2ex.izhihu.me)
+* 仅供测试。。求大佬别DDos
+
 ## 完成功能
 * Topic 展示
 * 登录，注册，退出

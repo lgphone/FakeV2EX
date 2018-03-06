@@ -1,0 +1,4 @@
+Django==2.0.2
+Markdown==2.6.11
+Pillow==5.0.0
+pytz==2018.3

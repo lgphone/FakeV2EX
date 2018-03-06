@@ -1,22 +1,4 @@
 {% extends 'topic/master.html' %}
-{% block CSS %}
-<style>
-    a.count_blue:visited, a.count_green:visited, a.count_orange:visited, a.count_livid:visited {
-        line-height: 12px;
-        font-weight: bold;
-        color: white;
-        background-color: #e5e5e5;
-        display: inline-block;
-        padding: 2px 10px 2px 10px;
-        -moz-border-radius: 12px;
-        -webkit-border-radius: 12px;
-        border-radius: 12px;
-        text-decoration: none;
-        margin-right: 5px;
-    }
-</style>
-{% endblock %}
-
 {% block main %}
     <div class="box">
         <div class="inner" style="background-color: #fff; border-top-left-radius: 3px; border-top-right-radius: 3px;" id="Tabs">
@@ -60,7 +42,7 @@
                         </td>
                         <td width="70" align="right" valign="middle">
                             <a href="{% url 'topic' obj.topic_sn %}"
-                               class="badge badge-pill badge-secondary">&nbsp;{{ obj.click_num }}&nbsp;</a>
+                               class="read_status badge badge-pill badge-secondary">&nbsp;{{ obj.click_num }}&nbsp;</a>
                         </td>
                     </tr>
                     </tbody>

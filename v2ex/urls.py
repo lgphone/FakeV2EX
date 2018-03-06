@@ -30,6 +30,8 @@ urlpatterns = [
     path('recent', RecentView.as_view(), name='recent'),
     # 发布新主题
     path('new', NewTopicView.as_view(), name='new'),
+    # notes
+    # path('n', NewTopicView.as_view(), name='new'),
     # 查看某个用户信息
     path('member/<slug:username>', MemberView.as_view(), name='member'),
     # 到某个节点下的主题
