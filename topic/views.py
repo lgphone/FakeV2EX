@@ -8,7 +8,7 @@ from utils.auth_decorator import login_auth
 from django.http import Http404
 from utils.some_utils import gender_topic_sn
 from utils.pagination import Paginator
-from .models import TopicCategory, Topic, NodeLink
+from .models import TopicCategory, Topic, NodeLink, Comments
 from operation.models import TopicVote, FavoriteNode
 from user.models import UserFollowing
 from .forms import NewTopicForm, MarkdownPreForm, CheckNodeForm
@@ -148,6 +148,7 @@ class TopicView(View):
             topic_obj.like_num = TopicVote.objects.filter(vote=1, topic=topic_obj).count()
             topic_obj.dislike_num = TopicVote.objects.filter(vote=0, topic=topic_obj).count()
             topic_obj.favorite_num = TopicVote.objects.filter(favorite=1, topic=topic_obj).count()
+            comments_obj = Comments.objects.filter(topic=topic_obj).select_related('author')
             if is_login:
                 topic_obj.thanks = TopicVote.objects.values_list('thanks').filter(topic=topic_obj,
                                                                                   user_id=user_info['uid']).first()
@@ -156,6 +157,18 @@ class TopicView(View):
             return render(request, 'topic/topic.html', locals())
         except Topic.DoesNotExist:
             raise Http404("topic does not exist")
+
+    @method_decorator(login_auth)
+    def post(self, request, topic_sn):
+        user_info = request.session.get('user_info', None)
+        content = request.POST.get('content', None)
+        if content is not None:
+            try:
+                topic_obj = Topic.objects.get(topic_sn=topic_sn)
+                Comments.objects.create(topic=topic_obj, author_id=user_info['uid'], content=content)
+                return redirect(reverse('topic', args=(topic_sn,)))
+            except Topic.DoesNotExist:
+                raise Http404("topic does not exist")
 
 
 class MarkdownPreView(View):

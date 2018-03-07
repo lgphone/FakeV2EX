@@ -90,3 +90,20 @@ class NodeLink(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Comments(models.Model):
+    """
+    Comments 评论表
+    """
+    topic = models.ForeignKey(Topic, verbose_name="Go分类", on_delete=models.CASCADE)
+    author = models.ForeignKey(User, verbose_name="Topic作者", on_delete=models.CASCADE)
+    content = models.TextField(max_length=20000, null=True, blank=True, verbose_name="Topic content")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
+
+    class Meta:
+        verbose_name = 'Comments'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.topic

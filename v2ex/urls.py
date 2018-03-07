@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path
 from topic.views import IndexView, NodeView, TopicView, NodeLinkView, RecentView, NewTopicView, MarkdownPreView, \
     MyFavoriteNodeView, MyFavoriteTopicView, MyFollowingView
 from user.views import SignupView, check_code, SigninView, SignoutView, MemberView
@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # 首页，默认是最热节点 最多30条
     path('', IndexView.as_view(), name='index'),
+    # re_path(r'^$', IndexView.as_view(), name='index'),
     # 所有主题，按最新时间排序
     path('recent', RecentView.as_view(), name='recent'),
     # 发布新主题

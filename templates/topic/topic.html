@@ -23,6 +23,12 @@
         -moz-border-radius: 4px;
         border-radius: 4px;
     }
+    .transparent {
+        background-color: transparent;
+        border: 2px dashed rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+        box-shadow: none;
+    }
     .vote:link, .vote:visited, .vote {
         text-decoration: none;
         font-size: 10px;
@@ -60,6 +66,24 @@
     }
     .gray {
         color: #999;
+    }
+    .ago {
+        font-size: 11px;
+        color: #ccc;
+        cursor: pointer;
+    }
+    .mll {
+        border-radius: 3px;
+        padding: 5px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        display: block;
+        width: 100%;
+        height: 8em;
+        overflow-y: auto;
+        font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+        resize: vertical;
+        box-sizing: border-box;
     }
 </style>
 {% endblock %}
@@ -108,6 +132,93 @@
             </div>
         {% endif %}
     </div>
+    <div class="sep20"></div>
+    {% if comments_obj %}
+        <div class="box">
+            {% for obj in comments_obj %}
+                <div class="cell">
+                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                        <tbody>
+                        <tr>
+                            <td width="48" valign="top" align="center"><img
+                                    src="{{ obj.author.avatar }}" class="avatar" style="max-width: 48px; max-height: 48px;" border="0"
+                                    align="default"></td>
+                            <td width="10" valign="top"></td>
+                            <td width="auto" valign="top" align="left">
+                                <div class="fr">
+                                    {% if is_login %}
+                                        <div id="thank_area_{{ obj.id }}" class="thank_area">
+
+                                            <a href="#;"
+                                               onclick="if (confirm('确认要不再显示来自 @{{ obj.author.username }} 的这条回复？')) { ignoreReply('{{ obj.id }}'); }"
+                                               class="thank" style="color: #ccc;">隐藏</a>
+                                            &nbsp; &nbsp; &nbsp; <a href="#;"
+                                                                    onclick="if (confirm('确认花费 10 个铜币向 {{ obj.author.username }} 的这条回复发送感谢？')) { thankReply('{{ obj.author.id }}');}"
+                                                                    class="thank">感谢回复者</a></div> &nbsp; <a href="#;"
+                                                                                                            onclick="replyOne('xinzhi');"><img
+                                            src="/static/img/reply.png" align="absmiddle" border="0" alt="Reply"></a>
+                                    {% endif %}
+                                    &nbsp;&nbsp; <span
+                                        class="badge badge-pill badge-secondary">{{ forloop.counter }}</span></div>
+                                <div class="sep3"></div>
+                                <strong><a href="{% url 'member' obj.author.username %}"
+                                           class="dark">{{ obj.author.username }}</a></strong>&nbsp; &nbsp;<span
+                                    class="ago">{{ obj.add_time }}</span>
+                                <div class="sep5"></div>
+                                <div class="reply_content">{{ obj.content }}</div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="box transparent">
+            <div class="inner" style="text-align: center">
+                <span style="color: rgba(0, 0, 0, 0.25);">目前尚无回复</span>
+            </div>
+        </div>
+    {% endif %}
+    {% if is_login %}
+        <div class="sep20"></div>
+        <div class="box">
+            <div class="cell">
+                <div class="fr"><a href="#" onclick="goTop()"><strong>↑</strong> 回到顶部</a></div>
+                添加一条新回复
+            </div>
+            <div class="cell">
+                <form method="post" action="{% url 'topic' topic_sn %}">
+                {% csrf_token %}
+                <textarea name="content" maxlength="10000" class="mll" id="reply_content"
+                          style="overflow: hidden; word-wrap: break-word; resize: none; height: 112px;"></textarea>
+                    <div class="sep10"></div>
+                    <div class="fr">
+                        <div class="sep5"></div>
+                        <span class="gray">请尽量让自己的回复能够对别人有帮助</span></div>
+                    <input type="hidden" value="10476" name="once">
+                    <input type="submit" value="回复" class="btn btn-sm">
+                    <script type="text/javascript">
+                        $("#reply_content").on('input', function (e) {
+                            saveReplyDraft(435882, 94579);
+                        });
+                        var keyPressed = 0;
+                        $("#reply_content").keydown(function (e) {
+                            keyPressed = keyPressed + 1;
+                            if ((e.ctrlKey || e.metaKey) && e.which === 13) {
+                                e.preventDefault();
+                                $("#reply_content").parent().submit();
+                            }
+                        });
+                    </script>
+                </form>
+            </div>
+            <div class="inner">
+                <div class="fr"><a href="{% url 'index' %}">← V2EX</a></div>
+                &nbsp;
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block JS %}

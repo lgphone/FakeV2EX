@@ -5,10 +5,12 @@ from django.urls import reverse
 from django.views.generic import View
 from django.http import Http404
 from django.db.models import Q
+from django.core.mail import send_mail
 from utils.check_code import create_validate_code
 from .models import UserProfile, UserFollowing
 from operation.models import TopicVote, FavoriteNode, Topic
 from .forms import SignupForm, SigninForm
+from v2ex.settings import EMAIL_FROM
 # Create your views here.
 
 
@@ -87,7 +89,6 @@ class SigninView(View):
                                 next_url = request.POST.get('next')
                             else:
                                 next_url = reverse('index')
-                            print(next_url)
                             resp = redirect(next_url)
                             request.session['isLogin'] = True
                             request.session['user_info'] = user_info
@@ -124,7 +125,7 @@ class MemberView(View):
             # 获取链接指向的用户名的obj
             user_obj = UserProfile.objects.get(username=username)
             # 获取作者是连接中的用户的Topic主题
-            topic_obj = Topic.objects.filter(author=user_obj).select_related('category')
+            topic_obj = Topic.objects.filter(author=user_obj).select_related('category').order_by('-add_time')
             if is_login:
                 # 获取当前用户是否following 此用户 根据此来调整页面显示信息
                 is_following = UserFollowing.objects.values_list('is_following').filter(is_following=1,
