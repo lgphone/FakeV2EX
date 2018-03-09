@@ -1,18 +1,18 @@
 {% extends 'layout.html' %}
 {% block rightbar %}
-    {% if is_login %}
+    {% if request.session.user_info %}
         <div class="box">
             <div class="cell">
                 <table cellpadding="0" cellspacing="0" border="0" width="100%">
                     <tbody>
                     <tr>
-                        <td width="48" valign="top"><a href="{% url 'member' user_info.username %}"><img
-                                src="{{ user_info.avatar }}"
+                        <td width="48" valign="top"><a href="{% url 'member' request.session.user_info.username %}"><img
+                                src="{{ request.session.user_info.avatar }}"
                                 class="rounded" border="0" align="default"
                                 style="max-width: 48px; max-height: 48px;"></a></td>
                         <td width="10" valign="top"></td>
                         <td width="auto" align="left"><span class="bigger"><a
-                                href="{% url 'member' user_info.username %}">{{ user_info.username }}</a></span>
+                                href="{% url 'member' request.session.user_info.username %}">{{ request.session.user_info.username }}</a></span>
                         </td>
                     </tr>
                     </tbody>
@@ -22,17 +22,17 @@
                     <tbody>
                     <tr class="no_hove_line">
                         <td width="33%" align="center"><a href="{% url 'my_nodes' %}" class="dark" style="display: block;"><span
-                                class="bigger">{{ user_info.favorite_node_num }}</span>
+                                class="bigger">{{ request.session.user_info.favorite_node_num }}</span>
                             <div class="sep3"></div>
                             <span>节点收藏</span></a></td>
                         <td width="34%"
                             style="border-left: 1px solid rgba(100, 100, 100, 0.4); border-right: 1px solid rgba(100, 100, 100, 0.4);"
                             align="center"><a href="{% url 'my_topics' %}" class="dark" style="display: block;"><span
-                                class="bigger">{{ user_info.favorite_topic_num }}</span>
+                                class="bigger">{{ request.session.user_info.favorite_topic_num }}</span>
                             <div class="sep3"></div>
                             <span>主题收藏</span></a></td>
                         <td width="33%" align="center"><a href="{% url 'my_following' %}" class="dark"
-                                                          style="display: block;"><span class="bigger">{{ user_info.following_user_num }}</span>
+                                                          style="display: block;"><span class="bigger">{{ request.session.user_info.following_user_num }}</span>
                             <div class="sep3"></div>
                             <span>特别关注</span></a></td>
                     </tr>

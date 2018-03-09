@@ -81,7 +81,6 @@
         width: 100%;
         height: 8em;
         overflow-y: auto;
-        font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
         resize: vertical;
         box-sizing: border-box;
     }
@@ -114,7 +113,7 @@
                 {{ topic_obj.html_content | safe }}
             </div>
         </div>
-        {% if is_login %}
+        {% if request.session.user_info %}
             <div class="topic_buttons">
                 <div class="fr gray f11" style="line-height: 12px; padding-top: 3px; text-shadow: 0px 1px 0px #fff;">{{ topic_obj.click_num }} 次点击 &nbsp;∙&nbsp; {{ topic_obj.favorite_num }} 人收藏 &nbsp; </div>
                 <div class="action-buttons">
@@ -135,6 +134,10 @@
     <div class="sep20"></div>
     {% if comments_obj %}
         <div class="box">
+            <div class="cell">
+                <span class="gray">{{ comments_obj.count }} 个回复 &nbsp;<strong
+                        class="snow">|</strong> &nbsp;直到 {{ now }}</span>
+            </div>
             {% for obj in comments_obj %}
                 <div class="cell">
                     <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -146,7 +149,7 @@
                             <td width="10" valign="top"></td>
                             <td width="auto" valign="top" align="left">
                                 <div class="fr">
-                                    {% if is_login %}
+                                    {% if request.session.user_info %}
                                         <div id="thank_area_{{ obj.id }}" class="thank_area">
 
                                             <a href="#;"
@@ -180,7 +183,7 @@
             </div>
         </div>
     {% endif %}
-    {% if is_login %}
+    {% if request.session.user_info %}
         <div class="sep20"></div>
         <div class="box">
             <div class="cell">

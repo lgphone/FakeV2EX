@@ -35,14 +35,20 @@
                             <span class="small">
                             <div class="votes"></div>
                             <a class="node" href="{% url 'node' obj.category.code %}">{{ obj.category.name }}</a> &nbsp;•&nbsp;
-                            <strong><a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a>
-                            </strong> &nbsp;•&nbsp; {{ obj.add_time }} &nbsp;•&nbsp; 最后回复来自 <strong>
-                            <a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a></strong>
+                            <strong>
+                                <a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a>
+                            </strong>
+                            {% if obj.last_comment %}
+                                &nbsp;•&nbsp; {{ obj.last_comment.add_time }} &nbsp;•&nbsp; 最后回复来自
+                                <strong>
+                                    <a href="{% url 'member' obj.last_comment.author.username %}">{{ obj.last_comment.author.username }}</a>
+                                </strong>
+                            {% endif %}
                         </span>
                         </td>
                         <td width="70" align="right" valign="middle">
                             <a href="{% url 'topic' obj.topic_sn %}"
-                               class="read_status badge badge-pill badge-secondary">&nbsp;{{ obj.click_num }}&nbsp;</a>
+                               class="read_status badge badge-pill badge-secondary">&nbsp;{{ obj.comment_num }}&nbsp;</a>
                         </td>
                     </tr>
                     </tbody>

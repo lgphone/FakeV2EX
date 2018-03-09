@@ -58,6 +58,8 @@ class Topic(models.Model):
     author = models.ForeignKey(User, verbose_name="Topic作者", on_delete=models.CASCADE)
     topic_sn = models.CharField(max_length=50, unique=True, verbose_name="Topic唯一sn")
     click_num = models.IntegerField(default=0, verbose_name="Topic点击数")
+    # 每次用户评论，把此字段+1 可以获取评论总数
+    comment_num = models.IntegerField(default=0, verbose_name="Topic 评论数量")
     title = models.TextField(max_length=120, verbose_name="Topic title")
     content = models.TextField(max_length=20000, null=True, blank=True, verbose_name="Topic content")
     html_content = models.TextField(max_length=20000, null=True, blank=True, verbose_name="Topic html content")
@@ -70,6 +72,11 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.title
+
+    # 通过Topic 获取最后评论
+    @property
+    def last_comment(self):
+        return Comments.objects.filter(topic=self).last() or None
 
 
 class NodeLink(models.Model):
@@ -98,7 +105,7 @@ class Comments(models.Model):
     """
     topic = models.ForeignKey(Topic, verbose_name="Go分类", on_delete=models.CASCADE)
     author = models.ForeignKey(User, verbose_name="Topic作者", on_delete=models.CASCADE)
-    content = models.TextField(max_length=20000, null=True, blank=True, verbose_name="Topic content")
+    content = models.TextField(max_length=20000, null=True, blank=True, verbose_name="Topic 评论")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
 
     class Meta:

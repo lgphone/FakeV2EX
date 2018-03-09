@@ -49,6 +49,7 @@ AUTH_USER_MODEL = "user.UserProfile"
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'middle.custom_middle.CountOnlineMiddlewareMixin',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -131,12 +132,48 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
+# 缓存相关
+CACHES = {
+    # 默认配置，cache 单独使用
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # 新增配置让session 使用，
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# 设置忽略连接异常
+DJANGO_REDIS_IGNORE_EXCEPTIONS = True
+
 # session 相关配置
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "session"
 SESSION_COOKIE_NAME = "sessionid"
 SESSION_COOKIE_PATH = "/"
-SESSION_COOKIE_AGE = 1209600
+SESSION_COOKIE_AGE = 60 * 20
+# 用户刷新，重新设置缓存时间
+SESSION_SAVE_EVERY_REQUEST = True
 
 # 分页器配置
 PRE_PAGE_COUNT = 15
 PAGER_NUMS = 7
+
+# 邮件配置
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# SMTP服务器
+EMAIL_HOST = 'smtp.sina.com'
+EMAIL_PORT = 25
+# 发送邮件的邮箱
+
+# 收件人看到的发件人
+EMAIL_FROM = '假的V2EX<luremind@sina.com>'

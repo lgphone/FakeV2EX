@@ -1,0 +1,281 @@
+{% extends 'user/master.html' %}
+{% block CSS %}
+    <style>
+        a:active {
+            color: #778087;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .sl {
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            width: 320px;
+            box-sizing: border-box;
+        }
+        .ml {
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            display: block;
+            width: 320px;
+            height: 160px;
+            box-sizing: border-box;
+        }
+        .problem {
+            padding: 10px;
+            font-size: 14px;
+            line-height: 120%;
+            text-align: left;
+            background-color: #ffffc0;
+            border-left: 5px solid #fff000;
+            border-bottom: 1px solid #e2e2e2;
+            color: #333;
+        }
+        .negative {
+            color: #ff3c00;
+        }
+        .orange {
+            color: #f90;
+        }
+        .green {
+            color: green;
+        }
+    </style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 设置</div>
+        {% if has_error %}
+            <div class="problem">请解决以下问题：
+                <ul>
+                    {% if obj.errors.website.0 %}
+                        <li>{{ obj.errors.website.0 }}</li>
+                    {% endif %}
+                    {% if obj.errors.company.0 %}
+                        <li>{{ obj.errors.company.0 }}</li>
+                    {% endif %}
+                    {% if obj.errors.company_title.0 %}
+                        <li>{{ obj.errors.company_title.0 }}</li>
+                    {% endif %}
+                    {% if obj.errors.location.0 %}
+                        <li>{{ obj.errors.location.0 }}</li>
+                    {% endif %}
+                    {% if obj.errors.bio.0 %}
+                        <li>{{ obj.errors.bio.0 }}</li>
+                    {% endif %}
+                    {% if obj.errors.list_rich.0 %}
+                        <li>{{ obj.errors.list_rich.0 }}</li>
+                    {% endif %}
+                    {% if obj.errors.show_balance.0 %}
+                        <li>{{ obj.errors.show_balance.0 }}</li>
+                    {% endif %}
+                    {% if obj.errors.my_home.0 %}
+                        <li>{{ obj.errors.my_home.0 }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="inner">
+            <form method="post" action="{% url 'settings' %}">
+                <table cellpadding="5" cellspacing="0" border="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td width="120" align="right"><img
+                                src="{{ user_detail_obj.user.avatar }}" class="avatar"
+                                border="0" align="default" style="max-width: 24px; max-height: 24px;"></td>
+                        <td width="auto" align="left">V2EX 第 {{ user_detail_obj.id }} 号会员</td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">用户名</td>
+                        <td width="auto" align="left">{{ user_detail_obj.user.username }}</td>
+                    </tr>
+
+                    <tr>
+                        <td width="120" align="right">手机号</td>
+                        {% if user_detail_obj.user.mobile_verify  == 0%}
+                            <td width="auto" align="left"><span class="negative">尚未验证手机号</span></td>
+                        {% else %}
+                            <td width="auto" align="left"><span>{{ user_detail_obj.user.mobile }}</span></td>
+                        {% endif %}
+                    </tr>
+
+                    <tr>
+                        <td width="120" align="right"></td>
+                        <td width="auto" align="left"><a href="/settings/phone">更改手机号</a></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">电子邮件</td>
+                        <td width="auto" align="left"><code>{{ user_detail_obj.user.email }}</code></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right"></td>
+                        <td width="auto" align="left"><a href="/settings/email">更改注册邮箱</a></td>
+                    </tr>
+
+                    <tr>
+                        <td width="120" align="right">邮件地址验证</td>
+                        {% if user_detail_obj.user.mobile_verify == 0 %}
+                            <td width="auto" align="left"><span class="orange">邮件地址尚未完成验证</span></td>
+                        {% else %}
+                            <td width="auto" align="left"><span class="green">邮件地址已经验证</span></td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td width="120" align="right"></td>
+                        <td width="auto" align="left">
+                            <button class="btn btn-sm"
+                                    onclick="if (confirm('你确认要向 {{ user_detail_obj.user.email }} 重新发送验证邮件？')) { resendVerificationEmail('24020'); }"
+                                    id="ButtonResendVerification" type="button">
+                                <li class="fa fa-refresh"></li>
+                                重发验证码
+                            </button> &nbsp; <span id="ResendResponse" class="gray"></span></td>
+                    </tr>
+
+                    <tr>
+                        <td width="120" align="right">个人网站</td>
+                        <td width="auto" align="left">
+                            <input type="text" class="sl" name="website" value="{{ user_detail_obj.website }}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">所在公司</td>
+                        <td width="auto" align="left">
+                            <input type="text" class="sl" name="company" value="{{ user_detail_obj.company }}"
+                                                             maxlength="50"></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">工作职位</td>
+                        <td width="auto" align="left">
+                            <input type="text" class="sl" name="company_title" value="{{ user_detail_obj.company_title }}"
+                                                             maxlength="50"></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">所在地</td>
+                        <td width="auto" align="left">
+                            <input type="text" class="sl" name="location" value="{{ user_detail_obj.user.location }}"></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">个人简介</td>
+                        <td width="auto" align="left"><textarea class="ml" name="bio">{{ user_detail_obj.bio }}</textarea></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">社区财富排行榜</td>
+                        <td width="auto" align="left"><select name="list_rich">
+                            {% if user_detail_obj.list_rich == 0 %}
+                                <option value="1">参与</option>
+                                <option value="0"  selected="selected">不参与</option>
+                            {% else %}
+                                <option value="1" selected="selected">参与</option>
+                                <option value="0" >不参与</option>
+                            {% endif %}
+                        </select>&nbsp; &nbsp; <a href="/top/rich" target="_blank">查看当前排行榜 ›</a></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right"></td>
+                        <td width="auto" align="left"><span class="gray">参与此排行榜将会公开你的个人资产状况。默认是不参与的。</span></td>
+                    </tr>
+
+                    <tr>
+                        <td width="120" align="right">显示余额</td>
+                        <td width="auto" align="left"><select name="show_balance">
+                            {% if user_detail_obj.show_balance == 0 %}
+                                <option value="1">显示</option>
+                                <option value="0" selected="selected">不显示</option>
+                            {% else %}
+                                <option value="1" selected="selected">显示</option>
+                                <option value="0">不显示</option>
+                            {% endif %}
+                        </select>&nbsp; &nbsp; <a href="/balance" target="_blank">查看我的当前余额 ›</a></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">自定义首页跳转</td>
+                        <td width="auto" align="left">
+                            <input type="text" class="sl" name="my_home" value="{{ user_detail_obj.my_home }}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right"></td>
+                        <td width="auto" align="left">
+                            {% csrf_token %}
+                            <input type="submit" class="btn btn-sm" value="保存设置">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+    <div class="sep20"></div>
+    <div class="box">
+        <div class="cell">
+            头像上传
+        </div>
+        <div class="cell">
+            <table cellpadding="5" cellspacing="0" border="0" width="100%">
+                <tbody>
+                <tr>
+                    <td width="120" align="right">当前头像</td>
+                    <td width="auto" align="left"><img src="{{ user_detail_obj.user.avatar }}" class="avatar" border="0"
+                                                       align="default"></td>
+                </tr>
+                <tr>
+                    <td width="120" align="right"></td>
+                    <td width="auto" align="left">
+                        <input type="button" onclick="location.href = '/settings/avatar';"
+                               class="btn btn-sm" value="上传新头像">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="inner">
+            关于头像的规则
+            <ul>
+                <li>V2EX 禁止使用任何低俗或者敏感图片作为头像</li>
+                <li>如果你是男的，请不要用女人的照片作为头像，这样可能会对其他会员产生误导</li>
+            </ul>
+        </div>
+    </div>
+    <div class="sep20"></div>
+    <div class="box">
+        <div class="cell">
+            <div class="fr"><span class="fade">如果你不打算更改密码，请留空以下区域</span></div>
+            更改密码
+        </div>
+        <div class="inner">
+            <form method="post" action="/settings/password">
+                <table cellpadding="5" cellspacing="0" border="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td width="120" align="right">当前密码</td>
+                        <td width="auto" align="left">
+                            <input type="password" class="sl" name="password_current" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">新密码</td>
+                        <td width="auto" align="left">
+                            <input type="password" class="sl" name="password_new" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">再次输入新密码</td>
+                        <td width="auto" align="left">
+                            <input type="password" class="sl" name="password_again" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right"></td>
+                        <td width="auto" align="left">
+                            {% csrf_token %}
+                            <input type="submit" class="btn btn-sm" value="更改密码"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+{% endblock %}

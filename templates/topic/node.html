@@ -69,7 +69,7 @@
                 <div class="fr f12">
                     <span>主题总数</span>
                     <strong>{{ page_obj.data_count }}</strong>
-                    {% if is_login %}
+                    {% if request.session.user_info %}
                         <span class="snow">&nbsp;•&nbsp;</span>
                         {% if node_obj.favorite.0 == 1 %}
                             <a href="#;" onclick="favoriteTopic('{{ node_code }}')" class="node_header_link">取消收藏</a>
@@ -81,7 +81,7 @@
                 <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> {{ node_obj.name }}
                 <div class="sep10"></div>
                 <div class="sep5"></div>
-                {% if is_login %}
+                {% if request.session.user_info %}
                     <div class="fr" style="padding-left: 10px;">
                         <input type="button" class="btn btn-sm btn-secondary" value="创建新主题"
                                onclick="location.href = '{% url 'new' %}?node_code={{ node_code }}';">
@@ -120,14 +120,20 @@
                             <div class="votes"></div>
                             <a class="node"
                                href="{% url 'node' obj.category.code %}">{{ obj.category.name }}</a> &nbsp;•&nbsp;
-                            <strong><a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a>
-                            </strong> &nbsp;•&nbsp; {{ obj.add_time }} &nbsp;•&nbsp; 最后回复来自 <strong>
-                            <a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a></strong>
+                            <strong>
+                                <a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a>
+                            </strong>
+                            {% if obj.last_comment %}
+                                &nbsp;•&nbsp; {{ obj.last_comment.add_time }} &nbsp;•&nbsp; 最后回复来自
+                                <strong>
+                                    <a href="{% url 'member' obj.last_comment.author.username %}">{{ obj.last_comment.author.username }}</a>
+                                </strong>
+                            {% endif %}
                         </span>
                         </td>
                         <td width="70" align="right" valign="middle">
                             <a href="{% url 'topic' obj.topic_sn %}"
-                               class="badge badge-pill badge-secondary">&nbsp;{{ obj.click_num }}&nbsp;</a>
+                               class="badge badge-pill badge-secondary">&nbsp;{{ obj.comment_num }}&nbsp;</a>
                         </td>
                     </tr>
                     </tbody>

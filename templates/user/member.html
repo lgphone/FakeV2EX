@@ -19,11 +19,19 @@
         <table cellpadding="0" cellspacing="0" border="0" width="100%">
             <tbody>
                 <tr>
-                    <td width="73" valign="top" align="center"><img src="{{ user_obj.avatar }}" class="rounded" border="0" align="default"><div class="sep10"></div><strong class="online">{{ user_obj.status }}</strong></td>
+                    <td width="73" valign="top" align="center">
+                        <img src="{{ user_obj.avatar }}" class="rounded" border="0" align="default">
+                        <div class="sep10"></div>
+                        {% if online_status %}
+                            <span class="badge badge-pill badge-success"> &nbsp; ONLINE &nbsp; </span>
+                        {% else %}
+                            <span class="badge badge-pill badge-light"> &nbsp; OFFLINE &nbsp; </span>
+                        {% endif %}
+                    </td>
                     <td width="10"></td>
                     <td width="auto" valign="top" align="left">
                         {% if is_login %}
-                            {% if user_info.username != user_obj.username %}
+                            {% if request.session.user_info.username != user_obj.username %}
                                 <div class="fr">
                                     {% if is_following.0 == 1 %}
                                         <input type="button" value="取消特别关注"
@@ -81,8 +89,12 @@
                     <div class="row topic-info">
                         <a href="{% url 'node' obj.category.code %}" class="badge badge-light">{{ obj.category.name }}</a>
                         <a href="{% url 'member' user_obj.username %}">{{ user_obj.username }}</a> •
-                        <strong>{{ obj.add_time }}</strong> •
-                        <strong>最后回复于。。。</strong>
+                        {% if obj.last_comment %}
+                            &nbsp;•&nbsp; {{ obj.last_comment.add_time }} &nbsp;•&nbsp; 最后回复来自
+                            <strong>
+                                <a href="{% url 'member' obj.last_comment.author.username %}">{{ obj.last_comment.author.username }}</a>
+                            </strong>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-1  offset-2">

@@ -17,12 +17,17 @@ class UserProfile(AbstractUser):
         ('OFFLINE', "离线")
     )
 
-    name = models.CharField(max_length=30, null=True, blank=True, verbose_name="姓名")
+    VERIFY_STATUS = (
+        (0, "未验证"),
+        (1, "已验证")
+    )
     birthday = models.DateField(null=True, blank=True, verbose_name="出生年月")
     gender = models.CharField(max_length=6, choices=GENDER_TYPE, default="female", verbose_name="性别")
-    location = models.CharField(max_length=30, null=True, blank=True, verbose_name="所在城市")
-    mobile = models.CharField(max_length=11, null=True, blank=True, verbose_name="电话")
-    email = models.CharField(max_length=100, null=True, blank=True, verbose_name="邮箱")
+    location = models.CharField(max_length=30, null=True, blank=True, default="", verbose_name="所在城市")
+    mobile = models.CharField(max_length=11, null=True, blank=True, default="", verbose_name="电话")
+    email = models.CharField(max_length=100, null=True, blank=True, default="", verbose_name="邮箱")
+    email_verify = models.IntegerField(choices=VERIFY_STATUS, default=0, verbose_name="Email是否已经验证")
+    mobile_verify = models.IntegerField(choices=VERIFY_STATUS, default=0, verbose_name="Mobile是否已经验证")
     avatar = models.CharField(max_length=50, null=True, blank=True, default="/static/img/default-avatar.png",
                               verbose_name="头像")
     status = models.CharField(max_length=10, choices=STATUS_TYPE, default="OFFLINE", verbose_name="在线状态")
@@ -39,23 +44,24 @@ class UserProfile(AbstractUser):
 
 class VerifyCode(models.Model):
     """
-    邮箱验证码
+    邮箱和手机验证码
     """
+    VERIFY_CODE_TYPE = (
+        (0, "Email"),
+        (1, "Mobile")
+    )
     code = models.CharField(max_length=10, verbose_name="验证码")
-    email = models.EmailField(verbose_name="邮箱")
+    to = models.EmailField(verbose_name="邮箱")
+    code_type = models.IntegerField(choices=VERIFY_CODE_TYPE, default=0, verbose_name="验证码类型")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
-        verbose_name = "邮箱验证码"
+        verbose_name = "邮箱和手机验证码"
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.code
-
-
-# class UserDetails(models.Model):
-#     user = models.ForeignKey(UserProfile, verbose_name="用户", on_delete=models.CASCADE)
+        return self.to
 
 
 class UserFollowing(models.Model):

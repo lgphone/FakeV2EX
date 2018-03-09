@@ -194,10 +194,10 @@
                             </form>
                         </div>
                     </td>
-                    {% if is_login %}
+                    {% if request.session.user_info %}
                         <td width="570" align="right" style="padding-top: 2px;">
                             <a href="{% url 'index' %}" class="top">首页</a>
-                            &nbsp;&nbsp;&nbsp;<a href="{% url 'member' user_info.username %}" class="top">{{ user_info.username }}</a>
+                            &nbsp;&nbsp;&nbsp;<a href="{% url 'member' request.session.user_info.username %}" class="top">{{ request.session.user_info.username }}</a>
                             &nbsp;&nbsp;&nbsp;<a href="/notes" class="top">记事本</a>
                             &nbsp;&nbsp;&nbsp;<a href="/settings" class="top">设置</a>
                             &nbsp;&nbsp;&nbsp;<a href="#;" onclick="if (confirm('确定要从 V2EX 登出？')) { location.href= '{% url 'signout' %}'; }" class="top">登出</a></td>
@@ -240,8 +240,8 @@
                     href="/mission" class="dark" target="_self">我们的愿景</a> &nbsp; <span class="snow">·</span> &nbsp; <a
                     href="/advertise" class="dark" target="_self">广告投放</a> &nbsp; <span class="snow">·</span> &nbsp; <a
                     href="/advertise/2016.html" class="dark" target="_self">鸣谢</a> &nbsp; <span class="snow">·</span>
-                    &nbsp; 3266 人在线</strong> &nbsp; <span>最高记录 3541</span> &nbsp; <span
-                    class="snow">·</span></a>
+                    &nbsp; {{ request.online_member_count }} 人在线</strong>&nbsp;<span
+                    class="snow">·</span> &nbsp; <span>您的IP是: {{ request.current_visitor_ip }}</span></a>
             <div class="sep20"></div>
             创意工作者们的社区
             <div class="sep5"></div>

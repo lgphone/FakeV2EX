@@ -36,3 +36,14 @@ class CheckTopicForm(forms.Form):
 class CheckNodeForm(forms.Form):
     node_code = forms.CharField(validators=[node_exist_validate, ], required=True,
                                 error_messages={'required': 'node_code 不能为空'})
+
+
+class SettingsForm(forms.Form):
+    website = forms.CharField(required=False, max_length=50, error_messages={'max_length': '最多50位'})
+    company = forms.CharField(required=False, max_length=50, error_messages={'max_length': '最多50位'})
+    company_title = forms.CharField(required=False, max_length=50, error_messages={'max_length': '最多50位'})
+    location = forms.CharField(required=False, max_length=11, error_messages={'max_length': '最多11位'})
+    bio = forms.CharField(required=False, max_length=50, error_messages={'max_length': '最多50位'})
+    list_rich = forms.CharField(required=False, max_length=2, error_messages={'max_length': '最多2位'})
+    show_balance = forms.CharField(required=False, max_length=2, error_messages={'max_length': '最多2位'})
+    my_home = forms.CharField(required=False, max_length=50, error_messages={'max_length': '最多50位'})

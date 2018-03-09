@@ -1,3 +1,4 @@
+from datetime import datetime
 import markdown
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
@@ -22,13 +23,11 @@ exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite', 'markdown
 
 class IndexView(View):
     def get(self, request):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
         current_tab = request.GET.get('tab', 'tech')
         category_obj = TopicCategory.objects.filter(category_type=1)
         if current_tab == 'hot':
             category_obj.hot = True
-            topic_obj = Topic.objects.all().order_by('-click_num')[0:30]
+            topic_obj = Topic.objects.all().order_by('-comment_num')[0:30]
             return render(request, 'topic/index.html', locals())
         category_children_obj = TopicCategory.objects.filter(parent_category__code=current_tab)
         if current_tab == 'tech':
@@ -44,8 +43,6 @@ class NewTopicView(View):
         return super(NewTopicView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
         obj = CheckNodeForm(request.GET)
         if obj.is_valid():
             node_code = obj.cleaned_data['node_code']
@@ -55,8 +52,6 @@ class NewTopicView(View):
         return render(request, 'topic/new.html', locals())
 
     def post(self, request):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
         has_error = True
         obj = NewTopicForm(request.POST)
         if obj.is_valid():
@@ -86,8 +81,6 @@ class RecentView(View):
         return super(RecentView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
         current_page = request.GET.get('p', '1')
         current_page = int(current_page)
         topic_obj = Topic.objects.all().order_by('-add_time')
@@ -99,15 +92,14 @@ class RecentView(View):
 
 class NodeView(View):
     def get(self, request, node_code):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
         current_page = request.GET.get('p', '1')
         current_page = int(current_page)
         try:
             node_obj = TopicCategory.objects.get(code=node_code, category_type=2)
-            if is_login:
-                node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(user_id=user_info['uid'],
-                                                                                        node=node_obj).first()
+            if request.session.get('user_info'):
+                node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(
+                    user_id=request.session.get('user_info')['uid'],
+                    node=node_obj).first()
             topic_obj = Topic.objects.filter(category=node_obj).order_by('-add_time')
             page_obj = Paginator(current_page, topic_obj.count())
             topic_obj = topic_obj[page_obj.start:page_obj.end]
@@ -119,15 +111,14 @@ class NodeView(View):
 
 class NodeLinkView(View):
     def get(self, request, node_code):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
         current_page = request.GET.get('p', '1')
         current_page = int(current_page)
         try:
             node_obj = TopicCategory.objects.get(code=node_code, category_type=2)
-            if is_login:
-                node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(user_id=user_info['uid'],
-                                                                                        node=node_obj).first()
+            if request.session.get('user_info'):
+                node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(
+                    user_id=request.session.get('user_info')['uid'],
+                    node=node_obj).first()
             node_link_obj = NodeLink.objects.filter(category__code=node_code).order_by('-add_time')
             page_obj = Paginator(current_page, node_link_obj.count())
             node_link_obj = node_link_obj[page_obj.start:page_obj.end]
@@ -139,8 +130,6 @@ class NodeLinkView(View):
 
 class TopicView(View):
     def get(self, request, topic_sn):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
         try:
             topic_obj = Topic.objects.get(topic_sn=topic_sn)
             topic_obj.click_num += 1
@@ -149,23 +138,30 @@ class TopicView(View):
             topic_obj.dislike_num = TopicVote.objects.filter(vote=0, topic=topic_obj).count()
             topic_obj.favorite_num = TopicVote.objects.filter(favorite=1, topic=topic_obj).count()
             comments_obj = Comments.objects.filter(topic=topic_obj).select_related('author')
-            if is_login:
+            now = datetime.now()
+            if request.session.get('user_info'):
                 topic_obj.thanks = TopicVote.objects.values_list('thanks').filter(topic=topic_obj,
-                                                                                  user_id=user_info['uid']).first()
+                                                                                  user_id=
+                                                                                  request.session.get('user_info')[
+                                                                                      'uid']).first()
                 topic_obj.favorite = TopicVote.objects.values_list('favorite').filter(topic=topic_obj,
-                                                                                      user_id=user_info['uid']).first()
+                                                                                      user_id=
+                                                                                      request.session.get('user_info')[
+                                                                                          'uid']).first()
             return render(request, 'topic/topic.html', locals())
         except Topic.DoesNotExist:
             raise Http404("topic does not exist")
 
     @method_decorator(login_auth)
     def post(self, request, topic_sn):
-        user_info = request.session.get('user_info', None)
         content = request.POST.get('content', None)
         if content is not None:
             try:
                 topic_obj = Topic.objects.get(topic_sn=topic_sn)
-                Comments.objects.create(topic=topic_obj, author_id=user_info['uid'], content=content)
+                Comments.objects.create(topic=topic_obj, author_id=request.session.get('user_info')['uid'],
+                                        content=content)
+                topic_obj.comment_num += 1
+                topic_obj.save()
                 return redirect(reverse('topic', args=(topic_sn,)))
             except Topic.DoesNotExist:
                 raise Http404("topic does not exist")
@@ -192,9 +188,8 @@ class MyFavoriteNodeView(View):
         return super(MyFavoriteNodeView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
-        my_favorite_obj = FavoriteNode.objects.filter(favorite=1, user_id=user_info['uid']).select_related(
+        my_favorite_obj = FavoriteNode.objects.filter(favorite=1,
+                                                      user_id=request.session.get('user_info')['uid']).select_related(
             'node').order_by('-add_time')
         return render(request, 'topic/my_node.html', locals())
 
@@ -205,11 +200,10 @@ class MyFavoriteTopicView(View):
         return super(MyFavoriteTopicView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
         my_favorite_obj = TopicVote.objects.filter(favorite=1,
-                                                   user_id=user_info['uid']).select_related('topic__author',
-                                                                                            'topic__category').order_by(
+                                                   user_id=request.session.get('user_info')['uid']).select_related(
+            'topic__author',
+            'topic__category').order_by(
             '-add_time')
         return render(request, 'topic/my_topic.html', locals())
 
@@ -220,12 +214,10 @@ class MyFollowingView(View):
         return super(MyFollowingView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        is_login = request.session.get('isLogin', None)
-        user_info = request.session.get('user_info', None)
         # 获取当前我正在关注的用户的QuerySet  判断 is_following  是不是 1
-        my_following_obj = UserFollowing.objects.filter(user_id=user_info['uid'], is_following=1).select_related(
-            'following')
-        print(my_following_obj)
+        my_following_obj = UserFollowing.objects.filter(user_id=request.session.get('user_info')['uid'],
+                                                        is_following=1).select_related('following')
+
         # 设定一个列表，存放查询到的所收藏的用户的id
         following_user_id = []
         # 把id 加入列表

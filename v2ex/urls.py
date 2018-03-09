@@ -19,7 +19,7 @@ from topic.views import IndexView, NodeView, TopicView, NodeLinkView, RecentView
     MyFavoriteNodeView, MyFavoriteTopicView, MyFollowingView
 from user.views import SignupView, check_code, SigninView, SignoutView, MemberView
 from operation.views import TopicVoteView, FavoriteTopicView, ThanksTopicView, FavoriteNodeView, FollowingView, \
-    BlockView
+    BlockView, SettingView
 
 urlpatterns = [
     # 管理员
@@ -55,6 +55,8 @@ urlpatterns = [
     path('signin', SigninView.as_view(), name='signin'),
     # 用户退出
     path('signout', SignoutView.as_view(), name='signout'),
+    # 用户设置
+    path('settings', SettingView.as_view(), name='settings'),
     # Following 动作
     path('following/<slug:username>', FollowingView.as_view(), name='following'),
     # Block 动作
