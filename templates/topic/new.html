@@ -61,7 +61,7 @@
     {% endif %}
     <form method="POST" action="{% url 'new' %}" id="compose">
         {% csrf_token %}
-        <input type="hidden" class="hide" name="username" value="{{ user_info.username }}" >
+        <input type="hidden" class="hide" name="username" value="{{ request.session.user_info.username }}" >
         <div class="cell"><div class="fr" id="title_remaining">120</div>
             主题标题
         </div>
