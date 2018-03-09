@@ -37,8 +37,18 @@ Django 2.0 写的仿V2EX社区  纯技术交流 联系方式: QQ 435968679
 * 用户草稿功能，写了一半没写完的保存到服务端
 * ... 目前能想到的暂时就这些吧
 
-## 图片展示
-* 没有部署到服务器中，先看图片吧..
+## 如何部署
+* install python3.6
+* git clone https://github.com/lgphone/FakeV2EX
+* cd FakeV2EX && pip install -r re.txt
+* 修改数据库，Redis连接地址
+* python manage.py makemigrations &&  python manage.py migrate
+* python manage.py createsuperuser
+* 测试直接 python manager.py runserver
+* 正式请使用 uwsgi 部署
+* 头部的Tab 以及二级导航 需要先在admin中录入数据
+
+## 图片展示 --- old
 
 * 主页
 ![主页](doc/pic/index.png)
