@@ -16,8 +16,9 @@ class CountOnlineMiddlewareMixin(MiddlewareMixin):
 
         # 判断用户是否登录
         if request.session.get('user_info', False):
-            # 在线的话每当用户访问页面要更新session 时间，防止session失效
-            request.session.set_expiry(SESSION_COOKIE_AGE)
+            # 因为已经在session中配置了自动更新时间了，下面操作不需要
+            # # 在线的话每当用户访问页面要更新session 时间，防止session失效
+            # request.session.set_expiry(SESSION_COOKIE_AGE)
             # 统计在线用户，先生成唯一key
             online_key = 'count_online_id_{_id}_session_{_session}'.format(
                 _id=request.session.get('user_info')['uid'], _session=session_key)
