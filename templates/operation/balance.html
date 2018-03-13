@@ -70,7 +70,7 @@
                                 <td class="positive">{{ obj.balance }}</td>
                             {% endif %}
                             <td>{{ obj.last_balance }}</td>
-                            <td>{{ obj.marks }}</td>
+                            <td>{{ obj.marks|safe }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

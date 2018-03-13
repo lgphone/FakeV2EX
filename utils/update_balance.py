@@ -1,8 +1,8 @@
 from operation.models import BalanceInfo, UserDetails
+from django.urls import reverse
 
 
 def update_balance(request, update_type, obj=None):
-
     # 创建主题
     if update_type == 'create':
         # 获取当前余额
@@ -14,7 +14,8 @@ def update_balance(request, update_type, obj=None):
         # 类型
         balance_type = "创建主题"
         # 描述
-        marks = '创建了的主题 {_title}'.format(_title=obj.title)
+        marks = '创建了的主题 > <a href="{_uri}">{_title}</a>'.format(_uri=reverse('topic', args=(obj.topic_sn,)),
+                                                                _title=obj.title)
 
     # 创建回复
     elif update_type == 'reply':
@@ -22,7 +23,8 @@ def update_balance(request, update_type, obj=None):
         uid = request.session.get('user_info')['uid']
         change_balance = -5
         balance_type = "创建回复"
-        marks = '在主题 {_title} 中创建了回复'.format(_title=obj.title)
+        marks = '在主题 > <a href="{_uri}">{_title}</a> 中创建了回复'.format(_uri=reverse('topic', args=(obj.topic_sn,)),
+                                                                    _title=obj.title)
 
     # 感谢主题
     elif update_type == 'thanks':
@@ -30,7 +32,9 @@ def update_balance(request, update_type, obj=None):
         uid = request.session.get('user_info')['uid']
         change_balance = -15
         balance_type = "发送谢意"
-        marks = '感谢 {_author} 的主题 > {_title}'.format(_author=obj.author.username, _title=obj.title)
+        marks = '感谢 <a href="{_member_uri}">{_author}</a> 的 > <a href="{_uri}">{_title}</a> 主题 > {_title}'.format(
+            _member_uri=reverse('member', args=(obj.author.username,)), _author=obj.author.username,
+            _uri=reverse('topic', args=(obj.topic_sn,)), _title=obj.title)
 
     # 收到感谢
     elif update_type == 'recv_thanks':
@@ -39,7 +43,8 @@ def update_balance(request, update_type, obj=None):
         uid = obj.author_id
         change_balance = 10
         balance_type = "收到谢意"
-        marks = '主题 {_title} 收到感谢'.format(_title=obj.title)
+        marks = '主题 > <a href="{_uri}">{_title}</a> 收到感谢'.format(_uri=reverse('topic', args=(obj.topic_sn,)),
+                                                                 _title=obj.title)
 
     # 主题收到回复
     elif update_type == 'reply_recv':
@@ -48,7 +53,8 @@ def update_balance(request, update_type, obj=None):
         uid = obj.author_id
         change_balance = 5
         balance_type = "主题回复收益"
-        marks = '主题 {_title} 收到了回复'.format(_title=obj.title)
+        marks = '主题 > <a href="{_uri}">{_title}</a> 收到了回复'.format(_uri=reverse('topic', args=(obj.topic_sn,)),
+                                                                  _title=obj.title)
 
     # 编辑主题
     elif update_type == 'edit':
@@ -57,7 +63,8 @@ def update_balance(request, update_type, obj=None):
         uid = obj.author_id
         change_balance = -5
         balance_type = "编辑主题"
-        marks = '编辑主题 {_title}'.format(_title=obj)
+        marks = '编辑了主题 > <a href="{_uri}">{_title}</a>'.format(_uri=reverse('topic', args=(obj.topic_sn,)),
+                                                               _title=obj.title)
 
     # 创建余额变动清单
     BalanceInfo.objects.create(

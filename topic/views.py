@@ -167,8 +167,10 @@ class TopicView(View):
                 topic_obj.comment_num += 1
                 topic_obj.save()
                 # 发评论，对应余额变动 主题作者收到奖励，发回复者减去奖励
-                update_balance(request, update_type='reply', obj=topic_obj)
-                update_balance(request, update_type='reply_recv', obj=topic_obj)
+                # 不是当前topic作者才会有变动
+                if topic_obj.author_id != request.session.get('user_info')['uid']:
+                    update_balance(request, update_type='reply', obj=topic_obj)
+                    update_balance(request, update_type='reply_recv', obj=topic_obj)
                 return redirect(reverse('topic', args=(topic_sn,)))
             except Topic.DoesNotExist:
                 raise Http404("topic does not exist")
