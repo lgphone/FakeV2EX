@@ -416,12 +416,16 @@ class AvatarSettingView(View):
         obj = AvatarSettingsForm(request.POST, request.FILES)
         if obj.is_valid():
             avatar = request.FILES['avatar']
-            avatar_path = save_avatar_file(avatar)
-            user_obj.avatar = avatar_path
-            # 保存
-            user_obj.save()
-            request.session['user_info']['avatar'] = user_obj.avatar
-            has_error = False
+            # 判断文件大小，小于2M才可以
+            if avatar.size <= 2*1024*1024:
+                avatar_path = save_avatar_file(avatar)
+                user_obj.avatar = avatar_path
+                # 保存
+                user_obj.save()
+                request.session['user_info']['avatar'] = user_obj.avatar
+                has_error = False
+            else:
+                avatar_size_error = "头像文件不能大于2M"
         return render(request, 'user/setting_avatar.html', locals())
 
 

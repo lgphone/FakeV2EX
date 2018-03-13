@@ -29,6 +29,9 @@
                     {% if obj.errors.avatar.0 %}
                         <li>{{ obj.errors.avatar.0 }}</li>
                     {% endif %}
+                    {% if avatar_size_error %}
+                        <li>{{ avatar_size_error }}</li>
+                    {% endif %}
                 </ul>
             </div>
         {% endif %}
