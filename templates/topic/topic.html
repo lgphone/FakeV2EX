@@ -122,10 +122,13 @@
                     {% else %}
                         <a id="favorite" class="badge badge-pill badge-light tb" href="#;" onclick="favoriteTopic('{{ topic_obj.topic_sn }}')">&nbsp;加入收藏&nbsp;</a> &nbsp;
                     {% endif %}
-                    {% if topic_obj.thanks.0 == 1 %}
-                        <a id="thanks" href="#;" class="badge badge-pill badge-light tb" disabled="disabled">&nbsp;已经发送感谢&nbsp;</a>
-                    {% else %}
-                        <a id="thanks" href="#;" class="badge badge-pill badge-light tb" onclick="if (confirm('你确定要向本主题创建者发送谢意？')) { thankTopic('{{ topic_obj.topic_sn }}'); }">&nbsp;感谢&nbsp;</a>
+                    {% if topic_obj.author_id != request.session.user_info.uid %}
+                        {% if topic_obj.thanks.0 == 1 %}
+                            <a id="thanks" href="#;" class="badge badge-pill badge-light tb" disabled="disabled">&nbsp;已经发送感谢&nbsp;</a>
+                        {% else %}
+                            <a id="thanks" href="#;" class="badge badge-pill badge-light tb"
+                               onclick="if (confirm('你确定要向本主题创建者发送谢意？')) { thankTopic('{{ topic_obj.topic_sn }}'); }">&nbsp;感谢&nbsp;</a>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>

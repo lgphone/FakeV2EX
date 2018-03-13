@@ -110,3 +110,34 @@ class UserTopDu(models.Model):
 
     def __str__(self):
         return self.user
+
+
+class BalanceInfo(models.Model):
+    user = models.ForeignKey(User, verbose_name="用户", on_delete=models.CASCADE)
+    balance_type = models.CharField(max_length=30, verbose_name="类型")
+    balance = models.IntegerField(verbose_name="数量")
+    last_balance = models.IntegerField(default=500, verbose_name="目前余额")
+    marks = models.CharField(max_length=30, verbose_name="备注")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="时间")
+
+    class Meta:
+        verbose_name = "用户账单"
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.user
+
+
+class SignedInfo(models.Model):
+    """
+    用户签到
+    """
+    CHOICES_TYPE = (
+        (False, "未签到"),
+        (True, "已经签到")
+    )
+    user = models.ForeignKey(User, verbose_name="用户", on_delete=models.CASCADE)
+    status = models.BooleanField(choices=CHOICES_TYPE, verbose_name="是否签到")
+    date = models.CharField(max_length=30, verbose_name="签到日期", unique=True)
+    signed_day = models.IntegerField(default=0, verbose_name="连续签到天数")
+    add_time = models.DateTimeField(default=datetime.now, verbose_name="时间")

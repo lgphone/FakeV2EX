@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.http import Http404
@@ -7,9 +7,11 @@ from django.views.generic import View
 from django.utils.decorators import method_decorator
 from utils.auth_decorator import login_auth
 from utils.send_notify_mail import send_email_code
+from utils.pagination import Paginator
 from utils.some_utils import gender_random_code, save_avatar_file
+from utils.update_balance import update_balance
 from django.contrib.auth import get_user_model
-from .models import Topic, TopicVote, FavoriteNode, TopicCategory, UserDetails
+from .models import Topic, TopicVote, FavoriteNode, TopicCategory, UserDetails, BalanceInfo, SignedInfo
 from .forms import TopicVoteForm, CheckTopicForm, CheckNodeForm, SettingsForm, PhoneSettingsForm, EmailSettingsForm, \
     AvatarSettingsForm, PasswordSettingsForm
 from user.models import UserFollowing, VerifyCode
@@ -127,29 +129,30 @@ class ThanksTopicView(View):
         if obj.is_valid():
             ret['changed'] = True
             topic_sn = obj.cleaned_data['topic_sn']
-            topic_obj = Topic.objects.filter(topic_sn=topic_sn).first()
-            try:
-                topic_vote_obj = TopicVote.objects.get(user_id=request.session.get('user_info')['uid'], topic=topic_obj)
-                print(topic_vote_obj)
-                if topic_vote_obj.thanks == 1:
-                    ret['changed'] = False
-                else:
+            topic_obj = Topic.objects.select_related('author').filter(topic_sn=topic_sn).first()
+            # 判断不是此topic 的作者才可以感谢
+            if topic_obj.author_id != request.session.get('user_info')['uid']:
+                try:
+                    topic_vote_obj = TopicVote.objects.get(user_id=request.session.get('user_info')['uid'], topic=topic_obj)
+                    print(topic_vote_obj)
+                    if topic_vote_obj.thanks == 1:
+                        ret['changed'] = False
+                    else:
+                        topic_vote_obj.thanks = 1
+                        topic_vote_obj.save()
+                except TopicVote.DoesNotExist:
+                    topic_vote_obj = TopicVote()
+                    topic_vote_obj.user_id = request.session.get('user_info')['uid']
                     topic_vote_obj.thanks = 1
+                    topic_vote_obj.topic = topic_obj
                     topic_vote_obj.save()
-            except TopicVote.DoesNotExist:
-                topic_vote_obj = TopicVote()
-                topic_vote_obj.user_id = request.session.get('user_info')['uid']
-                topic_vote_obj.thanks = 1
-                topic_vote_obj.topic = topic_obj
-                topic_vote_obj.save()
-                '''
-                等待添加功能，联合查询此贴作者并修改金币数量，添加，并把此感谢者金币减少
-                '''
-            ret['data'] = "&nbsp;已经发送感谢&nbsp;"
-            ret['topic_sn'] = topic_sn
-        else:
-            ret['changed'] = False
-            ret['data'] = obj.errors.as_json()
+                    # 感谢，金币变化
+                    update_balance(request, update_type='thanks', obj=topic_obj)
+                    update_balance(request, update_type='recv_thanks', obj=topic_obj)
+                ret['data'] = "&nbsp;已经发送感谢&nbsp;"
+                ret['topic_sn'] = topic_sn
+            else:
+                ret['data'] = obj.errors.as_json()
 
         return HttpResponse(json.dumps(ret))
 
@@ -171,7 +174,8 @@ class FavoriteNodeView(View):
             node_code = obj.cleaned_data['node_code']
             node_obj = TopicCategory.objects.filter(code=node_code, category_type=2).first()
             try:
-                favorite_node_obj = FavoriteNode.objects.get(user_id=request.session.get('user_info')['uid'], node=node_obj)
+                favorite_node_obj = FavoriteNode.objects.get(user_id=request.session.get('user_info')['uid'],
+                                                             node=node_obj)
                 if favorite_node_obj.favorite == 1:
                     favorite_node_obj.favorite = 0
                     request.session['user_info']['favorite_node_num'] -= 1
@@ -363,7 +367,7 @@ class ActivateEmailView(View):
         code_obj = VerifyCode.objects.filter(code=code, code_type=0).last()
         current_time = datetime.now()
         # 判断发送的code是否是十分钟之内的
-        if code_obj and int((current_time-code_obj.add_time).total_seconds()) < 600:
+        if code_obj and int((current_time - code_obj.add_time).total_seconds()) < 600:
             user_obj = User.objects.filter(email=code_obj.to).first()
             user_obj.email_verify = 1
             user_obj.save()
@@ -372,7 +376,7 @@ class ActivateEmailView(View):
 
 class SendActivateCodeView(View):
     @method_decorator(login_auth)
-    def post(self, request,):
+    def post(self, request, ):
         ret = {
             'changed': False,
             'data': '60秒限制'
@@ -384,7 +388,7 @@ class SendActivateCodeView(View):
             current_time = datetime.now()
             code_obj = VerifyCode.objects.filter(to=send_to, code_type=send_type).last()
             # 最后一条数据超过60秒，才可以发送验证码，防止频发发送
-            if not code_obj or int((current_time-code_obj.add_time).total_seconds()) > 60:
+            if not code_obj or int((current_time - code_obj.add_time).total_seconds()) > 60:
                 code_obj = VerifyCode.objects.create(to=send_to, code_type=send_type, code=random_code)
                 code_obj.code = random_code
                 code_obj.save()
@@ -450,3 +454,90 @@ class PasswordSettingView(View):
             else:
                 password_error = "您输入的当前密码不正确"
         return render(request, 'user/setting_password.html', locals())
+
+
+class DailyMissionView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DailyMissionView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        # 获取当前日期
+        current_date = datetime.now().strftime('%Y%m%d')
+        # 获取连续签到天数
+        signed_obj = SignedInfo.objects.filter(user_id=request.session.get('user_info')['uid'],
+                                               date=current_date).first()
+        # 判断是否已经签到并获取
+        if signed_obj:
+            signed_day = signed_obj.signed_day
+        else:
+            signed_day = 0
+        return render(request, 'operation/daily_mission.html', locals())
+
+
+class DailyRandomBalanceView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DailyRandomBalanceView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        # 判断用户是否已经签到
+        if not request.session.get('user_info')['daily_mission']:
+            # 获取当前日期
+            current_date = datetime.now().strftime('%Y%m%d')
+            # 获取当前余额
+            current_balance = request.session.get('user_info')['balance']
+            # 随机生成金钱
+            random_balance = 19
+            # 创建余额变动清单
+            BalanceInfo.objects.create(
+                user_id=request.session.get('user_info')['uid'],
+                balance_type="每日登录奖励",
+                balance=random_balance,
+                marks='{_date} 的每日登录奖励 {_num} 铜币'.format(_date=current_date, _num=random_balance),
+                last_balance=current_balance + random_balance
+            )
+            # 获取昨天签到状态，根据昨天签到状态获取已经签到天数
+            yesterday_date = (date.today() - timedelta(days=1)).strftime('%Y%m%d')
+            print(yesterday_date)
+
+            # 获取昨天签到状态
+            signed_obj = SignedInfo.objects.filter(date=yesterday_date, user_id=request.session.get('user_info')['uid'])
+
+            if signed_obj:
+                # 如果昨天签到了，获取昨天签到时间然后+1
+                signed_day = signed_obj.signed_day + 1
+            else:
+                # 昨天没有签到，设置为1
+                signed_day = 1
+
+            # 创建签到记录
+            SignedInfo.objects.create(
+                date=current_date,
+                user_id=request.session.get('user_info')['uid'],
+                status=True,
+                signed_day=signed_day
+            )
+            # 更新数据库中的用户余额
+            UserDetails.objects.filter(user_id=request.session.get('user_info')['uid']).update(
+                balance=current_balance + random_balance)
+            # 更新session信息
+            request.session['user_info']['daily_mission'] = True
+            request.session['user_info']['balance'] = current_balance + random_balance
+        return redirect(reverse('daily_mission'))
+
+
+class BalanceView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(BalanceView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        current_page = request.GET.get('p', '1')
+        current_page = int(current_page)
+        balance_info_obj = BalanceInfo.objects.filter(user_id=request.session.get('user_info')['uid']).order_by(
+            '-add_time')
+        page_obj = Paginator(current_page, balance_info_obj.count())
+        balance_info_obj = balance_info_obj[page_obj.start:page_obj.end]
+        page_str = page_obj.page_str(reverse('balance') + '?')
+        return render(request, 'operation/balance.html', locals())

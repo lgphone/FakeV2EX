@@ -1,0 +1,45 @@
+{% extends 'user/master.html' %}
+{% block CSS %}
+    <style>
+        a:active {
+            color: #778087;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .message {
+            padding: 10px;
+            font-size: 14px;
+            line-height: 120%;
+            text-align: left;
+            background-color: #f3faff;
+            border-left: 5px solid #c7e8ff;
+            border-bottom: 1px solid #e2e2e2;
+            color: #333;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="cell"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 日常任务</div>
+        {% if request.session.user_info.daily_mission %}
+            <div class="message">已成功领取每日登录奖励</div>
+        {% endif %}
+        <div class="cell">
+            {% if request.session.user_info.daily_mission %}
+                <span class="gray">
+                    <li class="fa fa-ok-sign" style="color: #0c0;"></li>
+                    &nbsp;每日登录奖励已领取
+                </span>
+                <div class="sep10"></div>
+                <input type="button" class="btn btn-sm" value="查看我的账户余额"
+                       onclick="location.href = '{% url 'balance' %}';">
+            {% else %}
+                <h3>每日登录奖励 {{ current_date }}</h3>
+                <input type="button" class="btn btn-sm" value="领取 X 铜币"
+                       onclick="location.href = '{% url 'daily_random_balance' %}';">
+            {% endif %}
+        </div>
+        <div class="cell">已连续登录 {{ signed_day }} 天</div>
+    </div>
+{% endblock %}

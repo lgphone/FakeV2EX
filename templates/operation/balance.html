@@ -1,0 +1,88 @@
+{% extends 'operation/master.html' %}
+{% load custom_filter %}
+{% block CSS %}
+    <style>
+        a:active {
+            color: #778087;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .gray {
+            color: #999;
+        }
+        .positive {
+            color: #0aa31c;
+        }
+        .negative {
+            color: #ff3c00;
+        }
+    </style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="cell"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 账户余额</div>
+        <div class="cell">
+            <table cellpadding="10" cellspacing="0" border="0" width="100%">
+                <tbody>
+                <tr>
+                    <td width="200">
+                        <span class="gray">当前账户余额</span>
+                        <div class="sep10"></div>
+                        <div class="sep5"></div>
+                        <div style="font-size: 24px; line-height: 24px;">
+                            <span class="badge badge-pill badge-light">
+                                {{ request.session.user_info.balance }}
+                                <img src="//cdn.v2ex.com/static/img/bronze.png" border="0">
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        {% if page_str %}
+            <div class="cell"
+                 style="background-image: url('/static/img/shadow_light.png'); background-size: 20px 20px; background-repeat: repeat-x;">
+                <ul class="pagination pagination-sm" style="margin-bottom:0;">
+                    {{ page_str }}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="cell">
+            <table class="table table-bordered">
+                <thead>
+                    <tr class="center">
+                        <th scope="col">时间</th>
+                        <th scope="col">类型</th>
+                        <th scope="col">数额</th>
+                        <th scope="col">余额</th>
+                        <th scope="col">描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in balance_info_obj %}
+                        <tr>
+                            <td>{{ obj.add_time }}</td>
+                            <td>{{ obj.balance_type }}</td>
+                            {% if '-' in obj.balance|to_str %}
+                                <td class="negative">{{ obj.balance }}</td>
+                            {% else %}
+                                <td class="positive">{{ obj.balance }}</td>
+                            {% endif %}
+                            <td>{{ obj.last_balance }}</td>
+                            <td>{{ obj.marks }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if page_str %}
+            <div class="cell"
+                 style="background-image: url('/static/img/shadow_light.png'); background-size: 20px 20px; background-repeat: repeat-x;">
+                <ul class="pagination pagination-sm" style="margin-bottom:0;">
+                    {{ page_str }}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

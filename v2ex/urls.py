@@ -20,7 +20,7 @@ from topic.views import IndexView, NodeView, TopicView, NodeLinkView, RecentView
 from user.views import SignupView, check_code, SigninView, SignoutView, MemberView
 from operation.views import TopicVoteView, FavoriteTopicView, ThanksTopicView, FavoriteNodeView, FollowingView, \
     BlockView, SettingView, PhoneSettingView, EmailSettingView, SendActivateCodeView, ActivateEmailView,\
-    AvatarSettingView, PasswordSettingView
+    AvatarSettingView, PasswordSettingView, DailyMissionView, DailyRandomBalanceView, BalanceView
 
 urlpatterns = [
     # 管理员
@@ -84,4 +84,10 @@ urlpatterns = [
     path('check_code', check_code, name='check_code'),
     # 发帖时markdown 格式预览
     path('preview/markdown', MarkdownPreView.as_view(), name='markdown_preview'),
+    # 每日金币奖励
+    path('mission/daily', DailyMissionView.as_view(), name='daily_mission'),
+    # 随机生成金钱接口
+    path('mission/daily/redeem', DailyRandomBalanceView.as_view(), name='daily_random_balance'),
+    # 用户金钱
+    path('balance', BalanceView.as_view(), name='balance'),
 ]

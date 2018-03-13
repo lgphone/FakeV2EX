@@ -60,7 +60,7 @@
             <div class="inner">
                 {% if request.session.user_info.show_balance == 1 %}
                     <div class="fr" id="money">
-                        <a href="/balance" class="balance_area" style="">
+                        <a href="{% url 'balance' %}" class="balance_area" style="">
                             {{ request.session.user_info.balance }}
                             <img src="//cdn.v2ex.com/static/img/bronze.png" align="absmiddle" border="0">
                         </a>
@@ -72,7 +72,9 @@
         <div class="sep20"></div>
         <div class="box">
             <div class="inner">
-                <li class="fa fa-gift" style="color: #f90;"></li> &nbsp;<a href="/mission/daily">领取今日的登录奖励</a>
+                {% if not request.session.user_info.daily_mission %}
+                    <li class="fa fa-gift" style="color: #f90;"></li> &nbsp;<a href="{% url 'daily_mission' %}">领取今日的登录奖励</a>
+                {% endif %}
             </div>
         </div>
         <div class="sep20"></div>

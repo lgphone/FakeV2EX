@@ -9,6 +9,7 @@ from utils.auth_decorator import login_auth
 from django.http import Http404
 from utils.some_utils import gender_topic_sn
 from utils.pagination import Paginator
+from utils.update_balance import update_balance
 from .models import TopicCategory, Topic, NodeLink, Comments
 from operation.models import TopicVote, FavoriteNode
 from user.models import UserFollowing
@@ -65,11 +66,14 @@ class NewTopicView(View):
                 html_content = markdown.markdown(content, format="xhtml5", extensions=exts)
             else:
                 html_content = content
-            Topic.objects.create(author=User.objects.filter(username=username).first(), title=title,
-                                 content=content,
-                                 html_content=html_content,
-                                 category=TopicCategory.objects.filter(code=node_code, category_type=2).first(),
-                                 topic_sn=topic_sn)
+            topic_obj = Topic.objects.create(author=User.objects.filter(username=username).first(), title=title,
+                                             content=content,
+                                             html_content=html_content,
+                                             category=TopicCategory.objects.filter(code=node_code,
+                                                                                   category_type=2).first(),
+                                             topic_sn=topic_sn)
+            # 发帖，余额变动
+            update_balance(request, update_type='create', obj=topic_obj)
             return redirect(reverse('topic', args=(topic_sn,)))
         node_obj = TopicCategory.objects.filter(category_type=2)
         return render(request, 'topic/new.html', locals())
@@ -162,6 +166,9 @@ class TopicView(View):
                                         content=content)
                 topic_obj.comment_num += 1
                 topic_obj.save()
+                # 发评论，对应余额变动 主题作者收到奖励，发回复者减去奖励
+                update_balance(request, update_type='reply', obj=topic_obj)
+                update_balance(request, update_type='reply_recv', obj=topic_obj)
                 return redirect(reverse('topic', args=(topic_sn,)))
             except Topic.DoesNotExist:
                 raise Http404("topic does not exist")

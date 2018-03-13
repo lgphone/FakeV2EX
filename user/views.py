@@ -1,5 +1,5 @@
 from io import BytesIO
-import time
+from datetime import datetime
 from django.shortcuts import render, HttpResponse, redirect
 from django.urls import reverse
 from django.core.cache import cache
@@ -8,7 +8,7 @@ from django.http import Http404
 from django.db.models import Q
 from utils.check_code import create_validate_code
 from .models import UserProfile, UserFollowing
-from operation.models import TopicVote, FavoriteNode, Topic, UserDetails
+from operation.models import TopicVote, FavoriteNode, Topic, UserDetails, SignedInfo
 from .forms import SignupForm, SigninForm
 
 
@@ -78,16 +78,27 @@ class SigninView(View):
                     if user_obj:
                         if user_obj.check_password(password):
                             # 账号密码正确，登录成功 修改最后登录时间
-                            current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-                            user_obj.last_login = current_time
+                            # current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                            # user_obj.last_login = current_time
+                            # 账号密码正确，登录成功 修改最后登录时间
+                            user_obj.last_login = datetime.now()
                             user_obj.save()
                             # 获取用户基础信息，存放到session中，方便频繁调用
 
-                            # 1 用户详细信息表
+                            # 用户详细信息表
                             user_detail = UserDetails.objects.filter(user=user_obj).first()
                             if not user_detail:
                                 user_detail = UserDetails.objects.create(user=user_obj)
+                            # 获取签到状态
+                            signed_obj = SignedInfo.objects.filter(user_id=user_obj.id,
+                                                                   date=datetime.now().strftime('%Y%m%d'),
+                                                                   status=True).first()
+                            if signed_obj:
+                                signed_status = True
+                            else:
+                                signed_status = False
 
+                            # 组装用户信息，并写入session中
                             user_info = {
                                 'username': username,
                                 'uid': user_obj.id,
@@ -98,8 +109,10 @@ class SigninView(View):
                                 'following_user_num': UserFollowing.objects.filter(is_following=1,
                                                                                    user=user_obj).count(),
                                 'show_balance': user_detail.show_balance,
-                                'balance': user_detail.balance
+                                'balance': user_detail.balance,
+                                'daily_mission': signed_status,
                             }
+                            # 登陆后页面跳转
                             if request.POST.get('next', None):
                                 next_url = request.POST.get('next')
                             else:
