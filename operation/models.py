@@ -117,7 +117,7 @@ class BalanceInfo(models.Model):
     balance_type = models.CharField(max_length=30, verbose_name="类型")
     balance = models.IntegerField(verbose_name="数量")
     last_balance = models.IntegerField(default=500, verbose_name="目前余额")
-    marks = models.CharField(max_length=30, verbose_name="备注")
+    marks = models.CharField(max_length=100, verbose_name="备注")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="时间")
 
     class Meta:
