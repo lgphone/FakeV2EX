@@ -1,14 +1,18 @@
 import json
+from datetime import datetime
 from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.http import Http404
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 from utils.auth_decorator import login_auth
+from utils.send_notify_mail import send_email_code
+from utils.some_utils import gender_random_code, save_avatar_file
 from django.contrib.auth import get_user_model
 from .models import Topic, TopicVote, FavoriteNode, TopicCategory, UserDetails
-from .forms import TopicVoteForm, CheckTopicForm, CheckNodeForm, SettingsForm
-from user.models import UserFollowing
+from .forms import TopicVoteForm, CheckTopicForm, CheckNodeForm, SettingsForm, PhoneSettingsForm, EmailSettingsForm, \
+    AvatarSettingsForm, PasswordSettingsForm
+from user.models import UserFollowing, VerifyCode
 
 User = get_user_model()
 
@@ -268,6 +272,7 @@ class SettingView(View):
         return render(request, 'user/settings.html', locals())
 
     def post(self, request):
+        has_error = True
         # 验证
         obj = SettingsForm(request.POST)
         # 获取用户的详细信息
@@ -275,13 +280,173 @@ class SettingView(View):
         if not user_detail_obj:
             user_detail_obj = UserDetails.objects.create(user_id=request.session.get('user_info')['uid'])
         if obj.is_valid():
+            has_error = False
             # 保存
             valid_data = obj.cleaned_data
             User.objects.filter(id=request.session.get('user_info')['uid']).update(location=valid_data['location'])
             valid_data.pop('location')
             user_detail_obj.__dict__.update(valid_data)
             user_detail_obj.save()
-            print(valid_data)
             # 使用Django 自带数据库缓存会有问题，无法设置成功，换成redis 就行了(可能是数据类型原因，重新刷新后就可以了)
             request.session['user_info']['show_balance'] = int(valid_data['show_balance'])
         return render(request, 'user/settings.html', locals())
+
+
+class PhoneSettingView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(PhoneSettingView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        # 获取用户的Phone
+        user_obj = User.objects.filter(id=request.session.get('user_info')['uid']).first()
+        return render(request, 'user/setting_phone.html', locals())
+
+    def post(self, request):
+        has_error = True
+        # 验证
+        obj = PhoneSettingsForm(request.POST)
+        if obj.is_valid():
+            password = obj.cleaned_data['password']
+            new_phone_number = obj.cleaned_data['new_phone_number']
+            user_obj = User.objects.filter(id=request.session.get('user_info')['uid']).first()
+            if user_obj.check_password(password):
+                user_obj.mobile = new_phone_number
+                # 省略手机号码验证
+                user_obj.mobile_verify = 1
+                # 保存
+                user_obj.save()
+                has_error = False
+            else:
+                password_error = "密码错误"
+        return render(request, 'user/setting_phone.html', locals())
+
+
+class EmailSettingView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(EmailSettingView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        # 获取用户的Email
+        user_obj = User.objects.filter(id=request.session.get('user_info')['uid']).first()
+        return render(request, 'user/setting_email.html', locals())
+
+    def post(self, request):
+        has_error = True
+        # 验证
+        obj = EmailSettingsForm(request.POST)
+        user_obj = User.objects.filter(id=request.session.get('user_info')['uid']).first()
+        if obj.is_valid():
+            password = obj.cleaned_data['password']
+            new_email = obj.cleaned_data['new_email']
+            if user_obj.check_password(password):
+                user_obj.email = new_email
+                user_obj.email_verify = 0
+                # 保存
+                user_obj.save()
+                # 发送验证信
+                random_code = gender_random_code()
+                code_obj = VerifyCode.objects.create(to=new_email, code_type=0, code=random_code)
+                code_obj.code = random_code
+                code_obj.save()
+                email_status = send_email_code(new_email, code=random_code)
+                has_error = False
+            else:
+                password_error = "密码错误"
+        return render(request, 'user/setting_email.html', locals())
+
+
+class ActivateEmailView(View):
+    def get(self, request, code):
+        # 获取
+        code_obj = VerifyCode.objects.filter(code=code, code_type=0).last()
+        current_time = datetime.now()
+        # 判断发送的code是否是十分钟之内的
+        if code_obj and int((current_time-code_obj.add_time).total_seconds()) < 600:
+            user_obj = User.objects.filter(email=code_obj.to).first()
+            user_obj.email_verify = 1
+            user_obj.save()
+        return render(request, 'user/activate_email_code.html', locals())
+
+
+class SendActivateCodeView(View):
+    @method_decorator(login_auth)
+    def post(self, request,):
+        ret = {
+            'changed': False,
+            'data': '60秒限制'
+        }
+        send_type = request.POST.get('send_type', None)
+        send_to = request.POST.get('send_to', None)
+        if send_type and send_to:
+            random_code = gender_random_code()
+            current_time = datetime.now()
+            code_obj = VerifyCode.objects.filter(to=send_to, code_type=send_type).last()
+            # 最后一条数据超过60秒，才可以发送验证码，防止频发发送
+            if not code_obj or int((current_time-code_obj.add_time).total_seconds()) > 60:
+                code_obj = VerifyCode.objects.create(to=send_to, code_type=send_type, code=random_code)
+                code_obj.code = random_code
+                code_obj.save()
+                email_status = send_email_code(send_to, code=random_code)
+                if email_status:
+                    ret['changed'] = True
+
+        return HttpResponse(json.dumps(ret))
+
+
+class AvatarSettingView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(AvatarSettingView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        # 获取
+        user_obj = User.objects.filter(id=request.session.get('user_info')['uid']).first()
+        return render(request, 'user/setting_avatar.html', locals())
+
+    def post(self, request):
+        has_error = True
+        # 验证
+        user_obj = User.objects.filter(id=request.session.get('user_info')['uid']).first()
+        obj = AvatarSettingsForm(request.POST, request.FILES)
+        if obj.is_valid():
+            avatar = request.FILES['avatar']
+            avatar_path = save_avatar_file(avatar)
+            user_obj.avatar = avatar_path
+            # 保存
+            user_obj.save()
+            request.session['user_info']['avatar'] = user_obj.avatar
+            has_error = False
+        return render(request, 'user/setting_avatar.html', locals())
+
+
+class PasswordSettingView(View):
+    @method_decorator(login_auth)
+    def dispatch(self, request, *args, **kwargs):
+        return super(PasswordSettingView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        return redirect(reverse('settings'))
+
+    def post(self, request):
+        has_error = True
+        user_obj = User.objects.filter(id=request.session.get('user_info')['uid']).first()
+        # 验证
+        obj = PasswordSettingsForm(request.POST)
+        if obj.is_valid():
+            password_current = obj.cleaned_data['password_current']
+            password_new = obj.cleaned_data['password_new']
+            password_again = obj.cleaned_data['password_again']
+            # 判断旧密码是否正确
+            if user_obj.check_password(password_current):
+                if password_new == password_again:
+                    user_obj.set_password(password_new)
+                    # 保存
+                    user_obj.save()
+                    has_password_error = False
+                else:
+                    password_error = "两次输入的密码不一样"
+            else:
+                password_error = "您输入的当前密码不正确"
+        return render(request, 'user/setting_password.html', locals())

@@ -1,0 +1,97 @@
+{% extends 'user/master.html' %}
+{% block CSS %}
+    <style>
+        a:active {
+            color: #778087;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .sls {
+            border-radius: 3px;
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            width: 240px;
+        }
+        .problem {
+            padding: 10px;
+            font-size: 14px;
+            line-height: 120%;
+            text-align: left;
+            background-color: #ffffc0;
+            border-left: 5px solid #fff000;
+            border-bottom: 1px solid #e2e2e2;
+            color: #333;
+        }
+    </style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a
+                href="{% url 'settings' %}">设置</a> <span class="chevron">&nbsp;›&nbsp;</span> 邮箱管理
+        </div>
+        {% if has_error %}
+            <div class="problem">请解决以下问题：
+                <ul>
+                    {% if obj.errors.new_email.0 %}
+                        <li>{{ obj.errors.new_email.0 }}</li>
+                    {% endif %}
+                    {% if obj.errors.password.0 %}
+                        <li>{{ obj.errors.password.0 }}</li>
+                    {% endif %}
+                    {% if password_error %}
+                        <li>{{ password_error }}</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="inner">
+            <form method="post" action="{% url 'settings_email' %}">
+                {% csrf_token %}
+                <table cellpadding="5" cellspacing="0" border="0" width="100%">
+                    <tbody>
+                    <tr>
+                        <td width="120" align="right">当前邮箱</td>
+                        <td width="auto" align="left">{{ user_obj.email }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right" valign="top"></td>
+                        <td width="auto" align="left">
+                    <span class="f14">
+                        如果你希望更改你的注册邮件地址，请在下方输入框中填入新的邮件地址。
+                        <br><br>
+                        然后我们会向此地址发送一封确认信，你需要在 8 小时内点击其中的链接，然后才能完成注册邮件地址更改。
+                    </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right" valign="top">
+                            <div class="sep5"></div>
+                            新邮箱
+                        </td>
+                        <td width="auto" align="left">
+                            <input type="email" class="sls" name="new_email" value="">
+                            <div class="sep5"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right">账号密码</td>
+                        <td width="auto" align="left">
+                            <input type="password" class="sls" name="password" value="">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120" align="right"></td>
+                        <td width="auto" align="left">
+                            <input type="submit" class="btn btn-sm" value="更改邮箱">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+</div>
+{% endblock %}

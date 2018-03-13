@@ -104,7 +104,7 @@
 
                     <tr>
                         <td width="120" align="right"></td>
-                        <td width="auto" align="left"><a href="/settings/phone">更改手机号</a></td>
+                        <td width="auto" align="left"><a href="{% url 'settings_phone' %}">更改手机号</a></td>
                     </tr>
                     <tr>
                         <td width="120" align="right">电子邮件</td>
@@ -112,28 +112,29 @@
                     </tr>
                     <tr>
                         <td width="120" align="right"></td>
-                        <td width="auto" align="left"><a href="/settings/email">更改注册邮箱</a></td>
+                        <td width="auto" align="left"><a href="{% url 'settings_email' %}">更改注册邮箱</a></td>
                     </tr>
 
                     <tr>
                         <td width="120" align="right">邮件地址验证</td>
-                        {% if user_detail_obj.user.mobile_verify == 0 %}
+                        {% if user_detail_obj.user.email_verify == 0 %}
                             <td width="auto" align="left"><span class="orange">邮件地址尚未完成验证</span></td>
                         {% else %}
                             <td width="auto" align="left"><span class="green">邮件地址已经验证</span></td>
                         {% endif %}
                     </tr>
-                    <tr>
-                        <td width="120" align="right"></td>
-                        <td width="auto" align="left">
-                            <button class="btn btn-sm"
-                                    onclick="if (confirm('你确认要向 {{ user_detail_obj.user.email }} 重新发送验证邮件？')) { resendVerificationEmail('24020'); }"
-                                    id="ButtonResendVerification" type="button">
-                                <li class="fa fa-refresh"></li>
-                                重发验证码
-                            </button> &nbsp; <span id="ResendResponse" class="gray"></span></td>
-                    </tr>
-
+                    {% if user_detail_obj.user.email_verify == 0 %}
+                        <tr>
+                            <td width="120" align="right"></td>
+                            <td width="auto" align="left">
+                                <button class="btn btn-sm"
+                                        onclick="if (confirm('你确认要向 {{ user_detail_obj.user.email }} 重新发送验证邮件？')) { resendVerificationEmail('{{ user_detail_obj.user.email }}'); }"
+                                        id="ButtonResendVerification" type="button">
+                                    <li class="fa fa-refresh"></li>
+                                    重发验证码
+                                </button> &nbsp; <span id="ResendResponse" class="gray"></span></td>
+                        </tr>
+                    {% endif %}
                     <tr>
                         <td width="120" align="right">个人网站</td>
                         <td width="auto" align="left">
@@ -224,7 +225,7 @@
                 <tr>
                     <td width="120" align="right"></td>
                     <td width="auto" align="left">
-                        <input type="button" onclick="location.href = '/settings/avatar';"
+                        <input type="button" onclick="location.href ='{% url 'settings_avatar' %}';"
                                class="btn btn-sm" value="上传新头像">
                     </td>
                 </tr>
@@ -246,7 +247,8 @@
             更改密码
         </div>
         <div class="inner">
-            <form method="post" action="/settings/password">
+            <form method="post" action="{% url 'settings_password' %}">
+                {% csrf_token %}
                 <table cellpadding="5" cellspacing="0" border="0" width="100%">
                     <tbody>
                     <tr>
@@ -270,7 +272,6 @@
                     <tr>
                         <td width="120" align="right"></td>
                         <td width="auto" align="left">
-                            {% csrf_token %}
                             <input type="submit" class="btn btn-sm" value="更改密码"></td>
                     </tr>
                     </tbody>
@@ -278,4 +279,33 @@
             </form>
         </div>
     </div>
+{% endblock %}
+
+{% block JS %}
+    {% if user_detail_obj.user.email_verify == 0 %}
+        <script>
+            function resendVerificationEmail(email) {
+                if ($.cookie('csrftoken')) {
+                    $.ajax({
+                        url: '/activate',
+                        type: 'post',
+                        data: {'send_type': 0, 'send_to': email},
+                        success: function (recv) {
+                            recv = JSON.parse(recv);
+                            if (recv.changed) {
+                                console.log('发送成功');
+                                $('#ButtonResendVerification').attr('disabled', 'disabled');
+                            } else {
+                                console.log('发送失败');
+                                console.log(recv)
+                            }
+                        },
+                        error: function () {
+                            console.log('请求失败')
+                        }
+                    })
+                }
+            }
+        </script>
+    {% endif %}
 {% endblock %}

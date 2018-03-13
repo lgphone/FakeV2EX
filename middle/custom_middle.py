@@ -22,7 +22,7 @@ class CountOnlineMiddlewareMixin(MiddlewareMixin):
             # 统计在线用户，先生成唯一key
             online_key = 'count_online_id_{_id}_session_{_session}'.format(
                 _id=request.session.get('user_info')['uid'], _session=session_key)
-            print(online_key)
+            # print(online_key)
             cache.set(online_key, 'online', timeout=SESSION_COOKIE_AGE)
 
         # 把统计数放入请求中，方便在模板中使用

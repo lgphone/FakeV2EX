@@ -1,0 +1,38 @@
+{% extends 'user/master.html' %}
+{% block CSS %}
+    <style>
+        a:active {
+            color: #778087;
+            text-decoration: none;
+            word-break: break-all;
+        }
+    </style>
+{% endblock %}
+{% block main %}
+    <div class="box">
+        <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a
+                href="{% url 'settings' %}">设置</a> <span class="chevron">&nbsp;›&nbsp;</span> 邮箱管理
+        </div>
+        <div class="inner">
+            <table cellpadding="5" cellspacing="0" border="0" width="100%">
+                <tbody>
+                <tr>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td width="120" align="right" valign="top"></td>
+                    <td width="auto" align="left">
+                    <span class="f14">
+                        {% if user_obj %}
+                            您的邮箱已经成功激活！
+                        {% else %}
+                            验证码超时或不存在
+                        {% endif %}
+                    </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+</div>
+{% endblock %}

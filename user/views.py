@@ -104,6 +104,9 @@ class SigninView(View):
                                 next_url = request.POST.get('next')
                             else:
                                 next_url = reverse('index')
+                            # 如果用户定义了登录后跳转，则跳转到用户指定页面
+                            if user_detail.my_home:
+                                next_url = user_detail.my_home
                             resp = redirect(next_url)
                             request.session['user_info'] = user_info
                             return resp

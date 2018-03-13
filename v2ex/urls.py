@@ -14,12 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, re_path
+from django.urls import path
 from topic.views import IndexView, NodeView, TopicView, NodeLinkView, RecentView, NewTopicView, MarkdownPreView, \
     MyFavoriteNodeView, MyFavoriteTopicView, MyFollowingView
 from user.views import SignupView, check_code, SigninView, SignoutView, MemberView
 from operation.views import TopicVoteView, FavoriteTopicView, ThanksTopicView, FavoriteNodeView, FollowingView, \
-    BlockView, SettingView
+    BlockView, SettingView, PhoneSettingView, EmailSettingView, SendActivateCodeView, ActivateEmailView,\
+    AvatarSettingView, PasswordSettingView
 
 urlpatterns = [
     # 管理员
@@ -57,6 +58,18 @@ urlpatterns = [
     path('signout', SignoutView.as_view(), name='signout'),
     # 用户设置
     path('settings', SettingView.as_view(), name='settings'),
+    # 用户头像设置
+    path('settings/avatar', AvatarSettingView.as_view(), name='settings_avatar'),
+    # 用户手机设置
+    path('settings/phone', PhoneSettingView.as_view(), name='settings_phone'),
+    # 用户Email设置
+    path('settings/email', EmailSettingView.as_view(), name='settings_email'),
+    # 密码修改
+    path('settings/password', PasswordSettingView.as_view(), name='settings_password'),
+    # 发送随机码地址
+    path('activate', SendActivateCodeView.as_view(), name='activate'),
+    # 用户邮箱激活链接
+    path('activate/<slug:code>', ActivateEmailView.as_view(), name='activate_email'),
     # Following 动作
     path('following/<slug:username>', FollowingView.as_view(), name='following'),
     # Block 动作
