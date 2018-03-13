@@ -30,7 +30,7 @@
                     </td>
                     <td width="10"></td>
                     <td width="auto" valign="top" align="left">
-                        {% if is_login %}
+                        {% if request.session.user_info %}
                             {% if request.session.user_info.username != user_obj.username %}
                                 <div class="fr">
                                     {% if is_following.0 == 1 %}
