@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from utils.auth_decorator import login_auth
 from utils.send_notify_mail import send_email_code
 from utils.pagination import Paginator
-from utils.some_utils import gender_random_code, save_avatar_file
+from utils.some_utils import gender_random_code, save_avatar_file, gender_random_balance
 from utils.update_balance import update_balance
 from django.contrib.auth import get_user_model
 from .models import Topic, TopicVote, FavoriteNode, TopicCategory, UserDetails, BalanceInfo, SignedInfo
@@ -492,7 +492,7 @@ class DailyRandomBalanceView(View):
             # 获取当前余额
             current_balance = request.session.get('user_info')['balance']
             # 随机生成金钱
-            random_balance = 19
+            random_balance = gender_random_balance()
             # 创建余额变动清单
             BalanceInfo.objects.create(
                 user_id=request.session.get('user_info')['uid'],

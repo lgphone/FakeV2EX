@@ -1,4 +1,5 @@
 import os
+import random
 from uuid import uuid4
 from v2ex.settings import AVATAR_FILE_PATH
 
@@ -11,6 +12,12 @@ def gender_topic_sn():
 def gender_random_code():
     random_code = str(uuid4()).split("-")[0]
     return random_code
+
+
+def gender_random_balance():
+    min_balance = 1
+    max_balance = 80
+    return random.randint(min_balance, max_balance)
 
 
 def save_avatar_file(file):
