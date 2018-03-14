@@ -30,7 +30,8 @@ class UserProfile(AbstractUser):
     mobile_verify = models.IntegerField(choices=VERIFY_STATUS, default=0, verbose_name="Mobile是否已经验证")
     avatar = models.CharField(max_length=50, null=True, blank=True, default="/static/img/default-avatar.png",
                               verbose_name="头像")
-    status = models.CharField(max_length=10, choices=STATUS_TYPE, default="OFFLINE", verbose_name="在线状态")
+    session = models.CharField(max_length=50, null=True, blank=True, default="",
+                               verbose_name="用户登录时会写入当前session_key")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
@@ -75,7 +76,8 @@ class UserFollowing(models.Model):
     )
 
     user = models.ForeignKey(UserProfile, verbose_name="用户", on_delete=models.CASCADE, related_name="follower")
-    following = models.ForeignKey(UserProfile, verbose_name="关注那个用户", on_delete=models.CASCADE, related_name="following")
+    following = models.ForeignKey(UserProfile, verbose_name="关注那个用户", on_delete=models.CASCADE,
+                                  related_name="following")
     is_following = models.IntegerField(choices=CHOICES, default=CHOICES[0][0], verbose_name="是否Following")
     is_block = models.IntegerField(choices=CHOICES, default=CHOICES[0][0], verbose_name="是否Block")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")

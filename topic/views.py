@@ -161,7 +161,7 @@ class TopicView(View):
         content = request.POST.get('content', None)
         if content is not None:
             try:
-                topic_obj = Topic.objects.get(topic_sn=topic_sn)
+                topic_obj = Topic.objects.select_related('author').get(topic_sn=topic_sn)
                 Comments.objects.create(topic=topic_obj, author_id=request.session.get('user_info')['uid'],
                                         content=content)
                 topic_obj.comment_num += 1

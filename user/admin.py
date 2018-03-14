@@ -7,11 +7,11 @@ from .models import VerifyCode
 
 class UserAdmin(admin.ModelAdmin):
     # 要列出的字段
-    list_display = ('id', 'username', 'gender', 'email', 'location', 'status', 'avatar', 'is_active',)
+    list_display = ('id', 'username', 'gender', 'email', 'location', 'session', 'avatar', 'is_active',)
     # 可以搜索的字段
     search_fields = ('name', )
     # 列出可以编辑的字段
-    list_editable = ('gender', 'location', 'status')
+    list_editable = ('gender', 'location',)
     # 右侧过滤条件
     list_filter = ('add_time',)
 

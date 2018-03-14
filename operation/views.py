@@ -133,7 +133,8 @@ class ThanksTopicView(View):
             # 判断不是此topic 的作者才可以感谢
             if topic_obj.author_id != request.session.get('user_info')['uid']:
                 try:
-                    topic_vote_obj = TopicVote.objects.get(user_id=request.session.get('user_info')['uid'], topic=topic_obj)
+                    topic_vote_obj = TopicVote.objects.get(user_id=request.session.get('user_info')['uid'],
+                                                           topic=topic_obj)
                     print(topic_vote_obj)
                     if topic_vote_obj.thanks == 1:
                         ret['changed'] = False
@@ -417,7 +418,7 @@ class AvatarSettingView(View):
         if obj.is_valid():
             avatar = request.FILES['avatar']
             # 判断文件大小，小于2M才可以
-            if avatar.size <= 2*1024*1024:
+            if avatar.size <= 2 * 1024 * 1024:
                 avatar_path = save_avatar_file(avatar)
                 user_obj.avatar = avatar_path
                 # 保存
@@ -503,10 +504,10 @@ class DailyRandomBalanceView(View):
             )
             # 获取昨天签到状态，根据昨天签到状态获取已经签到天数
             yesterday_date = (date.today() - timedelta(days=1)).strftime('%Y%m%d')
-            print(yesterday_date)
 
             # 获取昨天签到状态
-            signed_obj = SignedInfo.objects.filter(date=yesterday_date, user_id=request.session.get('user_info')['uid'])
+            signed_obj = SignedInfo.objects.filter(date=yesterday_date,
+                                                   user_id=request.session.get('user_info')['uid']).first()
 
             if signed_obj:
                 # 如果昨天签到了，获取昨天签到时间然后+1

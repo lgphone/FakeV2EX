@@ -78,13 +78,12 @@ class SigninView(View):
                     if user_obj:
                         if user_obj.check_password(password):
                             # 账号密码正确，登录成功 修改最后登录时间
-                            # current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-                            # user_obj.last_login = current_time
-                            # 账号密码正确，登录成功 修改最后登录时间
                             user_obj.last_login = datetime.now()
+                            # 获取用户本次session_key 记录到数据库中，以便在其他地方修改此用户的session 信息
+                            user_obj.session = request.session.session_key
                             user_obj.save()
-                            # 获取用户基础信息，存放到session中，方便频繁调用
 
+                            # 获取用户基础信息，存放到session中，方便频繁调用
                             # 用户详细信息表
                             user_detail = UserDetails.objects.filter(user=user_obj).first()
                             if not user_detail:
@@ -139,12 +138,11 @@ class SignoutView(View):
         # 如果用户登录了
         if request.session.get('user_info', None):
             # 删除登录用户统计信息
-            session_key = request.session.session_key
             online_key = 'count_online_id_{_id}_session_{_session}'.format(
-                _id=request.session.get('user_info')['uid'], _session=session_key)
+                _id=request.session.get('user_info')['uid'], _session=request.session.session_key)
             cache.delete(online_key)
             # 清除 session 信息
-            request.session.clear()
+            request.session.flush()
         return render(request, 'user/signout.html')
 
 
@@ -153,12 +151,11 @@ class MemberView(View):
         try:
             # 获取链接指向的用户名的obj
             user_obj = UserProfile.objects.get(username=username)
-            # 通过当前查看的用户名获取用户id，然后在cache中查找此key
+            # 通过当前查看的用户名获取用户id和session信息，然后在cache中查找此key
             # 判断用户是否在线 有此key  在线， 没有此key 离线
-            online_key = 'count_online_id_{_id}*'.format(_id=user_obj.id)
-            online_status = cache.keys(online_key)
-            print(online_status)
-
+            online_key = 'count_online_id_{_id}_session_{_session}'.format(
+                _id=user_obj.id, _session=user_obj.session)
+            online_status = cache.get(online_key)
             # 获取作者是连接中的用户的Topic主题
             topic_obj = Topic.objects.filter(author=user_obj).select_related('category').order_by('-add_time')
             if request.session.get('user_info', None):
