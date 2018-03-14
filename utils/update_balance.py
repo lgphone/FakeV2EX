@@ -114,9 +114,10 @@ def update_balance(request, update_type, obj=None):
 
         # 收到感谢，要查找是谁收到感谢，然后更新此用户的session数据
         session = SessionStore(session_key=obj.author.session)
-        session['user_info']['balance'] = current_balance + change_balance
-        # 在外边使用session 要调用save 保存数据
-        session.save()
+        if session.get('user_info', None):
+            session['user_info']['balance'] = current_balance + change_balance
+            # 在外边使用session 要调用save 保存数据
+            session.save()
 
     # 主题收到回复
     elif update_type == 'reply_recv':
@@ -144,9 +145,10 @@ def update_balance(request, update_type, obj=None):
 
         # 收到回复，要查找是谁收到回复，然后更新此用户的session数据
         session = SessionStore(session_key=obj.author.session)
-        session['user_info']['balance'] = current_balance + change_balance
-        # 在外边使用session 要调用save 保存数据
-        session.save()
+        if session.get('user_info', None):
+            session['user_info']['balance'] = current_balance + change_balance
+            # 在外边使用session 要调用save 保存数据
+            session.save()
 
     # 编辑主题
     elif update_type == 'edit':
