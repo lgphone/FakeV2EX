@@ -50,8 +50,8 @@ class NewTopicView(View):
     def get(self, request):
         obj = CheckNodeForm(request.GET)
         if obj.is_valid():
-            node_code = obj.cleaned_data['node_code']
-            node_obj = TopicCategory.objects.filter(code=node_code, category_type=2).first()
+            topic_node_code = obj.cleaned_data['topic_node_code']
+            node_obj = TopicCategory.objects.filter(code=topic_node_code, category_type=2).first()
             return render(request, 'topic/new.html', locals())
         node_obj = TopicCategory.objects.filter(category_type=2)
         return render(request, 'topic/new.html', locals())
@@ -61,16 +61,14 @@ class NewTopicView(View):
         obj = NewTopicForm(request.POST)
         if obj.is_valid():
             has_error = False
-            username = obj.cleaned_data['username']
             title = obj.cleaned_data['title']
             content = obj.cleaned_data['content']
-            node_code = obj.cleaned_data['node_code']
+            topic_node = obj.cleaned_data['topic_node']
             topic_sn = gender_topic_sn()
             markdown_content = markdown.markdown(content, format="xhtml5", extensions=exts)
-            topic_obj = Topic.objects.create(author=User.objects.filter(username=username).first(), title=title,
+            topic_obj = Topic.objects.create(author_id=request.session.get('user_info')['uid'], title=title,
                                              markdown_content=markdown_content,
-                                             category=TopicCategory.objects.filter(code=node_code,
-                                                                                   category_type=2).first(),
+                                             category_id=topic_node,
                                              topic_sn=topic_sn)
             # 发帖，余额变动
             update_balance(request, update_type='create', obj=topic_obj)

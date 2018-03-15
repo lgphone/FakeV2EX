@@ -39,9 +39,6 @@
     {% if has_error %}
         <div class="problem">请解决以下问题然后再提交：
             <ul>
-                {% if obj.errors.username.0 %}
-                    <li>{{ obj.errors.username.0 }}</li>
-                {% endif %}
                 {% if obj.errors.title.0 %}
                     <li>{{ obj.errors.title.0 }}</li>
                 {% endif %}
@@ -54,14 +51,13 @@
             </ul>
         </div>
     {% endif %}
-    {% if node_code %}
+    {% if topic_node_code %}
         <div class="header"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="{% url 'node' node_obj.code %}">{{ node_obj.name }}</a> <span class="chevron">&nbsp;›&nbsp;</span> 创建新主题</div>
     {% else %}
         <div class="cell"><a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> 创作新主题</div>
     {% endif %}
     <form method="POST" action="{% url 'new' %}" id="compose">
         {% csrf_token %}
-        <input type="hidden" class="hide" name="username" value="{{ request.session.user_info.username }}" >
         <div class="cell"><div class="fr" id="title_remaining">120</div>
             主题标题
         </div>
@@ -74,14 +70,14 @@
         <div style="text-align: left; border-bottom: 1px solid #e2e2e2; font-size: 14px; line-height: 120%;">
             <textarea class="msl" rows="10" maxlength="20000" id="editor" name="content" onkeydown="tab(this)"></textarea>
         </div>
-        {% if node_code%}
-            <input type="hidden" name="node_code" value="{{ node_code }}">
+        {% if topic_node_code %}
+            <input type="hidden" name="topic_node" value="{{ node_obj.id }}">
         {% else %}
             <div class="cell">
                 <div class="input-group node">
-                  <select class="custom-select" name="node_code">
+                  <select class="custom-select" name="topic_node">
                       {% for item in node_obj %}
-                        <option value="{{ item.code }}" selected>{{ item.name }}/{{ item.code }}</option>
+                        <option value="{{ item.id }}" selected>{{ item.name }}/{{ item.code }}</option>
                       {% endfor %}
                   </select>
                 </div>
