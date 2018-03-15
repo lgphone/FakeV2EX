@@ -7,7 +7,7 @@ def update_balance(request, update_type, obj=None):
     # 创建主题
     if update_type == 'create':
         # 获取当前余额
-        current_balance = request.session.session.get('user_info')['balance']
+        current_balance = request.session.get('user_info')['balance']
         # 获取当前用户的id
         uid = request.session.get('user_info')['uid']
         # 设置改变值
