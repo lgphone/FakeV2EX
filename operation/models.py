@@ -32,18 +32,6 @@ class TopicVote(models.Model):
     def __str__(self):
         return self.user.username
 
-    # 计算顶的数量
-    def count_like(self, topic_obj):
-        return TopicVote.objects.filter(vote=1, topic=topic_obj).count()
-
-    # 计算踩的数量
-    def count_dislike(self, topic_obj):
-        return TopicVote.objects.filter(vote=0, topic=topic_obj).count()
-
-    # 计算收藏的数量
-    def count_favorite(self, topic_obj):
-        return TopicVote.objects.filter(favorite=1, topic=topic_obj).count()
-
 
 class FavoriteNode(models.Model):
     """

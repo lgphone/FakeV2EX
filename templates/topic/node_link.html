@@ -88,40 +88,24 @@
                 {{ page_str }}
             </ul>
         </div>
-        {% for obj in topic_obj %}
+        {% for obj in node_link_obj %}
             <div class="cell item">
                 <table cellpadding="0" cellspacing="0" border="0" width="100%">
                     <tbody>
                     <tr>
-                        <td width="48" valign="top" align="center">
-                            <a href="{% url 'member' obj.author.username %}">
-                                <img src="{{ obj.author.avatar }}" class="rounded" alt="{{ obj.author.username }}"
-                                     width="48px" height="48px" border="0" align="default">
-                            </a>
-                        </td>
                         <td width="10"></td>
                         <td width="auto" valign="middle">
                             <span class="item_title"><a
-                                    href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></span>
+                                    href="{{ obj.link }}">{{ obj.link }}</a></span>
                             <div class="sep5"></div>
+                            <span class="item_title">{{ obj.desc }}</span>
                             <span class="small">
                             <div class="votes"></div>
-                            <a class="node"
-                               href="{% url 'node' obj.category.code %}">{{ obj.category.name }}</a> &nbsp;•&nbsp;
+                            <a class="node">{{ obj.add_time }}</a> &nbsp;•&nbsp;
                             <strong>
                                 <a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a>
                             </strong>
-                            {% if obj.last_comment %}
-                                &nbsp;•&nbsp; {{ obj.last_comment.add_time }} &nbsp;•&nbsp; 最后回复来自
-                                <strong>
-                                    <a href="{% url 'member' obj.last_comment.author.username %}">{{ obj.last_comment.author.username }}</a>
-                                </strong>
-                            {% endif %}
                         </span>
-                        </td>
-                        <td width="70" align="right" valign="middle">
-                            <a href="{% url 'topic' obj.topic_sn %}"
-                               class="badge badge-pill badge-secondary">&nbsp;{{ obj.comment_num }}&nbsp;</a>
                         </td>
                     </tr>
                     </tbody>

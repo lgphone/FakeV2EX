@@ -28,7 +28,7 @@
                         </td>
                         <td width="10"></td>
                         <td width="auto" valign="middle">
-                            <span class="item_title"><a href="{% url 'topic' obj.topic.topic_sn %}">{{ obj.topic.title }}</a></span>
+                            <span class="item_title"><a href="{% url 'topic' obj.topic.topic_sn %}">{{ obj.topic.title|safe }}</a></span>
                             <div class="sep5"></div>
                             <span class="small">
                             <div class="votes"></div>

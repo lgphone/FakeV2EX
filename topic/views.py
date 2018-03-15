@@ -30,13 +30,14 @@ class IndexView(View):
         category_obj = TopicCategory.objects.filter(category_type=1)
         if current_tab == 'hot':
             category_obj.hot = True
-            topic_obj = Topic.objects.all().order_by('-comment_num')[0:30]
+            topic_obj = Topic.objects.select_related('author', 'category').all().order_by('-comment_num')[0:30]
             return render(request, 'topic/index.html', locals())
         category_children_obj = TopicCategory.objects.filter(parent_category__code=current_tab)
         if current_tab == 'tech':
-            topic_obj = Topic.objects.all().order_by('-add_time')[0:30]
+            topic_obj = Topic.objects.select_related('author', 'category').all().order_by('-add_time')[0:30]
         else:
-            topic_obj = Topic.objects.filter(category__parent_category__code=current_tab).order_by('-add_time')[0:30]
+            topic_obj = Topic.objects.select_related('author', 'category').filter(
+                category__parent_category__code=current_tab).order_by('-add_time')[0:30]
         return render(request, 'topic/index.html', locals())
 
 
@@ -62,14 +63,22 @@ class NewTopicView(View):
             title = obj.cleaned_data['title']
             content = obj.cleaned_data['content']
             topic_node = obj.cleaned_data['topic_node']
+            # 生成唯一随机码
             topic_sn = gender_topic_sn()
+            # 过滤xss markdown转换
             title = bleach.clean(title)
             markdown_content = markdown.markdown(content, format="xhtml5", extensions=exts)
             markdown_content = bleach.clean(markdown_content, tags=markdown_tags, attributes=markdown_attrs)
+            # 保存
             topic_obj = Topic.objects.create(author_id=request.session.get('user_info')['uid'], title=title,
                                              markdown_content=markdown_content,
                                              category_id=topic_node,
                                              topic_sn=topic_sn)
+            # 更新Topic 所属的node 的统计数
+            node_obj = TopicCategory.objects.filter(id=topic_node, category_type=2).first()
+            node_obj.count_topic += 1
+            node_obj.save()
+
             # 发帖，余额变动
             update_balance(request, update_type='create', obj=topic_obj)
             return redirect(reverse('topic', args=(topic_sn,)))
@@ -85,7 +94,7 @@ class RecentView(View):
     def get(self, request):
         current_page = request.GET.get('p', '1')
         current_page = int(current_page)
-        topic_obj = Topic.objects.all().order_by('-add_time')
+        topic_obj = Topic.objects.select_related('author', 'category').all().order_by('-add_time')
         page_obj = Paginator(current_page, topic_obj.count())
         topic_obj = topic_obj[page_obj.start:page_obj.end]
         page_str = page_obj.page_str(reverse('recent') + '?')
@@ -102,7 +111,8 @@ class NodeView(View):
                 node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(
                     user_id=request.session.get('user_info')['uid'],
                     node=node_obj).first()
-            topic_obj = Topic.objects.filter(category=node_obj).order_by('-add_time')
+            topic_obj = Topic.objects.select_related('author', 'category').filter(category=node_obj).order_by(
+                '-add_time')
             page_obj = Paginator(current_page, topic_obj.count())
             topic_obj = topic_obj[page_obj.start:page_obj.end]
             page_str = page_obj.page_str(reverse('node', args=(node_code,)) + '?')
@@ -121,7 +131,8 @@ class NodeLinkView(View):
                 node_obj.favorite = FavoriteNode.objects.values_list('favorite').filter(
                     user_id=request.session.get('user_info')['uid'],
                     node=node_obj).first()
-            node_link_obj = NodeLink.objects.filter(category__code=node_code).order_by('-add_time')
+            node_link_obj = NodeLink.objects.select_related('author').filter(
+                category=node_obj).order_by('-add_time')
             page_obj = Paginator(current_page, node_link_obj.count())
             node_link_obj = node_link_obj[page_obj.start:page_obj.end]
             page_str = page_obj.page_str(reverse('node_link', args=(node_code,)) + '?')
@@ -139,7 +150,7 @@ class TopicView(View):
             topic_obj.like_num = TopicVote.objects.filter(vote=1, topic=topic_obj).count()
             topic_obj.dislike_num = TopicVote.objects.filter(vote=0, topic=topic_obj).count()
             topic_obj.favorite_num = TopicVote.objects.filter(favorite=1, topic=topic_obj).count()
-            comments_obj = Comments.objects.filter(topic=topic_obj).select_related('author')
+            comments_obj = Comments.objects.select_related('author').filter(topic=topic_obj)
             now = datetime.now()
             if request.session.get('user_info'):
                 topic_obj.thanks = TopicVote.objects.values_list('thanks').filter(topic=topic_obj,
@@ -161,9 +172,14 @@ class TopicView(View):
             try:
                 topic_obj = Topic.objects.select_related('author').get(topic_sn=topic_sn)
                 content = bleach.clean(content)
-                Comments.objects.create(topic=topic_obj, author_id=request.session.get('user_info')['uid'],
-                                        content=content)
+                comments_obj = Comments.objects.create(topic=topic_obj,
+                                                       author_id=request.session.get('user_info')['uid'],
+                                                       content=content)
+                # 当前Topic 评论数 +1
                 topic_obj.comment_num += 1
+                # 修改当前Topic 最后评论信息
+                topic_obj.last_comment_time = comments_obj.add_time
+                topic_obj.last_comment_user = request.session.get('user_info')['username']
                 topic_obj.save()
                 # 发评论，对应余额变动 主题作者收到奖励，发回复者减去奖励
                 # 不是当前topic作者才会有变动
@@ -199,9 +215,11 @@ class MyFavoriteNodeView(View):
         return super(MyFavoriteNodeView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        my_favorite_obj = FavoriteNode.objects.filter(favorite=1,
-                                                      user_id=request.session.get('user_info')['uid']).select_related(
-            'node').order_by('-add_time')
+        # TODO
+        # 给node model 添加统计字段，每次在此node新建topic + 1 ，统计的时候直接返回数据，不用查询
+        my_favorite_obj = FavoriteNode.objects.select_related('node').filter(favorite=1,
+                                                                             user_id=request.session.get('user_info')[
+                                                                                 'uid']).order_by('-add_time')
         return render(request, 'topic/my_node.html', locals())
 
 
@@ -211,11 +229,10 @@ class MyFavoriteTopicView(View):
         return super(MyFavoriteTopicView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        my_favorite_obj = TopicVote.objects.filter(favorite=1,
-                                                   user_id=request.session.get('user_info')['uid']).select_related(
-            'topic__author',
-            'topic__category').order_by(
-            '-add_time')
+        my_favorite_obj = TopicVote.objects.select_related('topic__author', 'topic__category').filter(
+            favorite=1,
+            user_id=request.session.get('user_info')['uid']).order_by('-add_time')
+
         return render(request, 'topic/my_topic.html', locals())
 
 
@@ -226,16 +243,17 @@ class MyFollowingView(View):
 
     def get(self, request):
         # 获取当前我正在关注的用户的QuerySet  判断 is_following  是不是 1
-        my_following_obj = UserFollowing.objects.filter(user_id=request.session.get('user_info')['uid'],
-                                                        is_following=1).select_related('following')
+        my_following_obj = UserFollowing.objects.select_related('following').filter(
+            user_id=request.session.get('user_info')['uid'],
+            is_following=1)
 
         # 设定一个列表，存放查询到的所收藏的用户的id
         following_user_id = []
         # 把id 加入列表
         for obj in my_following_obj:
             following_user_id.append(obj.following.id)
-        # 查询用户id在所关注的用户的主题
-        following_topic_obj = Topic.objects.filter(author_id__in=following_user_id).select_related('category',
-                                                                                                   'author').order_by(
-            '-add_time')
+        # 使用in查询用户id在所关注的用户的主题
+        following_topic_obj = Topic.objects.select_related('category', 'author').filter(
+            author_id__in=following_user_id).order_by('-add_time')
+
         return render(request, 'topic/my_following.html', locals())

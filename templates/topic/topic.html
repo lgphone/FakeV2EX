@@ -97,7 +97,7 @@
             </div>
             <a href="{% url 'index' %}">V2EX</a> <span class="chevron">&nbsp;›&nbsp;</span> <a href="{% url 'node' topic_obj.category.code %}">{{ topic_obj.category.name }}</a>
             <div class="sep10"></div>
-            <h1>{{ topic_obj.title }}</h1>
+            <h1>{{ topic_obj.title|safe }}</h1>
             <div id="topic_votes" class="votes">
                 <a href="javascript:" onclick="upVoteTopic('{{ topic_obj.topic_sn }}');" class="vote">
                     <li class="fa fa-chevron-up">&nbsp;{{ topic_obj.like_num }}</li>

@@ -61,8 +61,8 @@ class TopicVoteView(View):
                 <a href="javascript:" onclick="downVoteTopic('{_topic_sn}');" class="vote">
                 <li class="fa fa-chevron-down">&nbsp;{_dislike_num}</li>
                 </a>
-                '''.format(_like_num=topic_vote_obj.count_like(topic_obj),
-                           _dislike_num=topic_vote_obj.count_dislike(topic_obj),
+                '''.format(_like_num=TopicVote.objects.filter(vote=1, topic=topic_obj).count(),
+                           _dislike_num=TopicVote.objects.filter(vote=0, topic=topic_obj).count(),
                            _topic_sn=topic_sn, )
         else:
             ret['changed'] = False

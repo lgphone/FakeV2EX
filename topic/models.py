@@ -33,6 +33,7 @@ class TopicCategory(models.Model):
                                       verbose_name="背景图片")
     theme_color = models.CharField(default="#001D25", max_length=30, verbose_name="主题颜色",
                                    help_text="主题颜色")
+    count_topic = models.IntegerField(default=0, verbose_name="统计此节点下一共有多少个Topic")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
@@ -43,11 +44,6 @@ class TopicCategory(models.Model):
 
     def __str__(self):
         return self.name
-
-    # 计算所在分类的Topic数量
-    @property
-    def count_topic(self):
-        return Topic.objects.filter(category=self).count()
 
 
 class Topic(models.Model):
@@ -60,6 +56,10 @@ class Topic(models.Model):
     click_num = models.IntegerField(default=0, verbose_name="Topic点击数")
     # 每次用户评论，把此字段+1 可以获取评论总数
     comment_num = models.IntegerField(default=0, verbose_name="Topic 评论数量")
+    # 最后评论人
+    last_comment_user = models.CharField(max_length=50, null=True, blank=True, default="", verbose_name="Topic 最后评论人名")
+    # 最后评论时间
+    last_comment_time = models.DateTimeField(null=True, blank=True,  verbose_name="Topic 最后评论时间")
     title = models.TextField(max_length=120, verbose_name="Topic title")
     markdown_content = models.TextField(max_length=20000, null=True, blank=True, verbose_name="Topic 内容")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
@@ -71,11 +71,6 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.title
-
-    # 通过Topic 获取最后评论
-    @property
-    def last_comment(self):
-        return Comments.objects.filter(topic=self).last() or None
 
 
 class NodeLink(models.Model):

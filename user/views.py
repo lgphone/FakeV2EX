@@ -45,6 +45,7 @@ class SignupView(View):
                     password = obj.cleaned_data['password']
                     email = obj.cleaned_data['email']
                     mobile = obj.cleaned_data['mobile']
+                    # 保存用户
                     user_obj = UserProfile()
                     user_obj.username = username
                     user_obj.email = email
@@ -53,6 +54,7 @@ class SignupView(View):
                     user_obj.save()
                     # 注册成功，创建用户details 表
                     UserDetails.objects.create(user=user_obj)
+                    # 跳转到登录页
                     return redirect(reverse('signin'))
             else:
                 code_error = "验证码错误"
@@ -83,11 +85,12 @@ class SigninView(View):
                             user_obj.session = request.session.session_key
                             user_obj.save()
 
-                            # 获取用户基础信息，存放到session中，方便频繁调用
-                            # 用户详细信息表
+                            # 用户详细信息表 注册时已经创建，这里是防止admin等用户未创建产生的BUG
                             user_detail = UserDetails.objects.filter(user=user_obj).first()
                             if not user_detail:
                                 user_detail = UserDetails.objects.create(user=user_obj)
+
+                            # 获取用户基础信息，存放到session中，方便频繁调用
                             # 获取签到状态
                             signed_obj = SignedInfo.objects.filter(user_id=user_obj.id,
                                                                    date=datetime.now().strftime('%Y%m%d'),
@@ -152,7 +155,8 @@ class MemberView(View):
             # 获取链接指向的用户名的obj
             user_obj = UserProfile.objects.get(username=username)
             # 通过当前查看的用户名获取用户id和session信息，然后在cache中查找此key
-            # 判断用户是否在线 有此key  在线， 没有此key 离线
+            # 1 判断用户是否在线 有此key  在线， 没有此key 离线 这里用此方式
+            # 2 通过session 根据有没有此用户在数据库中存储的session 判断
             online_key = 'count_online_id_{_id}_session_{_session}'.format(
                 _id=user_obj.id, _session=user_obj.session)
             online_status = cache.get(online_key)

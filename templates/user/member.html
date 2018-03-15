@@ -84,15 +84,15 @@
             <div class="row topic">
                 <div class="col-8">
                     <div class="row topic-title">
-                        <div><a href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></div>
+                        <div><a href="{% url 'topic' obj.topic_sn %}">{{ obj.title|safe }}</a></div>
                     </div>
                     <div class="row topic-info">
                         <a href="{% url 'node' obj.category.code %}" class="badge badge-light">{{ obj.category.name }}</a>
                         <a href="{% url 'member' user_obj.username %}">{{ user_obj.username }}</a> •
-                        {% if obj.last_comment %}
-                            &nbsp;•&nbsp; {{ obj.last_comment.add_time }} &nbsp;•&nbsp; 最后回复来自
+                        {% if obj.last_comment_user %}
+                            &nbsp;•&nbsp; {{ obj.last_comment_time }} &nbsp;•&nbsp; 最后回复来自
                             <strong>
-                                <a href="{% url 'member' obj.last_comment.author.username %}">{{ obj.last_comment.author.username }}</a>
+                                <a href="{% url 'member' obj.last_comment_user %}">{{ obj.last_comment_user }}</a>
                             </strong>
                         {% endif %}
                     </div>

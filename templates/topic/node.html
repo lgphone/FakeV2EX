@@ -114,7 +114,7 @@
                         <td width="10"></td>
                         <td width="auto" valign="middle">
                             <span class="item_title"><a
-                                    href="{% url 'topic' obj.topic_sn %}">{{ obj.title }}</a></span>
+                                    href="{% url 'topic' obj.topic_sn %}">{{ obj.title|safe }}</a></span>
                             <div class="sep5"></div>
                             <span class="small">
                             <div class="votes"></div>
@@ -123,10 +123,10 @@
                             <strong>
                                 <a href="{% url 'member' obj.author.username %}">{{ obj.author.username }}</a>
                             </strong>
-                            {% if obj.last_comment %}
-                                &nbsp;•&nbsp; {{ obj.last_comment.add_time }} &nbsp;•&nbsp; 最后回复来自
+                            {% if obj.last_comment_user %}
+                                &nbsp;•&nbsp; {{ obj.last_comment_time }} &nbsp;•&nbsp; 最后回复来自
                                 <strong>
-                                    <a href="{% url 'member' obj.last_comment.author.username %}">{{ obj.last_comment.author.username }}</a>
+                                    <a href="{% url 'member' obj.last_comment_user %}">{{ obj.last_comment_user }}</a>
                                 </strong>
                             {% endif %}
                         </span>
