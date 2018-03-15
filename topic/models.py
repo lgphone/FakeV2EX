@@ -52,7 +52,7 @@ class TopicCategory(models.Model):
 
 class Topic(models.Model):
     """
-    Topic
+    Topic主表
     """
     category = models.ForeignKey(TopicCategory, verbose_name="Go分类", on_delete=models.CASCADE)
     author = models.ForeignKey(User, verbose_name="Topic作者", on_delete=models.CASCADE)
@@ -66,7 +66,7 @@ class Topic(models.Model):
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
-        verbose_name = 'Topic'
+        verbose_name = 'Topic主表'
         verbose_name_plural = verbose_name
 
     def __str__(self):
@@ -80,7 +80,7 @@ class Topic(models.Model):
 
 class NodeLink(models.Model):
     """
-    Link
+    NodeLink主表
     """
     category = models.ForeignKey(TopicCategory, verbose_name="Node分类", on_delete=models.CASCADE)
     author = models.ForeignKey(User, verbose_name="Link作者", on_delete=models.CASCADE)
@@ -91,7 +91,7 @@ class NodeLink(models.Model):
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
-        verbose_name = 'Link'
+        verbose_name = 'NodeLink主表'
         verbose_name_plural = verbose_name
 
     def __str__(self):
@@ -108,8 +108,8 @@ class Comments(models.Model):
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
 
     class Meta:
-        verbose_name = 'Comments'
+        verbose_name = 'Comments 评论表'
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.topic
+        return self.content

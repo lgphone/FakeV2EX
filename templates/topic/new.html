@@ -133,8 +133,7 @@
                 data: {'md': md},
                 success: function (recv) {
                     $('.markdown_body').html(recv);
-                    console.log('codehilite');
-                    $('.codehilite code').each(function (i, block) {
+                    $('.markdown_body code').each(function (i, block) {
                         hljs.highlightBlock(block);
                     });
                 },

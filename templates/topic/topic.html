@@ -110,7 +110,7 @@
         </div>
         <div class="cell">
             <div class="topic_content">
-                {{ topic_obj.markdown_content | safe }}
+                {{ topic_obj.html_content | safe }}
             </div>
         </div>
         {% if request.session.user_info %}
@@ -171,7 +171,7 @@
                                            class="dark">{{ obj.author.username }}</a></strong>&nbsp; &nbsp;<span
                                     class="ago">{{ obj.add_time }}</span>
                                 <div class="sep5"></div>
-                                <div class="reply_content">{{ obj.content }}</div>
+                                <div class="reply_content">{{ obj.content|safe }}</div>
                             </td>
                         </tr>
                         </tbody>

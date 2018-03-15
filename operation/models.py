@@ -95,7 +95,7 @@ class UserDetails(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.user
+        return self.user.username
 
 
 class UserTopDu(models.Model):
@@ -109,7 +109,7 @@ class UserTopDu(models.Model):
         unique_together = ('user', 'add_time',)
 
     def __str__(self):
-        return self.user
+        return self.top_du
 
 
 class BalanceInfo(models.Model):
@@ -125,7 +125,7 @@ class BalanceInfo(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.user
+        return self.last_balance
 
 
 class SignedInfo(models.Model):
@@ -148,4 +148,4 @@ class SignedInfo(models.Model):
         unique_together = ('user', 'signed_day')
 
     def __str__(self):
-        return self.user
+        return self.status

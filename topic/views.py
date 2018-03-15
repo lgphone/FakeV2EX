@@ -1,6 +1,7 @@
 from datetime import datetime
 import markdown
-from mdx_bleach.extension import BleachExtension
+import bleach
+from extra.bleach_whitelist import markdown_tags, markdown_attrs
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
 from django.views.generic import View
@@ -19,11 +20,8 @@ from .forms import NewTopicForm, MarkdownPreForm, CheckNodeForm
 User = get_user_model()
 # Create your views here.
 
-# 清理html xss 的markdown 扩展
-bleach = BleachExtension()
-
 exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite', 'markdown.extensions.tables',
-        'markdown.extensions.toc', bleach]
+        'markdown.extensions.toc']
 
 
 class IndexView(View):
@@ -65,7 +63,9 @@ class NewTopicView(View):
             content = obj.cleaned_data['content']
             topic_node = obj.cleaned_data['topic_node']
             topic_sn = gender_topic_sn()
+            title = bleach.clean(title)
             markdown_content = markdown.markdown(content, format="xhtml5", extensions=exts)
+            markdown_content = bleach.clean(markdown_content, tags=markdown_tags, attributes=markdown_attrs)
             topic_obj = Topic.objects.create(author_id=request.session.get('user_info')['uid'], title=title,
                                              markdown_content=markdown_content,
                                              category_id=topic_node,
@@ -160,6 +160,7 @@ class TopicView(View):
         if content is not None:
             try:
                 topic_obj = Topic.objects.select_related('author').get(topic_sn=topic_sn)
+                content = bleach.clean(content)
                 Comments.objects.create(topic=topic_obj, author_id=request.session.get('user_info')['uid'],
                                         content=content)
                 topic_obj.comment_num += 1
@@ -183,7 +184,10 @@ class MarkdownPreView(View):
         obj = MarkdownPreForm(request.POST)
         if obj.is_valid():
             md = obj.cleaned_data['md']
+            # 转为markdown格式
             md_html = markdown.markdown(md, format="xhtml5", extensions=exts)
+            # 清理不安全的标签
+            md_html = bleach.clean(md_html, tags=markdown_tags, attributes=markdown_attrs)
             return HttpResponse(md_html)
 
         return HttpResponse('')

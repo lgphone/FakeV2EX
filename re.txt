@@ -3,7 +3,6 @@ Django==2.0.2
 django-redis==4.9.0
 html5lib==1.0.1
 Markdown==2.6.11
-mdx-bleach==0.1.2
 Pillow==5.0.0
 pytz==2018.3
 redis==2.10.6
