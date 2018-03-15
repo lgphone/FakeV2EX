@@ -110,7 +110,7 @@
         </div>
         <div class="cell">
             <div class="topic_content">
-                {{ topic_obj.html_content | safe }}
+                {{ topic_obj.markdown_content | safe }}
             </div>
         </div>
         {% if request.session.user_info %}
