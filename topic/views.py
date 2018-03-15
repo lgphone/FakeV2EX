@@ -215,8 +215,6 @@ class MyFavoriteNodeView(View):
         return super(MyFavoriteNodeView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        # TODO
-        # 给node model 添加统计字段，每次在此node新建topic + 1 ，统计的时候直接返回数据，不用查询
         my_favorite_obj = FavoriteNode.objects.select_related('node').filter(favorite=1,
                                                                              user_id=request.session.get('user_info')[
                                                                                  'uid']).order_by('-add_time')
