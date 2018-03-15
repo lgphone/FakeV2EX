@@ -95,7 +95,7 @@ class NodeLink(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.title
+        return self.author.username
 
 
 class Comments(models.Model):
@@ -112,4 +112,4 @@ class Comments(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.content
+        return self.author.username

@@ -109,7 +109,7 @@ class UserTopDu(models.Model):
         unique_together = ('user', 'add_time',)
 
     def __str__(self):
-        return self.top_du
+        return self.user.username
 
 
 class BalanceInfo(models.Model):
@@ -117,7 +117,7 @@ class BalanceInfo(models.Model):
     balance_type = models.CharField(max_length=30, verbose_name="类型")
     balance = models.IntegerField(verbose_name="数量")
     last_balance = models.IntegerField(default=500, verbose_name="目前余额")
-    marks = models.CharField(max_length=100, verbose_name="备注")
+    marks = models.CharField(max_length=200, verbose_name="备注")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="时间")
 
     class Meta:
@@ -125,7 +125,7 @@ class BalanceInfo(models.Model):
         verbose_name_plural = verbose_name
 
     def __str__(self):
-        return self.last_balance
+        return self.user.username
 
 
 class SignedInfo(models.Model):
@@ -148,4 +148,4 @@ class SignedInfo(models.Model):
         unique_together = ('user', 'signed_day')
 
     def __str__(self):
-        return self.status
+        return self.user.username
