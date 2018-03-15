@@ -1,5 +1,6 @@
 from datetime import datetime
 import markdown
+from mdx_bleach.extension import BleachExtension
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
 from django.views.generic import View
@@ -18,8 +19,11 @@ from .forms import NewTopicForm, MarkdownPreForm, CheckNodeForm
 User = get_user_model()
 # Create your views here.
 
+# 清理html xss 的markdown 扩展
+bleach = BleachExtension()
+
 exts = ['markdown.extensions.extra', 'markdown.extensions.codehilite', 'markdown.extensions.tables',
-        'markdown.extensions.toc']
+        'markdown.extensions.toc', bleach]
 
 
 class IndexView(View):
@@ -62,13 +66,9 @@ class NewTopicView(View):
             content = obj.cleaned_data['content']
             node_code = obj.cleaned_data['node_code']
             topic_sn = gender_topic_sn()
-            if content:
-                html_content = markdown.markdown(content, format="xhtml5", extensions=exts)
-            else:
-                html_content = content
+            markdown_content = markdown.markdown(content, format="xhtml5", extensions=exts)
             topic_obj = Topic.objects.create(author=User.objects.filter(username=username).first(), title=title,
-                                             content=content,
-                                             html_content=html_content,
+                                             markdown_content=markdown_content,
                                              category=TopicCategory.objects.filter(code=node_code,
                                                                                    category_type=2).first(),
                                              topic_sn=topic_sn)

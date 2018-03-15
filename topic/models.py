@@ -61,8 +61,7 @@ class Topic(models.Model):
     # 每次用户评论，把此字段+1 可以获取评论总数
     comment_num = models.IntegerField(default=0, verbose_name="Topic 评论数量")
     title = models.TextField(max_length=120, verbose_name="Topic title")
-    content = models.TextField(max_length=20000, null=True, blank=True, verbose_name="Topic content")
-    html_content = models.TextField(max_length=20000, null=True, blank=True, verbose_name="Topic html content")
+    markdown_content = models.TextField(max_length=20000, null=True, blank=True, verbose_name="Topic 内容")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
