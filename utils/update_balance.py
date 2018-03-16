@@ -66,7 +66,7 @@ def update_balance(request, update_type, obj=None):
         uid = request.session.get('user_info')['uid']
         change_balance = -15
         balance_type = "发送谢意"
-        marks = '感谢 <a href="{_member_uri}">{_author}</a> 的 > <a href="{_uri}">{_title}</a> 主题 > {_title}'.format(
+        marks = '感谢 <a href="{_member_uri}">{_author}</a> 的 > <a href="{_uri}">{_title}</a> 主题'.format(
             _member_uri=reverse('member', args=(obj.author.username,)), _author=obj.author.username,
             _uri=reverse('topic', args=(obj.topic_sn,)), _title=obj.title)
 
