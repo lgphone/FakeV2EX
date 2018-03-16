@@ -115,16 +115,23 @@
                 </table>
             </div>
             <div class="inner">
-                <div class="fr" id="money"><a href="/balance" class="balance_area" style="">24 <img
-                        src="//cdn.v2ex.com/static/img/silver.png" alt="S" align="absmiddle" border="0"
-                        style="padding-bottom: 2px;"> 81 <img src="//cdn.v2ex.com/static/img/bronze.png" alt="B"
-                                                              align="absmiddle" border="0"></a></div>
+                {% if request.session.user_info.show_balance == 1 %}
+                    <div class="fr" id="money">
+                        <a href="{% url 'balance' %}" class="badge badge-pill badge-light">
+                            {{ request.session.user_info.balance }}
+                            <img src="/static/img/bronze.png" border="0">
+                        </a>
+                    </div>
+                {% endif %}
                 <a href="/notifications">0 条未读提醒</a></div>
         </div>
         <div class="sep20"></div>
         <div class="box">
             <div class="inner">
-                <li class="fa fa-gift" style="color: #f90;"></li> &nbsp;<a href="/mission/daily">领取今日的登录奖励</a>
+                {% if not request.session.user_info.daily_mission %}
+                    <li class="fa fa-gift" style="color: #f90;"></li> &nbsp;
+                    <a href="{% url 'daily_mission' %}">领取今日的登录奖励</a>
+                {% endif %}
             </div>
         </div>
         <div class="sep20"></div>

@@ -60,11 +60,10 @@
             <div class="inner">
                 {% if request.session.user_info.show_balance == 1 %}
                     <div class="fr" id="money">
-                        <a href="{% url 'balance' %}" class="balance_area" style="">
+                        <a href="{% url 'balance' %}" class="badge badge-pill badge-light">
                             {{ request.session.user_info.balance }}
-                            <img src="//cdn.v2ex.com/static/img/bronze.png" align="absmiddle" border="0">
+                            <img src="/static/img/bronze.png" border="0">
                         </a>
-
                     </div>
                 {% endif %}
                 <a href="/notifications">0 条未读提醒</a></div>
