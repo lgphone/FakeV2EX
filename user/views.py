@@ -53,7 +53,7 @@ class SignupView(View):
                     user_obj.set_password(password)
                     user_obj.save()
                     # 注册成功，创建用户details 表
-                    UserDetails.objects.create(user=user_obj)
+                    UserDetails.objects.create(user_id=user_obj.id)
                     # 跳转到登录页
                     return redirect(reverse('signin'))
             else:
@@ -86,9 +86,9 @@ class SigninView(View):
                             user_obj.save()
 
                             # 用户详细信息表 注册时已经创建，这里是防止admin等用户未创建产生的BUG
-                            user_detail = UserDetails.objects.filter(user=user_obj).first()
+                            user_detail = UserDetails.objects.filter(user_id=user_obj.id).first()
                             if not user_detail:
-                                user_detail = UserDetails.objects.create(user=user_obj)
+                                user_detail = UserDetails.objects.create(user_id=user_obj.id)
 
                             # 获取用户基础信息，存放到session中，方便频繁调用
                             # 获取签到状态

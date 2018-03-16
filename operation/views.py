@@ -271,10 +271,9 @@ class SettingView(View):
 
     def get(self, request):
         # 获取用户的详细信息
-        user_detail_obj = UserDetails.objects.filter(id=request.session.get('user_info')['uid']).first()
-        if not user_detail_obj:
-            user_detail_obj = UserDetails.objects.create(user_id=request.session.get('user_info')['uid'])
-        print(request.session.get('user_info'))
+        user_detail_obj = UserDetails.objects.select_related('user').filter(
+            user_id=request.session.get('user_info')['uid']).first()
+
         return render(request, 'user/settings.html', locals())
 
     def post(self, request):
@@ -282,9 +281,8 @@ class SettingView(View):
         # 验证
         obj = SettingsForm(request.POST)
         # 获取用户的详细信息
-        user_detail_obj = UserDetails.objects.filter(id=request.session.get('user_info')['uid']).first()
-        if not user_detail_obj:
-            user_detail_obj = UserDetails.objects.create(user_id=request.session.get('user_info')['uid'])
+        user_detail_obj = UserDetails.objects.filter(user_id=request.session.get('user_info')['uid']).first()
+
         if obj.is_valid():
             has_error = False
             # 保存
