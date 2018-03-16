@@ -1,6 +1,7 @@
 from django.utils.deprecation import MiddlewareMixin
 from django.core.cache import cache
 from v2ex.settings import SESSION_COOKIE_AGE
+from django.db import connection
 
 
 class CountOnlineMiddlewareMixin(MiddlewareMixin):
@@ -30,3 +31,12 @@ class CountOnlineMiddlewareMixin(MiddlewareMixin):
         # 如果用户不再看网页，session 和 cache 的key 会自动过期，自动删除
         request.online_member_count = len(cache.keys("count_online_id_*"))
         request.current_visitor_ip = ip
+
+    # 用来查看sql语句的debug 关闭
+    # def process_response(self, request, response):
+    #     for query in connection.queries:
+    #         nice_sql = query['sql'].replace('"', '').replace(',', ', ')
+    #         sql = "\033[1;31m[%s]\033[0m %s" % (query['time'], nice_sql)
+    #         print(sql)
+    #
+    #     return response

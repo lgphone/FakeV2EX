@@ -204,19 +204,19 @@
                         <span class="gray">请尽量让自己的回复能够对别人有帮助</span></div>
                     <input type="hidden" value="10476" name="once">
                     <input type="submit" value="回复" class="btn btn-sm">
-                    <script type="text/javascript">
-                        $("#reply_content").on('input', function (e) {
-                            saveReplyDraft(435882, 94579);
-                        });
-                        var keyPressed = 0;
-                        $("#reply_content").keydown(function (e) {
-                            keyPressed = keyPressed + 1;
-                            if ((e.ctrlKey || e.metaKey) && e.which === 13) {
-                                e.preventDefault();
-                                $("#reply_content").parent().submit();
-                            }
-                        });
-                    </script>
+{#                    <script type="text/javascript">#}
+{#                        $("#reply_content").on('input', function (e) {#}
+{#                            saveReplyDraft(435882, 94579);#}
+{#                        });#}
+{#                        var keyPressed = 0;#}
+{#                        $("#reply_content").keydown(function (e) {#}
+{#                            keyPressed = keyPressed + 1;#}
+{#                            if ((e.ctrlKey || e.metaKey) && e.which === 13) {#}
+{#                                e.preventDefault();#}
+{#                                $("#reply_content").parent().submit();#}
+{#                            }#}
+{#                        });#}
+{#                    </script>#}
                 </form>
             </div>
             <div class="inner">

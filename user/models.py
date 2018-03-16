@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -54,6 +55,7 @@ class VerifyCode(models.Model):
     code = models.CharField(max_length=10, verbose_name="验证码")
     to = models.CharField(max_length=30, verbose_name="发送给谁")
     code_type = models.IntegerField(choices=VERIFY_CODE_TYPE, default=0, verbose_name="验证码类型")
+    task_id = models.CharField(max_length=37, null=True, blank=True, verbose_name="任务的返回id")
     add_time = models.DateTimeField(default=datetime.now, verbose_name="添加时间")
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 

@@ -4,6 +4,7 @@ import bleach
 from extra.bleach_whitelist import markdown_tags, markdown_attrs
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse
+from django.db.models import F
 from django.views.generic import View
 from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
@@ -74,10 +75,9 @@ class NewTopicView(View):
                                              markdown_content=markdown_content,
                                              category_id=topic_node,
                                              topic_sn=topic_sn)
-            # 更新Topic 所属的node 的统计数
-            node_obj = TopicCategory.objects.filter(id=topic_node, category_type=2).first()
-            node_obj.count_topic += 1
-            node_obj.save()
+
+            # 使用F 自增此字段 更新Topic 所属的node 的统计数
+            TopicCategory.objects.filter(id=topic_node, category_type=2).update(count_topic=F('count_topic') + 1)
 
             # 发帖，余额变动
             update_balance(request, update_type='create', obj=topic_obj)
@@ -145,8 +145,7 @@ class TopicView(View):
     def get(self, request, topic_sn):
         try:
             topic_obj = Topic.objects.get(topic_sn=topic_sn)
-            topic_obj.click_num += 1
-            topic_obj.save()
+            # 添加其他属性
             topic_obj.like_num = TopicVote.objects.filter(vote=1, topic=topic_obj).count()
             topic_obj.dislike_num = TopicVote.objects.filter(vote=0, topic=topic_obj).count()
             topic_obj.favorite_num = TopicVote.objects.filter(favorite=1, topic=topic_obj).count()
@@ -161,6 +160,8 @@ class TopicView(View):
                                                                                       user_id=
                                                                                       request.session.get('user_info')[
                                                                                           'uid']).first()
+            # 使用F 自增此字段 增加一次阅读数量
+            Topic.objects.filter(topic_sn=topic_sn).update(click_num=F('click_num') + 1)
             return render(request, 'topic/topic.html', locals())
         except Topic.DoesNotExist:
             raise Http404("topic does not exist")
@@ -175,8 +176,8 @@ class TopicView(View):
                 comments_obj = Comments.objects.create(topic=topic_obj,
                                                        author_id=request.session.get('user_info')['uid'],
                                                        content=content)
-                # 当前Topic 评论数 +1
-                topic_obj.comment_num += 1
+                # 当前Topic 评论数 +1 使用F
+                topic_obj.comment_num = F('comment_num') + 1
                 # 修改当前Topic 最后评论信息
                 topic_obj.last_comment_time = comments_obj.add_time
                 topic_obj.last_comment_user = request.session.get('user_info')['username']

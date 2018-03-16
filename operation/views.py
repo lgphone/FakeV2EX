@@ -3,10 +3,11 @@ from datetime import datetime, timedelta, date
 from django.shortcuts import HttpResponse, redirect, render
 from django.urls import reverse
 from django.http import Http404
+from django.db.models import F
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 from utils.auth_decorator import login_auth
-from utils.send_notify_mail import send_email_code
+from .tasks import send_email_code
 from utils.pagination import Paginator
 from utils.some_utils import gender_random_code, save_avatar_file, gender_random_balance
 from utils.update_balance import update_balance
@@ -352,10 +353,13 @@ class EmailSettingView(View):
                 user_obj.save()
                 # 发送验证信
                 random_code = gender_random_code()
+                # 异步发送 返回id
+                ret_obj = send_email_code.delay(to=new_email, code=random_code)
+                # 存入数据库
                 code_obj = VerifyCode.objects.create(to=new_email, code_type=0, code=random_code)
                 code_obj.code = random_code
+                code_obj.task_id = ret_obj.task_id
                 code_obj.save()
-                email_status = send_email_code(new_email, code=random_code)
                 has_error = False
             else:
                 password_error = "密码错误"
@@ -370,8 +374,9 @@ class ActivateEmailView(View):
         # 判断发送的code是否是十分钟之内的
         if code_obj and int((current_time - code_obj.add_time).total_seconds()) < 600:
             user_obj = User.objects.filter(email=code_obj.to).first()
-            user_obj.email_verify = 1
-            user_obj.save()
+            if user_obj:
+                user_obj.email_verify = 1
+                user_obj.save()
         return render(request, 'user/activate_email_code.html', locals())
 
 
@@ -385,17 +390,24 @@ class SendActivateCodeView(View):
         send_type = request.POST.get('send_type', None)
         send_to = request.POST.get('send_to', None)
         if send_type and send_to:
+            # 如果用户已经验证过了，就不要再发送了
+            if User.objects.filter(email=send_to, email_verify=1).first():
+                ret['changed'] = False
+                ret['data'] = "用户已经验证成功"
+                return HttpResponse(json.dumps(ret))
+
             random_code = gender_random_code()
             current_time = datetime.now()
             code_obj = VerifyCode.objects.filter(to=send_to, code_type=send_type).last()
             # 最后一条数据超过60秒，才可以发送验证码，防止频发发送
             if not code_obj or int((current_time - code_obj.add_time).total_seconds()) > 60:
+                ret_obj = send_email_code.delay(to=send_to, code=random_code)
                 code_obj = VerifyCode.objects.create(to=send_to, code_type=send_type, code=random_code)
                 code_obj.code = random_code
+                code_obj.task_id = ret_obj.task_id
                 code_obj.save()
-                email_status = send_email_code(send_to, code=random_code)
-                if email_status:
-                    ret['changed'] = True
+                ret['changed'] = True
+                ret['data'] = "发送成功"
 
         return HttpResponse(json.dumps(ret))
 
@@ -490,18 +502,29 @@ class DailyRandomBalanceView(View):
         if not request.session.get('user_info')['daily_mission']:
             # 获取当前日期
             current_date = datetime.now().strftime('%Y%m%d')
-            # 获取当前余额
-            current_balance = request.session.get('user_info')['balance']
             # 随机生成金钱
             random_balance = gender_random_balance()
+
+            # 更新数据库中的用户余额 使用F
+            UserDetails.objects.filter(user_id=request.session.get('user_info')['uid']).first().update(
+                balance=F('balance') + random_balance)
+
+            # 获取更新后的用户的余额
+            user_obj = UserDetails.objects.filter(user_id=request.session.get('user_info')['uid']).first()
+
             # 创建余额变动清单
             BalanceInfo.objects.create(
                 user_id=request.session.get('user_info')['uid'],
                 balance_type="每日登录奖励",
                 balance=random_balance,
                 marks='{_date} 的每日登录奖励 {_num} 铜币'.format(_date=current_date, _num=random_balance),
-                last_balance=current_balance + random_balance
+                last_balance=user_obj.balance
             )
+
+            # 更新session信息
+            request.session['user_info']['daily_mission'] = True
+            request.session['user_info']['balance'] = user_obj.balance
+
             # 获取昨天签到状态，根据昨天签到状态获取已经签到天数
             yesterday_date = (date.today() - timedelta(days=1)).strftime('%Y%m%d')
 
@@ -523,12 +546,7 @@ class DailyRandomBalanceView(View):
                 status=True,
                 signed_day=signed_day
             )
-            # 更新数据库中的用户余额
-            UserDetails.objects.filter(user_id=request.session.get('user_info')['uid']).update(
-                balance=current_balance + random_balance)
-            # 更新session信息
-            request.session['user_info']['daily_mission'] = True
-            request.session['user_info']['balance'] = current_balance + random_balance
+
         return redirect(reverse('daily_mission'))
 
 

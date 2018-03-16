@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'operation.apps.OperationConfig',
     'topic.apps.TopicConfig',
     'notes.apps.NotesConfig',
+    'django_celery_results',
 ]
 
 AUTH_USER_MODEL = "user.UserProfile"
@@ -187,3 +189,29 @@ BASE_DOMAIN = 'http://127.0.0.1:8000'
 
 # 头像存放目录（当然也可以使用OSS等云存储，这里存储到本地）
 AVATAR_FILE_PATH = os.path.join(BASE_DIR, 'static', 'img')
+
+
+# CELERY 配置
+# BROKER 地址
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/2'
+# RESULT 返回到数据库中（可选返回cache中）
+CELERY_RESULT_BACKEND = 'django-db'
+# 接受的格式json
+CELERY_ACCEPT_CONTENT = ['json']
+# 序列化为json
+CELERY_TASK_SERIALIZER = 'json'
+
+# CELERY_BEAT_SCHEDULE = {
+#     # 周期性任务
+#     'task-one': {
+#         'task': 'app.tasks.print_hello',
+#         'schedule': 5.0, # 每5秒执行一次
+#         # 'args': ()
+#     },
+#     # 定时任务
+#     'task-two': {
+#         'task': 'app.tasks.print_hello',
+#         'schedule': crontab(minute=0, hour='*/3,10-19'),
+#         # 'args': ()
+#     }
+# }
