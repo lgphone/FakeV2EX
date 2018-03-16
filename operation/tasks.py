@@ -28,6 +28,8 @@ ACTIVE_EMAIL = '''
 # 自定义要执行的task任务
 @task
 def print_hello():
+    import time
+    time.sleep(10)
     return 'hello django'
 
 

@@ -18,7 +18,7 @@ def update_balance(request, update_type, obj=None):
                                                                 _title=obj.title)
 
         # 更新数据库中的用户余额
-        UserDetails.objects.filter(user_id=uid).first().update(balance=F('balance') + change_balance)
+        UserDetails.objects.filter(user_id=uid).update(balance=F('balance') + change_balance)
 
         # 获取此用户更新后的balance
         user_obj = UserDetails.objects.filter(user_id=uid).first()
@@ -44,7 +44,7 @@ def update_balance(request, update_type, obj=None):
                                                                     _title=obj.title)
 
         # 更新数据库中的用户余额
-        UserDetails.objects.filter(user_id=uid).first().update(balance=F('balance') + change_balance)
+        UserDetails.objects.filter(user_id=uid).update(balance=F('balance') + change_balance)
 
         # 获取此用户更新后的balance
         user_obj = UserDetails.objects.filter(user_id=uid).first()
@@ -71,7 +71,7 @@ def update_balance(request, update_type, obj=None):
             _uri=reverse('topic', args=(obj.topic_sn,)), _title=obj.title)
 
         # 更新数据库中的用户余额
-        UserDetails.objects.filter(user_id=uid).first().update(balance=F('balance') + change_balance)
+        UserDetails.objects.filter(user_id=uid).update(balance=F('balance') + change_balance)
 
         # 获取此用户更新后的balance
         user_obj = UserDetails.objects.filter(user_id=uid).first()
@@ -98,7 +98,7 @@ def update_balance(request, update_type, obj=None):
                                                                  _title=obj.title)
 
         # 更新数据库中的用户余额
-        UserDetails.objects.filter(user_id=uid).first().update(balance=F('balance') + change_balance)
+        UserDetails.objects.filter(user_id=uid).update(balance=F('balance') + change_balance)
 
         # 获取此用户更新后的balance
         user_obj = UserDetails.objects.filter(user_id=uid).first()
@@ -129,7 +129,7 @@ def update_balance(request, update_type, obj=None):
                                                                   _title=obj.title)
 
         # 更新数据库中的用户余额
-        UserDetails.objects.filter(user_id=uid).first().update(balance=F('balance') + change_balance)
+        UserDetails.objects.filter(user_id=uid).update(balance=F('balance') + change_balance)
 
         # 获取此用户更新后的balance
         user_obj = UserDetails.objects.filter(user_id=uid).first()
@@ -159,7 +159,7 @@ def update_balance(request, update_type, obj=None):
                                                                _title=obj.title)
 
         # 更新数据库中的用户余额
-        UserDetails.objects.filter(user_id=uid).first().update(balance=F('balance') + change_balance)
+        UserDetails.objects.filter(user_id=uid).update(balance=F('balance') + change_balance)
 
         # 获取此用户更新后的balance
         user_obj = UserDetails.objects.filter(user_id=uid).first()

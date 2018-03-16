@@ -506,7 +506,7 @@ class DailyRandomBalanceView(View):
             random_balance = gender_random_balance()
 
             # 更新数据库中的用户余额 使用F
-            UserDetails.objects.filter(user_id=request.session.get('user_info')['uid']).first().update(
+            UserDetails.objects.filter(user_id=request.session.get('user_info')['uid']).update(
                 balance=F('balance') + random_balance)
 
             # 获取更新后的用户的余额
